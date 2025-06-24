@@ -1,10 +1,13 @@
+---@diagnostic disable: assign-type-mismatch
 print("[Randomizer] Mod loaded\n")
 print("Running on " .. _VERSION .. "\n") --Lua 5.4
 
 
 --AP = require("lua-apclientpp")
 require("AP_Functions")
-
+local UEHelpers = require("UEHelpers")
+local APUtil = require("utility")
+local Player = require("player")
 
 
 
@@ -13,24 +16,45 @@ local host = "localhost"
 local slot = "Player1"
 local password = ""
 
-function SkipIntro()
-    local PlayerClass = StaticFindObject("/Script/LevelSequence.LevelSequencePlayer")
-    local IntroPlayer = FindObject(PlayerClass, nil, "/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.Intro.AnimationPlayer")
-    IntroPlayer.DurationFrames = 1
-    local FPCtrl = FindFirstOf("FirstPersonController_C")
-    ExecuteWithDelay(1000, function ()
-        FPCtrl:EnablePlayerInputActions()
-        FPCtrl.MayMove = true
-    end)
-end
+RegisterHook("/Script/Engine.PlayerController:ClientRestart", function()
+    ---@type AFirstPersonCharacter_C
+    local player = FindFirstOf("FirstPersonCharacter_C")
+    if player ~= nil and player:IsValid() then
+        Player.Player = player
+        print("PLAYER LOADED IN LUA")
+    else
+        print("PLAYER FAILED TO LOAD IN LUA")
+    end
+end)
 
-function SetUpHooks()
-    Map = FindFirstOf("Map_C")
-    if not Map:IsValid() then
+RegisterCustomEvent("Lua_ModInitialized", function (ModActor)
+    if ModActor:get() ~= nil and ModActor:get():IsValid() then
+        APUtil.ModActor = ModActor:get()
+        print("AP ModActor loaded in LUA")
+    end
+end)
+
+ExecuteAsync(function ()
+    local player = FindFirstOf("PlayerController")
+
+    if player ~= nil and player:IsValid() then
+        APUtil.Startup()
         return
     end
-    RegisterHook("/Game/FirstPersonBP/Maps/Map.Map_C:PlayIntro", SkipIntro)
-end
+
+    NotifyOnNewObject("/Script/Engine.PlayerController", function ()
+        APUtil.Startup()
+    end)
+end)
+
+-- Numpad 5 to toggle debug menu
+RegisterKeyBind(Key.NUM_FIVE, {}, function()
+    if APUtil.ModActor and APUtil.ModActor:IsValid() then
+        print("Toggling debug tools")
+        APUtil.ModActor:ToggleDebug()
+    end
+end)
+
 
 RegisterHook("/Script/Engine.PlayerController:ClientRestart", SetUpHooks)
 
