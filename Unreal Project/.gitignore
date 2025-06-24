@@ -1,0 +1,54 @@
+# Unreal Engine folders
+Binaries/
+DerivedDataCache/
+Intermediate/
+WindowsNoEditor/
+Saved/Config/CrashReportClient
+Saved/Cooked/
+Saved/Crashes/
+Saved/MaterialStats/
+Saved/MaterialStatsDebug/
+Saved/Shaders/
+Saved/StagedBuilds/
+Saved/Temp/
+Saved/TmpPackaging/
+Saved/Autosaves/
+.vs/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.VC.opendb
+
+# Build and project files that can be regenerated
+*.xcodeproj
+*.xcworkspace
+*.opensdf
+*.log
+*.tlog
+*.ipch/
+*.obj
+*.pdb
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Visual Studio Code settings
+.vscode/
+
+# Unreal Engine Launcher generated files
+*.tmp
+*.bak
+
+# Crash reports
+*.dmp
+
+# Auto-generated plugins
+Plugins/*/Intermediate/
+Plugins/*/Binaries/

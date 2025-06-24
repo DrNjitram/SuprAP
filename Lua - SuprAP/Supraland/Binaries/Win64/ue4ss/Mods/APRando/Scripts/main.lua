@@ -21,16 +21,10 @@ RegisterHook("/Script/Engine.PlayerController:ClientRestart", function()
     local player = FindFirstOf("FirstPersonCharacter_C")
     if player ~= nil and player:IsValid() then
         Player.Player = player
+        Player.SetupHooks()
         print("PLAYER LOADED IN LUA")
     else
         print("PLAYER FAILED TO LOAD IN LUA")
-    end
-end)
-
-RegisterCustomEvent("Lua_ModInitialized", function (ModActor)
-    if ModActor:get() ~= nil and ModActor:get():IsValid() then
-        APUtil.ModActor = ModActor:get()
-        print("AP ModActor loaded in LUA")
     end
 end)
 
@@ -47,22 +41,27 @@ ExecuteAsync(function ()
     end)
 end)
 
--- Numpad 5 to toggle debug menu
-RegisterKeyBind(Key.NUM_FIVE, {}, function()
+RegisterKeyBind(Key.F1, { ModifierKey.CONTROL }, function ()
+    print("Key pressed!\nShutting down")
+    ap = nil
+    collectgarbage("collect")
+    --ExecuteInGameThread(GetLookedActor)
+end)
+
+-- Toggle debug menu
+RegisterKeyBind(Key.F5, {}, function()
     if APUtil.ModActor and APUtil.ModActor:IsValid() then
         print("Toggling debug tools")
         APUtil.ModActor:ToggleDebug()
     end
 end)
 
-
-RegisterHook("/Script/Engine.PlayerController:ClientRestart", SetUpHooks)
-
-RegisterKeyBind(Key.F1, { ModifierKey.CONTROL }, function ()
-    print("Key pressed!\nShutting down")
-    ap = nil
-    collectgarbage("collect")
-    --ExecuteInGameThread(GetLookedActor)
+-- Print player location
+RegisterKeyBind(Key.NUM_ZERO, {}, function () 
+    ---@type APawn
+    local Pawn = UEHelpers.GetPlayer()
+    local transform = Pawn:GetTransform()
+    print(transform.Translation.X, transform.Translation.Y, transform.Translation.Z)
 end)
 
 function Test(FullCommand, Parameters, OutputDevice)
