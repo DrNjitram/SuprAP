@@ -16,7 +16,7 @@ item_types = ['BuyForceBeamGold_C', 'BuySpeedx2_C', 'BuyGunCriticalDamage_C', 'B
               'BuyHealthRegenMax10_C', 'BuyHealthRegen_C', 'BuyHealth+5_C', 'BuyHealth+15_C', 'BuyGunSpeedx2_C',
               'BuyGunRefireRate50_C', 'BuyGunRefillSpeed+66_C', 'BP_UnlockMap_C', 'BuyBelt_C', 'BuyChestDetector_C',
               'BuyChestDetectorRadius_C', 'BuyDoubleJump_C', 'BuyForceBlock_C', 'BuyGun1_C', 'BuyGunAlt_C',
-              'BuyGunCriticalDamageChance_C', 'BuyGunDamage+15_C', 'UpgradeHappiness_C'
+              'BuyGunCriticalDamageChance_C', 'BuyGunDamage+15_C', 'UpgradeHappiness_C', "Shell_C"
               ]
 # Other pipe types arent used i think
 pipe_types = ['PipesystemNew_C']
@@ -24,7 +24,7 @@ pipe_types = ['PipesystemNew_C']
 enemy_spawner_types = ['EnemySpawn1_C', 'EnemySpawn2_C', 'EnemySpawn3_C']
 # All classes that are found in the world, as chests, loose coins, or loose items
 location_types = ['Chest_C', 'CoinBig_C', 'Coin_C', 'Coin:Chest_C', 'BuyGunAlt_C', 'BuyStats_C', 'BuySword_C',
-                  'BuyTranslocator_C', 'BuyWalletx2_C']
+                  'BuyTranslocator_C', 'BuyWalletx2_C', 'Juicer_C', "Shell_C", 'DeadHero_C']
 # This is to ensure we aren't missing any type of items
 ignore_types = ['SmallbuttonQuickOnoff_C', 'DoorStone_C', 'Smallbutton2_C', 'Smallbutton_C', 'Door3_C', 'Lever_C',
                 'CarryStones_C', 'ButtonFloor_C', 'BallButton_C', 'BarrelClosed_Blueprint_C', 'BarrelColor_C',
@@ -39,8 +39,8 @@ ignore_types = ['SmallbuttonQuickOnoff_C', 'DoorStone_C', 'Smallbutton2_C', 'Sma
                 , 'Pipesystem_C', '_Pickaxe_C']
 
 # We might do something with these later
-maybe_types = ['Shell_C', 'PlayerStart', 'PhysicalCoin_C', 'Jumppad_C',
-               'Coin:DestroyablePots_C', 'DeadHero_C', 'PipesystemNewDLC_C']
+maybe_types = ['PlayerStart', 'PhysicalCoin_C', 'Jumppad_C',
+               'Coin:DestroyablePots_C', 'PipesystemNewDLC_C']
 
 
 all_types = item_types + pipe_types + enemy_spawner_types + ignore_types + maybe_types + location_types
@@ -85,6 +85,12 @@ for d in marker_data.values():
             items[d["spawns"]] += 1
         elif "coins" in d:
             locations[d["name"]] = {"type": "CoinItem", "item": d["type"], "coins": d["coins"], "pos": (d["lng"], d["lat"], d["alt"])}
+        elif "Juicer_C" == d["type"]:
+            locations[d["name"]] = {"type": "JuicerItem", "item": d["spawns"], "pos": (d["lng"], d["lat"], d["alt"])}
+            items[d["spawns"]] += 1
+        elif "DeadHero_C" == d["type"]:
+            locations[d["name"]] = {"type": "HeroItem", "item": d["name"], "pos": (d["lng"], d["lat"], d["alt"])}
+            items[d["name"]] += 1
         else:
             locations[d["name"]] = {"type": "FoundItem", "item": d["type"], "pos": (d["lng"], d["lat"], d["alt"])}
     if "cost" in d:
@@ -102,7 +108,23 @@ for k,v in locations.items():
     if v["item"] not in items:
         print(k,v)
     check_items[v["item"]] += 1
-    localisation[v["item"]] = game_classes[v["item"]]["friendly"]
+    if "HeroItem" != v["type"]:
+        localisation[v["item"]] = game_classes[v["item"]]["friendly"]
+
+localisation |= {
+    "DeadHero2Austin" : "Austin",
+    "DeadHero2Link" : "Link",
+    "DeadHero3Heman" : "Heman",
+    "DeadHero3Pokemon" :"Ash",
+    "DeadHero4Picard" : "Picard",
+    "DeadHero4Santa" : "Santa",
+    "DeadHero4Santa2" : "Santa",
+    "DeadHero4Santa3" : "Santa",
+    "DeadHero_3" : "Hero_3",
+    "DeadHeroGoku" : "Goku",
+    "DeadHeroGuybrush" :"GuyBrush",
+    "DeadHeroIndy" : "Indy"
+}
 
 print("Connections", len(connections), connections)
 print("Locations", len(locations), locations)

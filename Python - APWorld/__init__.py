@@ -38,24 +38,22 @@ class SupralandWorld(World):
     options_dataclass = options.SupralandOptions
     options: options.SupralandOptions
     required_client_version = (0, 6, 2)
-    origin_region_name = "Redville"
+    origin_region_name = "Introduction"
     set_rules = set_rules
 
-
+    item_table = items.item_table
+    location_table = locations.location_table
+    coinsanity_types = ["Coin_C", "CoinBig_C", "Coin:Chest_C"]
+    gravesanity_types = ["EnemySpawn1_C", "EnemySpawn2_C", "EnemySpawn3_C"]
 
     def generate_early(self) -> None:
         pass
 
-
     def create_regions(self) -> None:
-        gravesanity = self.options.gravesanity.value
-        coinsanity = self.options.coinsanity.value
-        coinsanity_types = ["Coin_C", "CoinBig_C", "Coin:Chest_C"]
-        gravesanity_types = ["EnemySpawn1_C", "EnemySpawn2_C", "EnemySpawn3_C"]
-
+        region_introduction = Region("Introduction", self.player, self.multiworld)
         region_redville = Region("Redville", self.player, self.multiworld)
-        for location_name, location_data in locations.location_table.items():
-            if (not gravesanity and location_data["item"] in gravesanity_types) or (not coinsanity and location_data["item"] in coinsanity_types):
+        for location_name, location_data in self.location_table.items():
+            if (not self.options.gravesanity.value and location_data["item"] in self.gravesanity_types) or (not self.options.coinsanity.value and location_data["item"] in self.coinsanity_types):
                 continue
             loc_id = self.location_name_to_id[location_name]
             region_redville.locations.append(SupralandLocation(self.player, location_name, loc_id, region_redville))
@@ -63,20 +61,28 @@ class SupralandWorld(World):
         for event in locations.event_list:
             location =  SupralandLocation(self.player, event, None, region_redville)
             region_redville.locations.append(location)
+
             location.place_locked_item(
                 SupralandItem(event, ItemClassification.progression, None, player=self.player))
 
+            if event == "Final Boss":
+                location.item.name = "Victory"
+
         self.multiworld.regions.append(region_redville)
+        self.multiworld.regions.append(region_introduction)
+
+    def connect_entrances(self) -> None:
+        region_introduction = self.multiworld.regions.region_cache[self.player]["Introduction"]
+        region_redville = self.multiworld.regions.region_cache[self.player]["Redville"]
+
+        region_redville.connect(region_introduction)
+        region_introduction.connect(region_redville)
 
     def create_items(self) -> None:
         pool: List[SupralandItem] = []
-        gravesanity = self.options.gravesanity.value
-        coinsanity = self.options.coinsanity.value
-        coinsanity_types = ["Coin_C", "CoinBig_C", "Coin:Chest_C"]
-        gravesanity_types = ["EnemySpawn1_C", "EnemySpawn2_C", "EnemySpawn3_C"]
 
-        for data in items.item_table.values():
-            if (not gravesanity and data.type_name in gravesanity_types) or (not coinsanity and data.type_name in coinsanity_types):
+        for data in self.item_table.values():
+            if (not self.options.gravesanity.value and data.type_name in self.gravesanity_types) or (not self.options.coinsanity.value and data.type_name in self.coinsanity_types):
                 continue
             for _ in range(data.count):
                 pool.append(self.create_item(data.name))

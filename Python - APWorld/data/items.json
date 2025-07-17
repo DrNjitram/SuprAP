@@ -389,23 +389,103 @@
             "loc": "Big Coin",
             "count": 83
       },
-      "EnemySpawn1_C": {
+      "DeadHero2Austin": {
             "id": 2078,
+            "loc": "Austin",
+            "count": 1
+      },
+      "DeadHero2Link": {
+            "id": 2079,
+            "loc": "Link",
+            "count": 1
+      },
+      "DeadHero3Heman": {
+            "id": 2080,
+            "loc": "Heman",
+            "count": 1
+      },
+      "DeadHero3Pokemon": {
+            "id": 2081,
+            "loc": "Ash",
+            "count": 1
+      },
+      "DeadHero4Picard": {
+            "id": 2082,
+            "loc": "Picard",
+            "count": 1
+      },
+      "DeadHero4Santa": {
+            "id": 2083,
+            "loc": "Santa",
+            "count": 1
+      },
+      "DeadHero4Santa2": {
+            "id": 2084,
+            "loc": "Santa",
+            "count": 1
+      },
+      "DeadHero4Santa3": {
+            "id": 2085,
+            "loc": "Santa",
+            "count": 1
+      },
+      "DeadHero_3": {
+            "id": 2086,
+            "loc": "Hero_3",
+            "count": 1
+      },
+      "DeadHeroGoku": {
+            "id": 2087,
+            "loc": "Goku",
+            "count": 1
+      },
+      "DeadHeroGuybrush": {
+            "id": 2088,
+            "loc": "GuyBrush",
+            "count": 1
+      },
+      "DeadHeroIndy": {
+            "id": 2089,
+            "loc": "Indy",
+            "count": 1
+      },
+      "EnemySpawn1_C": {
+            "id": 2090,
             "loc": "Wooden Cross",
             "count": 76
       },
       "EnemySpawn2_C": {
-            "id": 2079,
+            "id": 2091,
             "loc": "Stone Grave",
             "count": 55
       },
       "EnemySpawn3_C": {
-            "id": 2080,
+            "id": 2092,
             "loc": "Volcano",
             "count": 67
       },
+      "BP_DoubleHealthLoot_C": {
+            "id": 2093,
+            "loc": "Double Health",
+            "count": 1
+      },
+      "_BuyHealth+10_C": {
+            "id": 2094,
+            "loc": "Health +10",
+            "count": 1
+      },
+      "BP_A3_StrengthQuest_C": {
+            "id": 2095,
+            "loc": "Strong",
+            "count": 1
+      },
+      "Shell_C": {
+            "id": 2096,
+            "loc": "Shell",
+            "count": 6
+      },
       "UpgradeHappiness_C": {
-            "id": 2081,
+            "id": 2097,
             "loc": "Happiness",
             "count": 1
       }

@@ -44,17 +44,19 @@ useful = ["BP_UnlockMap_C", "BuyChestDetector_C", "BuyChestDetectorRadius_C", "B
           "BuyShowHealthbar_C", "BuyGunCoin_C", "BuyArmor1_C", "BuySwordRefireRate-33_C", "BuyHeartLuck_C",
           "BuyForceCubeStomp_C", "BuyCoinMagnet_C", "BuySwordHoly2_C", "BuyForceCubeStompGrave3_C", "BuyGunHoly1_C",
           "UpgradeHappiness_C", "BuyGunAltDamagex2_C", "BuyGunComboDamage+25_C", "BuyGunDamage+1_C", "Coin:Chest_C",
-          "CoinBig_C", "EnemySpawn1_C", "EnemySpawn2_C", "EnemySpawn3_C"
+          "EnemySpawn1_C", "EnemySpawn2_C", "EnemySpawn3_C", "BP_DoubleHealthLoot_C", "_BuyHealth+10_C"
           ]
 progression = ["BuyBelt_C", "BuyDoubleJump_C", "BuyForceBeamGold_C", "BuyForceBlock_C", "BuyGun1_C", "BuyGunAlt_C",
                "BuySpeedx15_C", "BuySpeedx2_C", "BuySword2_C", "BuySword_C", "BuyTranslocator_C", "BuyWalletx2_C",
                "BuyWalletx15_C", "BuyForceCubeBeam_C", "BuyGunSplashDamage_C", "BuySwordHoly1_C",
-               "BuyEnemiesLoot_C", "BuySmashdown_C", "BuyForceBeam_C"]
+               "BuyEnemiesLoot_C", "BuySmashdown_C", "BuyForceBeam_C", "BP_A3_StrengthQuest_C"]
 trap = []
-filler = ["Coin_C"]
+filler = ["Coin_C", "CoinBig_C", "DeadHero2Austin", "DeadHero2Link", "DeadHero3Heman", "DeadHero3Pokemon",
+          "DeadHero4Picard", "DeadHero4Santa", "DeadHero4Santa2", "DeadHero4Santa3", "DeadHero_3",
+          "DeadHeroGoku", "DeadHeroGuybrush", "DeadHeroIndy", "Shell_C"]
 
 
-#print(sum([v["count"] for v in item_table.values()])) # 229 without coins and spawns
+#print(sum([v["count"] for k,v in item_table.items() if "Coin" not in k and "Enemy" not in k])) # 205 without coins and spawns
 item_table = {v["id"]: ItemData(get_IC(k), v["count"], v["loc"], k) for k,v in item_table.items()}
 #print(item_table)
 #print(sum([v.count for v in item_table.values()]))

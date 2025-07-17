@@ -10,11 +10,17 @@ else:
 
 # This will get pipe openings added later
 event_list: list[str] = [
-    "Victory"
+    "Introduction",
+    "Blueville Theft",
+    "Rattlehag",
+    "Final Boss"
 ]
 
 #Adds regions and location names
 data_table = {
+    'Juicer2': { 'name': '', 'region': ''},
+    'Juicer3': { 'name': '', 'region': ''},
+    'Juicer_286': { 'name': '', 'region': ''},
     'BP_UnlockMap_2': { 'name': '', 'region': ''},
     'BuyBelt2_2': { 'name': '', 'region': ''},
     'BuyChestDetector_30': { 'name': '', 'region': ''},
@@ -1175,7 +1181,25 @@ data_table = {
     'EnemySpawn93': { 'name': '', 'region': ''},
     'EnemySpawn95_22931': { 'name': '', 'region': ''},
     'EnemySpawn96': { 'name': '', 'region': ''},
-    'UpgradeHappiness2_2': { 'name': '', 'region': ''}
+    'UpgradeHappiness2_2': { 'name': '', 'region': ''},
+    'Shell13_3781': { 'name': '', 'region': ''},
+    'Shell16_5895': { 'name': '', 'region': ''},
+    'Shell2_1957': { 'name': '', 'region': ''},
+    'Shell5_1015': { 'name': '', 'region': ''},
+    'Shell9_2044': { 'name': '', 'region': ''},
+    'Shell_1483': { 'name': '', 'region': ''},
+    'DeadHero2Austin': { 'name': '', 'region': ''},
+    'DeadHero2Link': { 'name': '', 'region': ''},
+    'DeadHero3Heman': { 'name': '', 'region': ''},
+    'DeadHero3Pokemon': { 'name': '', 'region': ''},
+    'DeadHero4Picard': { 'name': '', 'region': ''},
+    'DeadHero4Santa': { 'name': '', 'region': ''},
+    'DeadHero4Santa2': { 'name': '', 'region': ''},
+    'DeadHero4Santa3': { 'name': '', 'region': ''},
+    'DeadHero_3': { 'name': '', 'region': ''},
+    'DeadHeroGoku': { 'name': '', 'region': ''},
+    'DeadHeroGuybrush': { 'name': '', 'region': ''},
+    'DeadHeroIndy': { 'name': '', 'region': ''}
 }
 
 #print(len(location_table)) # 229 without coins and spawns
@@ -1186,7 +1210,7 @@ for k,v in location_table.items():
     #     print("'" + k + "': { 'name': '', 'region': ''}, ") # manual filling time kids
 location_name_to_id = {k: v["id"] for k,v in location_table.items()}
 #print(location_table)
-#print(len(location_table))
+#print(len([k for k,v in location_table.items() if "Coin" not in v["item"] and "Enemy" not in v["item"] ]))
 
 # For Exporting to another tool
 # for location_name, location_data in location_table.items():

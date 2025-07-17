@@ -6,6 +6,8 @@ if TYPE_CHECKING:
     from . import SupralandWorld
     from BaseClasses import CollectionState, Location
 
+starting_wallet = 30
+
 def can_access_location(state: "CollectionState", player: int, loc: Dict) -> bool:
     return True
 
