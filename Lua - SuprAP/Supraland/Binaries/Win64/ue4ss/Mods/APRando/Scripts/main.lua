@@ -8,12 +8,13 @@ require("AP_Functions")
 local UEHelpers = require("UEHelpers")
 local APUtil = require("utility")
 local Player = require("player")
+local Data = require("data")
 
 
 
 -- TODO: user input
-local host = "localhost"
-local slot = "Player1"
+local host = ""
+local slot = ""
 local password = ""
 
 RegisterHook("/Script/Engine.PlayerController:ClientRestart", function()
@@ -77,6 +78,40 @@ function Test(FullCommand, Parameters, OutputDevice)
     return true
 end
 
+
+function Send(FullCommand, Parameters, OutputDevice)
+    ap:LocationChecks({math.floor(tonumber(Parameters[1]))})
+    return true
+end
+
+function Scout(FullCommand, Parameters, OutputDevice)
+    get_item(Parameters, 1)
+    return true
+end
+
+---@param names string[]
+---@param send_hint integer
+function get_item(names, send_hint)
+    if send_hint == nil then
+        send_hint = 0 -- do not create a hint
+    end
+
+    local ids = {}
+    for i = 1, #names do
+        ids[#ids+1] = Data.L[names[i]]
+    end
+    for _, item in ipairs(names) do
+            print(item .. "\n")
+    end
+    for _, item in ipairs(ids) do
+            print(item .. "\n")
+    end
+    ap:LocationScouts(ids, send_hint)
+end
+
+--ap:LocationChecks({ap:get_location_id(name)})
+--ap:LocationScouts(ap:get_location_id(name), 0)
+
 function Connect(FullCommand, Parameters, OutputDevice)
     print(string.format("Full command: %s\n", FullCommand))
     print(string.format("Number of parameters: %i\n", #Parameters))
@@ -92,13 +127,16 @@ function Connect(FullCommand, Parameters, OutputDevice)
         connect(Parameters[1], Parameters[2], "")
 
         print("Will run for 10 seconds ...")
-        local t0 = os.clock()
-        while os.clock() - t0 < 10 do
-            ap:poll()  -- call this e.g. once per frame
+        while ap do
+            ap:poll()
         end
-        print("shutting down...");
-        ap = nil
-        collectgarbage("collect")
+        --local t0 = os.clock()
+        --while os.clock() - t0 < 10 do
+        --    ap:poll()  -- call this e.g. once per frame
+        --end
+        --print("shutting down...");
+        --ap = nil
+        --collectgarbage("collect")
     end)
     
     return true
@@ -107,3 +145,5 @@ end
 
 RegisterConsoleCommandHandler("test", Test)
 RegisterConsoleCommandHandler("connect", Connect)
+RegisterConsoleCommandHandler("send", Send)
+RegisterConsoleCommandHandler("scout", Scout)

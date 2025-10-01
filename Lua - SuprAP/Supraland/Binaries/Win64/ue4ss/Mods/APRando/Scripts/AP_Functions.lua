@@ -1,8 +1,9 @@
 local AP = require "lua-apclientpp"
+local data = require("data")
 
 -- global to this mod
-local game_name = "Secret of Evermore" --"Supraland"
-local items_handling = 7  -- full remote
+local game_name = "Supraland" --"Supraland"
+local items_handling = 3  -- full remote
 local message_format = AP.RenderFormat.TEXT
 ---@type APClient
 ap = nil
@@ -22,36 +23,19 @@ function connect(server, slot, password)
 
     function on_room_info()
         print("Room info")
-        ap:ConnectSlot(slot, password, items_handling, {"Lua-APClientPP"}, {0, 4, 9})
+        ap:ConnectSlot(slot, password, items_handling, {"Lua-APClientPP"}, {0, 6, 4})
     end
 
     function on_slot_connected(slot_data)
-        print("starting asserts\n")
-        --assert(not pcall(function() ap:get_item_name(64055) end)) -- not valid anymore, need 2nd arg
-        assert(ap:get_item_name(64055, nil) == ap:get_item_name(64055, ap:get_game()))
-        --assert(not pcall(function() ap:get_location_name(64000) end)) -- not valid anymore, need 2nd arg
-        assert(ap:get_location_name(64000, nil) == ap:get_location_name(64000, ap:get_game()))
-        if ap:get_game() == "Secret of Evermore" then
-            assert(ap:get_item_name(64055, nil) == "Bronze Axe")
-            assert(ap:get_item_name(64055, "Timespinner") ~= "Bronze Axe")
-            assert(ap:get_location_name(64000, "Secret of Evermore") == "Acid Rain")
-            assert(ap:get_location_name(64000, "Timespinner") ~= "Acid Rain")
-        end
-
         print("Slot connected")
         for k,v in ipairs(slot_data) do
             print(k.." = "..v)
         end
         print("missing locations: " .. table.concat(ap.missing_locations, ", "))
         print("checked locations: " .. table.concat(ap.checked_locations, ", "))
-        ap:Say("Hello World!")
-        ap:Bounce({name="test"}, {game_name})
-        local extra = {nonce = 123}  -- optional extra data will be in the server reply
-        ap:Get({"counter"}, extra)
-        ap:Set("counter", 0, true, {{"add", 1}}, extra)
-        ap:Set("empty_array", nil, true, {{"replace", AP.EMPTY_ARRAY}})
+
         ap:ConnectUpdate(nil, {"Lua-APClientPP", "DeathLink"})
-        ap:LocationChecks({64000, 64001, 64002})
+        ap:LocationChecks({10, 11, 12})
         print("Players:")
         local players = ap:get_players()
         for _, player in ipairs(players) do
@@ -75,7 +59,7 @@ function connect(server, slot, password)
     function on_location_info(items)
         print("Locations scouted:")
         for _, item in ipairs(items) do
-            print(item.item)
+            print(item.item .. "\n") --add writing to save map here?
         end
     end
 
