@@ -9,13 +9,15 @@ local UEHelpers = require("UEHelpers")
 local APUtil = require("utility")
 local Player = require("player")
 local Data = require("data")
-
+local ItemFunc = require("item_functions")
 
 
 -- TODO: user input
 local host = ""
 local slot = ""
 local password = ""
+
+local BASE_ID = 678000
 
 RegisterHook("/Script/Engine.PlayerController:ClientRestart", function()
     ---@type AFirstPersonCharacter_C
@@ -89,6 +91,13 @@ function Scout(FullCommand, Parameters, OutputDevice)
     return true
 end
 
+function UpdateMessage(FullCommand, Parameters, OutputDevice)
+    if APUtil.ModActor and APUtil.ModActor:IsValid() then
+        APUtil.ModActor:Update_Message(Parameters[1])
+    end
+    return true
+end
+
 ---@param names string[]
 ---@param send_hint integer
 function get_item(names, send_hint)
@@ -115,6 +124,7 @@ end
 function Connect(FullCommand, Parameters, OutputDevice)
     print(string.format("Full command: %s\n", FullCommand))
     print(string.format("Number of parameters: %i\n", #Parameters))
+    items_owned = {}
     
     for ParameterNumber, Parameter in pairs(Parameters) do
         local str = string.format("Parameter #%i -> '%s (%s)'\n", ParameterNumber, Parameter, type(Parameter))
@@ -126,17 +136,11 @@ function Connect(FullCommand, Parameters, OutputDevice)
         --connect(host, slot, password)
         connect(Parameters[1], Parameters[2], "")
 
-        print("Will run for 10 seconds ...")
+        
         while ap do
             ap:poll()
         end
-        --local t0 = os.clock()
-        --while os.clock() - t0 < 10 do
-        --    ap:poll()  -- call this e.g. once per frame
-        --end
-        --print("shutting down...");
-        --ap = nil
-        --collectgarbage("collect")
+
     end)
     
     return true
@@ -147,3 +151,4 @@ RegisterConsoleCommandHandler("test", Test)
 RegisterConsoleCommandHandler("connect", Connect)
 RegisterConsoleCommandHandler("send", Send)
 RegisterConsoleCommandHandler("scout", Scout)
+RegisterConsoleCommandHandler("msg", UpdateMessage)

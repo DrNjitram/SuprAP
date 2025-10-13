@@ -8,6 +8,13 @@ local message_format = AP.RenderFormat.TEXT
 ---@type APClient
 ap = nil
 
+local Data = require("data")
+local BASE_ID = 678000
+items_owned = {}
+game_items_recieved = {}
+
+local item_functions = require("item_functions")
+
 function connect(server, slot, password)
     function on_socket_connected()
         print("Socket connected")
@@ -52,7 +59,48 @@ function connect(server, slot, password)
     function on_items_received(items)
         print("Items received:")
         for _, item in ipairs(items) do
-            print(item.item .. "\n")
+            
+            local item_name = Data.ID[item.item-BASE_ID+1]
+            print(item.item .. ": " .. item_name .. "\n")
+
+            local f = item_functions[item_name]
+            if f == nil then
+                print("No function Found\n")
+            end
+            if items_owned[item_name] == nil then
+                    items_owned[item_name] = 0
+            end
+            if game_items_recieved[item_name] == nil then
+                game_items_recieved[item_name] = 0
+            end
+            
+            if items_owned[item_name] == game_items_recieved[item_name] then
+                game_items_recieved[item_name] = game_items_recieved[item_name] + 1
+                print("Now Owns " .. game_items_recieved[item_name] .. " of ".. item_name)
+            else
+                print("Already owned " .. game_items_recieved[item_name] .. " of ".. item_name)
+            end
+            items_owned[item_name] = items_owned[item_name] + 1
+
+            if Data.P[item_name] ~= nil then
+                Item_BP = Data.P[item_name][items_owned[item_name]]
+                if f ~= nil and game_items_recieved[item_name] >= items_owned[item_name] then
+                    Result = f(items_owned[item_name])
+                end
+            else
+                Item_BP = Data.BP[item_name]
+                if f ~= nil and game_items_recieved[item_name] >= items_owned[item_name] then
+                    Result = f()
+                end
+            end
+
+            -- Send the Item_BP to some other function or expose within the BP mod
+           -- print(item.item .. ": " .. item_name .. "\n")-- ..": ".. Data.PN[item_name] .. ": " ..Item_BP .."\n")
+            
+            if f ~= nil and Result ~= true then
+                print("Function Found, but failed to execute")
+            end
+            
         end
     end
 
