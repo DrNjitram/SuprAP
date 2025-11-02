@@ -211,6 +211,7 @@ function funcs.ProgSword(count)
     elseif count == 2 then
         Player.Player.SkillHasSword2 = true
     end
+    return true
 end
 
 function funcs.ProgSpeedJump(count)
@@ -223,6 +224,7 @@ function funcs.ProgSpeedJump(count)
     elseif count == 4 then
         Player.Player.SkillMultijump2 = true
     end
+    return true
 end
 
 function funcs.ProgForceBeam(count)
@@ -233,6 +235,7 @@ function funcs.ProgForceBeam(count)
     elseif count == 3 then
         Player.Player.SkillGrappleGold = true
     end
+    return true
 end
 
 function funcs.ProgCube(count)
@@ -243,6 +246,7 @@ function funcs.ProgCube(count)
     elseif count == 3 then
         Player.Player.SkillKillGrave3 = true
     end
+    return true
 end
 
 function funcs.ProgGun(count)
@@ -253,6 +257,7 @@ function funcs.ProgGun(count)
     elseif count > 2 and count <= 7 then
         Player.Player.Projectile1Damage = Player.Player.Projectile1Damage * 2 --Might be wrong
     end
+    return true
 end
 
 function funcs.ProgTrans(count)
@@ -261,6 +266,7 @@ function funcs.ProgTrans(count)
     elseif count == 2 then
         print("Shotforce not available")
     end
+    return true
 end
 
 function funcs.ProgGraveGun(count)
@@ -269,6 +275,7 @@ function funcs.ProgGraveGun(count)
     elseif count == 2 then
         Player.Player["Skill Gun Kill Grave 2"] = true
     end
+    return true
 end
 
 function funcs.ProgGraveSword(count)
@@ -277,6 +284,7 @@ function funcs.ProgGraveSword(count)
     elseif count == 2 then
         Player.Player.SkillSwordKillGrave2 = true
     end
+    return true
 end
 
 function funcs.ProgHealthRegen(count)
@@ -287,13 +295,114 @@ function funcs.ProgHealthRegen(count)
     elseif count == 18 then
         Player.Player.HealthRegenerateToX = Player.Player.HealthRegenerateToX + 10
     end
+    return true
+end
+
+function funcs.Loot()
+    Player.Player.EnemiesLoot = true
+    return true
+end
+
+function funcs.LootLuck()
+    Player.Player.LootHealthLuck = Player.Player.LootHealthLuck + 0.33
+    return true
+end
+
+function funcs.ChestDetector()
+    Player.Player.HasChestDetector = true
+    return true
+end
+
+function funcs.ChestDetectorRadius()
+    Player.Player['Max Chest Distance'] = Player.Player['Max Chest Distance'] * 2
+    return true
+end
+
+function funcs.Progress()
+    Player.Player['Show Progress Points?'] = true
+    return true
+end
+
+function funcs.Stats()
+    Player.Player.Stats = true
+    return true
+end
+
+function funcs.StompDamage()
+    Player.Player.SmashDownDamage = Player.Player.SmashDownDamage + 33
+    return true
+end
+
+function funcs.StompRadius()
+    Player.Player['Smash Down Radius'] = Player.Player['Smash Down Radius'] + 50
+    return true
+end
+
+function funcs.Wallet2()
+    Player.Player.MaxCoins = Player.Player.MaxCoins * 2.0
+    return true
+end
+
+function funcs.Wallet15()
+    Player.Player.MaxCoins = Player.Player.MaxCoins * 1.5
+    return true
+end
+
+function funcs.GunComboDamage()
+    Player.Player.ComboDamage = Player.Player.ComboDamage + 25
+    return true
+end
+
+function funcs.HealthBar()
+    Player.Player['Show Health Bar?'] = Player.Player['Show Health Bar?'] + 50
+    return true
+end
+
+function funcs.Armor()
+    Player.player.Armor = Player.player.Armor + 3
+    return true
+end
+
+function funcs.Coin()
+    Player.player.Coins = Player.player.Coins + 1
+    return true
+end
+
+function funcs.BigCoin()
+    Player.player.Coins = Player.player.Coins + 5
+    return true
+end
+
+function funcs.CoinBundle()
+    Player.player.Coins = Player.player.Coins + 25
+    return true
+end
+
+function funcs.Splash()
+    Player.player.Projectile1Radius = Player.player.Projectile1Radius + 275
+    return true
+end
+
+function funcs.GreenMoon()
+    Player.player.Moons = Player.player.Moons + 1
+    return true
+end
+
+function funcs.RedMoon()
+    Player.player.RedCrystals = Player.player.RedCrystals + 1
+    return true
+end
+
+function funcs.Shells()
+    Player.player.Shells = Player.player.Shells + 1
+    return true
 end
 
 funcs.item_to_func = {
     Map = nil,
     Buckle = funcs.Buckle,
-    ChestDetector = nil,
-    ChestDetectorRadius = nil,
+    ChestDetector = funcs.ChestDetector,
+    ChestDetectorRadius = funcs.ChestDetectorRadius,
     GunCritDamage = funcs.GunCritDamage,
     GunCritChance = funcs.GunCritChange,
     GunDamage15 = funcs.GunDamage15,
@@ -307,43 +416,43 @@ funcs.item_to_func = {
     Health5 = funcs.Health5,
     Health15 = funcs.Health15,
     ShieldBreaker = funcs.SkillShieldBreaker,
-    ShowProgress = nil,
-    StompDamage = nil,
-    Stats = nil,
+    ShowProgress = funcs.Progress,
+    StompDamage = funcs.StompDamage,
+    Stats = funcs.Stats,
     SwordCriticalChance = funcs.SwordCriticalChance,
     SwordDamage1 = funcs.SwordDamage1,
     SwordDamage2 = funcs.SwordDamage2,
     SwordDamage3 = funcs.SwordDamage3,
     ChestCount = funcs.ChestCount,
-    Wallet2 = nil,
-    Wallet15 = nil,
-    StompRadius = nil,
-    GunComboDamage = nil,
-    CoinBundle = nil,
+    Wallet2 = funcs.Wallet2,
+    Wallet15 = funcs.Wallet15,
+    StompRadius = funcs.StompRadius,
+    GunComboDamage = funcs.GunComboDamage,
+    CoinBundle = funcs.CoinBundle,
     EnemyHealth = nil,
     TransDamage = funcs.TransDamage,
     TransCooldown = funcs.TransCooldown,
-    GreenMoon = nil,
-    RedMoon = nil,
-    GunSplash = nil,
+    GreenMoon = funcs.GreenMoon,
+    RedMoon = funcs.RedMoon,
+    GunSplash = funcs.Splash,
     Silent = funcs.Silent,
     GraveCount = funcs.GraveCount,
     GraveDetector = funcs.GraveDetector,
-    MoreLoot = nil,
+    MoreLoot = funcs.LootLuck,
     CubeTelefrag = funcs.CubeTelefrag,
     HealthRegenSpeed = funcs.HealthRegenSpeed,
     SwordRange = funcs.SwordRange,
     SwordCritical = funcs.SwordCritical,
-    Loot = nil,
+    Loot = funcs.Loot,
     Stomp = funcs.Stomp,
-    HealthBar = nil,
+    HealthBar = funcs.HealthBar,
     GunCoin = funcs.GunCoin,
-    Armor = nil,
+    Armor = funcs.Armor,
     SwordSpeed = funcs.SwordSpeed,
-    LootLuck = nil,
+    LootLuck = funcs.LootLuck,
     CoinMagnet = funcs.CoinMagnet,
-    Coin = nil,
-    BigCoin = nil,
+    Coin = funcs.Coin,
+    BigCoin = funcs.BigCoin,
     HeroAustin = nil,
     HeroLink = nil,
     HeroHeman = nil,
@@ -360,7 +469,7 @@ funcs.item_to_func = {
     EnemySpawn2 = nil,
     EnemySpawn3 = nil,
     DoubleHealth = funcs.DoubleHealth,
-    Shell = nil,
+    Shell = funcs.Shells,
     Strong = funcs.Strong,
     Happiness = funcs.Happiness,
     StolenBuckle = funcs.Buckle,

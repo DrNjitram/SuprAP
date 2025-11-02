@@ -54,6 +54,7 @@ player.Status = {
     SkillHasGunCriticalDamageChance = 0.0,
     ["Skill Gun Kill Grave 1"] = false,
     ["Skill Gun Kill Grave 2"] = false,
+    ComboDamage = 0.0,
     -- Belt
     SkillHasBelt = false,
     MagnetRepelUpgrade = false,
@@ -76,6 +77,8 @@ player.Status = {
     -- Shoes
     HasSilentFeet = false, -- Stomp Shoes
     SkillHasSmashDown = false,
+    SmashDownDamage = 0.0,
+    ['Smash Down Radius'] = 0.0,
     -- Dev tools?
     bGodMode = false,
     bBuddhaMode = false,
@@ -95,7 +98,25 @@ player.Status = {
     KilledDemonGrunts = 0,
     KilledDemonBoss = 0,
     KilledArcher = 0,
-    KilledFatty = 0
+    KilledFatty = 0,
+    -- Coins
+    Coins = 0,
+    MaxCoins = 0,
+    -- Chest Detector
+    HasChestDetector = false,
+    ['Max Chest Distance'] = 0.0,
+    -- Loot
+    EnemiesLoot = false,
+    DoubleLoot = false,
+    LootHealthLuck = 0.0,
+    -- Misc
+    ['Show Health Bar?'] = false,
+    ['Show Progress Points?'] = false,
+    Stats = false,
+    Armor = 0.0,
+    Moons = 0, -- Green Moons
+    RedCrystals = 0, --Red Moons
+    Shells = 0,
 }
 
 function player.SetupHooks()
@@ -116,13 +137,14 @@ function player.SetupHooks()
         APUtil.ModActor = ModActor:get()
         print("AP ModActor loaded in LUA")
     end
-    player.UpdateStatus("SkillHasSword", true)
+    --player.UpdateStatus("SkillHasSword", true)
 end)
 end
 
 function player.Heal()
     player.Player.Health = player.Player.MaxHealth
 end
+
 
 local function GetStatus()
     for stat, _ in pairs(player.Status) do
@@ -153,5 +175,137 @@ function player.UpdateStatus(KeyName, Value)
     end
     APUtil.ModActor:StatusToDebugWidget()
 end
+
+local function SetPlayerProperty(name, stringValue)
+    local obj = FindFirstOf("FirstPersonCharacter_C")
+    if not obj or not obj:IsValid() then
+        return false, "not found"
+    end
+
+    local value = coerceValue(obj, name, stringValue)
+
+    if value~=nil then
+        obj[name] = value -- setting value
+        obj:SaveSTuff()
+        return true
+    end
+
+    return false, "not found or could not find type"
+end
+
+local function coerceValue(obj, name, value)
+    local prop = obj[name]
+    if prop == nil then
+        return nil
+    end
+
+    local ptype = type(prop)
+    if ptype == "number" then
+        return tonumber(value)
+    elseif ptype == "boolean" then
+        return value == "true" or value == "1"
+    elseif ptype == "FVector" then
+        local x, y, z = value:match("([%d%.%-]+),([%d%.%-]+),([%d%.%-]+)")
+        if x then return {X=tonumber(x), Y=tonumber(y), Z=tonumber(z)} end
+    elseif ptype == "FRotator" then
+        local p, y, r = value:match("([%d%.%-]+),([%d%.%-]+),([%d%.%-]+)")
+        if p then return {Pitch=tonumber(p), Yaw=tonumber(y), Roll=tonumber(r)} end
+    elseif ptype:match("FString") then
+        return value
+    else
+        print("Unhandled type:", ptype)
+    end
+    return nil
+end
+
+
+local function GetPlayerProperties()
+    local obj = FindFirstOf("FirstPersonCharacter_C")
+    if not obj or not obj:IsValid() then
+        return {}
+    end
+
+    local data = {}
+    for name, value in pairs(player.Status) do
+        if type(obj[name])~='userdata' then
+            local str = string.format("%s: %s [%s]", name, tostring(obj[name]), type(obj[name]))
+            table.insert(data, str)
+        end
+    end
+    table.sort(data)
+    return data
+end
+
+local function SetPlayerProperty(name, stringValue)
+    local obj = FindFirstOf("FirstPersonCharacter_C")
+    if not obj or not obj:IsValid() then
+        return false, "not found"
+    end
+
+    local value = coerceValue(obj, name, stringValue)
+
+    if value~=nil then
+        obj[name] = value -- setting value
+        obj:SaveSTuff()
+        return true
+    end
+
+    return false, "not found or could not find type"
+end
+
+RegisterConsoleCommandHandler("poke", function(FullCommand, Parameters, Ar)
+    local name = Parameters[1]
+
+    if not name then
+        local res = GetPlayerProperties()
+        for _, str in ipairs(res) do
+            print(str)
+            Ar:Log(str)
+        end
+        Ar:Log("Usage: poke <PropertyName> <Value>")
+        return true
+    end
+
+    local stringValue = table.concat(Parameters, " ", 2)
+    local ok, err = SetPlayerProperty(name, stringValue)
+
+    if ok then
+        Ar:Log(string.format("%s set to %s", name, stringValue))
+    else
+        Ar:Log(err)
+    end
+
+    return true
+end)
+
+RegisterConsoleCommandHandler("peek", function(FullCommand, Parameters, Ar)
+    local name = Parameters[1]
+
+    if not name then
+        local res = GetPlayerProperties()
+        for _, str in ipairs(res) do
+            print(str)
+            Ar:Log(str)
+        end
+        Ar:Log("Usage: peek <PropertyName>")
+        return true
+    end
+
+    local obj = FindFirstOf("FirstPersonCharacter_C")
+    if not obj or not obj:IsValid() then
+        Ar:Log("Character not found")
+        return true
+    end
+
+    if obj[name] ~= nil then
+        Ar:Log(string.format("%s is %s", name, obj[name]))
+    else
+        Ar:Log(string.format("Property %s not found.", name))
+    end
+
+    return true
+end)
+
+
 
 return player

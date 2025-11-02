@@ -10,12 +10,14 @@ local APUtil = require("utility")
 local Player = require("player")
 local Data = require("data")
 local ItemFunc = require("item_functions")
-
+require("lua-apclientpp")
 
 -- TODO: user input
 local host = ""
 local slot = ""
 local password = ""
+
+
 
 local BASE_ID = 678000
 
@@ -45,10 +47,7 @@ ExecuteAsync(function ()
 end)
 
 RegisterKeyBind(Key.F1, { ModifierKey.CONTROL }, function ()
-    print("Key pressed!\nShutting down")
-    ap = nil
-    collectgarbage("collect")
-    --ExecuteInGameThread(GetLookedActor)
+    disconnect()
 end)
 
 -- Toggle debug menu
@@ -66,6 +65,13 @@ RegisterKeyBind(Key.NUM_ZERO, {}, function ()
     local transform = Pawn:GetTransform()
     print(transform.Translation.X, transform.Translation.Y, transform.Translation.Z)
 end)
+
+local function disconnect()
+    print("Key pressed!\nShutting down")
+    ap = nil
+    collectgarbage("collect")
+    return true
+end
 
 function Test(FullCommand, Parameters, OutputDevice)
     print(string.format("Full command: %s\n", FullCommand))
@@ -146,9 +152,94 @@ function Connect(FullCommand, Parameters, OutputDevice)
     return true
 end
 
+RegisterKeyBind(Key.F4, { ModifierKey.CONTROL }, function ()
+    print("Spawning APLogo")
 
+    if APUtil.ModActor == nil then
+        print("Modactor not valid")
+        APUtil.ModActor = FindFirstOf("ModActor_C")
+        if APUtil.ModActor ~= nil and APUtil.ModActor:IsValid() then
+            print("Modactor valid now")
+        else
+            print("Modactor still not valid")
+        end
+    end
+
+    ---@type APawn
+    local Pawn = UEHelpers.GetPlayer()
+    local transform = Pawn:GetTransform()
+    print(transform.Translation.X, transform.Translation.Y, transform.Translation.Z)
+
+    if APUtil.ModActor ~= nil then
+        local obj = APUtil.ModActor:SpawnActor()
+
+        --print(obj:GetClass())
+    else
+        print("ModActor not valid")
+    end
+    
+    print(APUtil.GetObjectName(APUtil.APLogo))
+    local transform = APUtil.APLogo:GetTransform()
+    print(transform.Translation.X, transform.Translation.Y, transform.Translation.Z)
+
+
+    
+    
+    --local obj = UEHelpers:GetWorld():SpawnActor(APUtil.APLogo, transform.Translation, transform.Rotation)
+
+end)
+
+
+local cost = 10
+
+RegisterKeyBind(Key.F5, { ModifierKey.CONTROL }, function ()
+    ---@type APawn
+    local Pawn = UEHelpers.GetPlayer()
+    local transform = Pawn:GetTransform()
+    print(transform.Translation.X, transform.Translation.Y, transform.Translation.Z)
+
+    ---@type AAPLogo_C
+    local Actor = nil
+
+    if APUtil.ModActor == nil then
+        print("Modactor not valid")
+        APUtil.ModActor = FindFirstOf("ModActor_C")
+        if APUtil.ModActor ~= nil and APUtil.ModActor:IsValid() then
+            print("Modactor valid now")
+        else
+            print("Modactor still not valid")
+        end
+    end
+    
+    if APUtil.ModActor ~= nil then
+        transform.Translation.X = transform.Translation.X + 10
+        Actor = APUtil.ModActor:SpawnActor(transform)
+
+        if Actor ~= nil  and Actor:IsValid() then
+            print(Actor:GetFullName())
+            local transform = Actor:GetTransform()
+            print(transform.Translation.X, transform.Translation.Y, transform.Translation.Z)
+            Actor.Cost = cost
+            cost = cost + 10
+            Actor.TextBottom:K2_SetText(FText(tostring(Actor.Cost) .. " Coins"))
+        end
+
+        
+    end
+
+
+end)
+
+RegisterCustomEvent("ClickedLogo", function (obj)
+    local logo = obj:get()
+    print("Presed E on " .. APUtil.GetObjectName(logo))
+end)
+
+RegisterConsoleCommandHandler("disconnect", disconnect)
 RegisterConsoleCommandHandler("test", Test)
 RegisterConsoleCommandHandler("connect", Connect)
 RegisterConsoleCommandHandler("send", Send)
 RegisterConsoleCommandHandler("scout", Scout)
 RegisterConsoleCommandHandler("msg", UpdateMessage)
+
+require("DeployItems")

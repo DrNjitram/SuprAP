@@ -1,5 +1,6 @@
 local AP = require "lua-apclientpp"
-local data = require("data")
+local UI = require("UI")
+local util = require("utility")
 
 -- global to this mod
 local game_name = "Supraland" --"Supraland"
@@ -15,17 +16,49 @@ game_items_recieved = {}
 
 local item_functions = require("item_functions")
 
+local msg_length = 60
+Connected = "False"
+Last_checked = "NA"
+Last_item = "NA"
+Last_sent = "NA"
+Last_msg = {}
+
+local function joinByChunk(text, chunkSize)
+    if text == nil then
+        return nil
+    end
+    local s = {}
+    for i=1, #text, chunkSize do
+        s[#s+1] = text:sub(i,i+chunkSize - 1)
+    end
+    return "\n" .. table.concat(s,"\n")
+end
+
+function UpdateText()
+    local str = string.format('SuprAP 0.0.1\nConnected\t%s\nLast Location\t%s\nLast Item Sent\t%s\nLast Item Recieved\t%s\n%s\n%s\n%s',
+            Connected, Last_checked, Last_sent, Last_item, joinByChunk(Last_msg[1], msg_length), joinByChunk(Last_msg[2], msg_length), joinByChunk(Last_msg[3], msg_length))
+    SetText(str)
+end
+
+RegisterKeyBind(Key.P, {ModifierKey.ALT}, UpdateText)
+
 function connect(server, slot, password)
     function on_socket_connected()
         print("Socket connected")
+        Connected = "True"
+        UpdateText()
     end
 
     function on_socket_error(msg)
         print("Socket error: " .. msg)
+        Connected = "False"
+        UpdateText()
     end
 
     function on_socket_disconnected()
         print("Socket disconnected")
+        Connected = "False"
+        UpdateText()
     end
 
     function on_room_info()
@@ -42,13 +75,23 @@ function connect(server, slot, password)
         print("checked locations: " .. table.concat(ap.checked_locations, ", "))
 
         ap:ConnectUpdate(nil, {"Lua-APClientPP", "DeathLink"})
-        ap:LocationChecks({10, 11, 12})
+        --ap:LocationChecks({10, 11, 12})
         print("Players:")
         local players = ap:get_players()
         for _, player in ipairs(players) do
             print("  " .. tostring(player.slot) .. ": " .. player.name ..
                   " playing " .. ap:get_player_game(player.slot))
         end
+
+        if util.locations_checked then
+            local checked = {}
+            for k,v in pairs(util.locations_checked) do
+                checked[#checked+1] = k
+            end
+            ap:LocationChecks(checked)
+        end
+        Connected = "True"
+        UpdateText()
     end
 
 
@@ -81,7 +124,7 @@ function connect(server, slot, password)
                 print("Already owned " .. game_items_recieved[item_name] .. " of ".. item_name)
             end
             items_owned[item_name] = items_owned[item_name] + 1
-
+            Last_item = item_name
             if Data.P[item_name] ~= nil then
                 Item_BP = Data.P[item_name][items_owned[item_name]]
                 if f ~= nil and game_items_recieved[item_name] >= items_owned[item_name] then
@@ -102,13 +145,21 @@ function connect(server, slot, password)
             end
             
         end
+        UpdateText()
     end
 
     function on_location_info(items)
         print("Locations scouted:")
         for _, item in ipairs(items) do
-            print(item.item .. "\n") --add writing to save map here?
+            -- for k,v in pairs(item) do
+            --     print(k .. ": "..v)
+            -- end
+            local game = ap:get_player_game(item.player)
+            local item_name = ap:get_item_name(item.item, game)
+            print(item.item .. ": " .. game .. ": " .. ap:get_item_name(item.item, game) .. "\n") --add writing to save map here?
+            Last_sent = item_name
         end
+        UpdateText()
     end
 
     function on_location_checked(locations)
@@ -125,13 +176,22 @@ function connect(server, slot, password)
 
     function on_print(msg)
         print(msg)
+        Last_msg[3] = Last_msg[2]
+        Last_msg[2] = Last_msg[1]
+        Last_msg[1] = msg
+        UpdateText()
     end
 
     function on_print_json(msg, extra)
-        print(ap:render_json(msg, message_format))
+        msg_fmt = ap:render_json(msg, message_format)
+        print(msg_fmt)
         for key, value in pairs(extra) do
             -- print("  " .. key .. ": " .. tostring(value))
         end
+        Last_msg[3] = Last_msg[2]
+        Last_msg[2] = Last_msg[1]
+        Last_msg[1] = msg_fmt
+        UpdateText()
     end
 
     function on_bounced(bounce)
