@@ -30,6 +30,10 @@ util.chests = {}
 
 util.locations_checked = {}
 
+util.found = {}
+util.replaced = {}
+
+
 function util.TeleportPlayerToActor(targetActor)
     ExecuteInGameThread(function ()
         util.ModActor:TeleportPlayerTo(targetActor:GetTransform().Translation)
@@ -40,6 +44,13 @@ function util.TeleportPlayerToLocation(targetLocation)
     ExecuteInGameThread(function ()
         util.ModActor:TeleportPlayerTo(targetLocation)
     end)
+end
+
+function util.GetPath(object)
+    ---@type string
+    local fullName = util.GetObjectName(object)
+    return "/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel." .. fullName
+
 end
 
 function util.GetObjectName(object)
@@ -64,77 +75,76 @@ local function SkipIntroMovie()
     end)
 end
 
-local function SetupObjectLists()
-    if not util.chests then
-        util.chests = {}
-        util.chests = FindAllOf("Chest_C")
-    end
-    print("Chest list loaded")
+-- local function SetupObjectLists()
+--     if not util.chests then
+--         util.chests = {}
+--         util.chests = FindAllOf("Chest_C")
+--     end
+--     print("Chest list loaded")
 
     
-    util.found = {}
+--     util.found = {}
     
 
-    for _, chest in ipairs(util.chests) do
-        if chest.IsOpen then
-            print(util.GetObjectName(chest))
-            print(util.GetObjectName(chest.Spawnthing))
-        end
+--     for _, chest in ipairs(util.chests) do
+--         if chest.IsOpen then
+--             print(util.GetObjectName(chest))
+--             print(util.GetObjectName(chest.Spawnthing))
+--         end
 
-        -- RegisterHook(chest:GetFullName() .. ":OnClicked", function (c)
-        --    print("Opened Chest " .. c:GetFullName())
-        -- end)
-    end
-    -- Chest9_2231
-    -- LotsOfCoins10_C
-    -- /Game/Blueprints/Levelobjects/Chest.chest_C:Timeline_0__FinishedFunc
-    -- UseInteraction activates too many times
-    -- Activation doesnt work
-    -- RegisterHook("/Game/Blueprints/Levelobjects/Chest.chest_C:UseInteraction", function (self, param, ...)
-    --        local location = self:get()
-    -- end)
-    RegisterHook("/Game/Blueprints/Levelobjects/Chest.chest_C:UseInteraction", function (self, param, ...)
-        local chest = self:get()
-        local name = util.GetObjectName(chest)
-        if not util.found[name] then
-            util.found[name] = 1
-            local location = data.L[name]
+--         -- RegisterHook(chest:GetFullName() .. ":OnClicked", function (c)
+--         --    print("Opened Chest " .. c:GetFullName())
+--         -- end)
+--     end
+--     -- Chest9_2231
+--     -- LotsOfCoins10_C
+--     -- /Game/Blueprints/Levelobjects/Chest.chest_C:Timeline_0__FinishedFunc
+--     -- UseInteraction activates too many times
+--     -- Activation doesnt work
+--     -- RegisterHook("/Game/Blueprints/Levelobjects/Chest.chest_C:UseInteraction", function (self, param, ...)
+--     --        local location = self:get()
+--     -- end)
+--     RegisterHook("/Game/Blueprints/Levelobjects/Chest.chest_C:UseInteraction", function (self, param, ...)
+--         local chest = self:get()
+--         local name = util.GetObjectName(chest)
+--         if not util.found[name] then
+--             util.found[name] = 1
+--             local location = data.L[name]
 
-            if location then
-                util.locations_checked[location] = 1
-                Last_checked = name .. ": " .. tostring(location)
-                if ap then
-                    ap:LocationChecks({location})
-                    ap:LocationScouts({location})
-                    Last_checked = tostring(name)
-                end
-                UpdateText()
-            end
-            if ap then
-               chest.Spawnthing = FindFirstOf("Coin_C") 
-            else
-                chest.Spawnthing = FindFirstOf("Coin_C")
-            end
+--             if location then
+--                 util.locations_checked[location] = 1
+--                 Last_checked = name .. ": " .. tostring(location)
+--                 if ap then
+--                     ap:LocationChecks({location})
+--                     ap:LocationScouts({location})
+--                     Last_checked = tostring(name)
+--                 end
+--                 UpdateText()
+--             end
+--             if ap then
+--                chest.Spawnthing = FindFirstOf("Coin_C") 
+--             else
+--                 chest.Spawnthing = FindFirstOf("Coin_C")
+--             end
             
-            print("A Opened Chest " .. name .. ": " .. tostring(location))
+--             print("A Opened Chest " .. name .. ": " .. tostring(location))
             
-        end
-    end)
+--         end
+--     end)
 
-    -- RegisterHook("/Game/Blueprints/Levelobjects/BuyWalletx2.BuyWalletx2_C:AddToShop_Event", function( self, param, ...)
-    --     local item = self:get()
-    --     print("Added to shop: " .. util.GetObjectName(item))
-    -- end)
+--     RegisterHook("/Game/Blueprints/Levelobjects/BarrelClosed_Blueprint.BarrelClosed_Blueprint_C:Activate", function (self, ...)
+--         print("Activate")
+--     end)
+--     -- RegisterHook("/Game/Blueprints/Levelobjects/BuyWalletx2.BuyWalletx2_C:AddToShop_Event", function( self, param, ...)
+--     --     local item = self:get()
+--     --     print("Added to shop: " .. util.GetObjectName(item))
+--     -- end)
 
-    -- RegisterHook("/Game/Blueprints/Levelobjects/Chest.chest_C:Timeline_0__FinishedFunc", function (self, param, ...)
-    --         local name = self:get():GetFullName()
-    --        print("F Opened Chest " .. name)
-    -- end)
 
     
-end
+-- end
 
-local function hasSubstring(str, substrings)
+function HasSubstring(str, substrings)
     for _, sub in ipairs(substrings) do
         if str:find(sub) then
             return true
@@ -143,94 +153,70 @@ local function hasSubstring(str, substrings)
     return false
 end
 
-RegisterKeyBind(Key.F3, { ModifierKey.CONTROL }, function ()
-    if not util.shop_items then
-        util.shop_items = {}
 
-        local items = FindAllOf("Actor")
-        local i = 1
-        for _, item in ipairs(items) do
-            if item:GetPropertyValue("Cost") and type(item.Cost) == "number" then
-                util.shop_items[i] = item
-                i = i + 1
-            end
-        end
+
+function ReplaceActorWithLogo(toReplace, title, cost)
+    if toReplace == nil then
+        toReplace = "/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.BuyWallet+50_737"
+    end
+    if title == nil then
+        title = "Archipelago Item"
+    end
+    if cost == nil then
+        cost = 0
     end
 
-    for _, shop_item in ipairs(util.shop_items) do
+    if util.ModActor == nil then
+        util.ModActor = FindFirstOf("ModActor_C")
+    end
 
-        if util.GetObjectName(shop_item) == "BuyWallet+50_737" then
-            print(util.GetObjectName(shop_item))
-            print(tostring(shop_item.Cost))
-            print("In Shop: " .. tostring(shop_item.IsInShop))
-            
-            shop_item.Taken = true
+    ---@type AActor
+    local item = StaticFindObject(toReplace)
+    if item ~= nil and item:IsValid() then
+        local name = util.GetObjectName(item)
+        --print("Replacing " .. name)
+        name = name:gsub("+", "_")
+        --print(util.GetObjectName(item))
 
-            local transform = shop_item:GetTransform()
-            transform.Rotation.Z = transform.Rotation.Z + 0.785
-            
-            for a,b in pairs(transform.Rotation) do
-                print(tostring(a) .. " " .. tostring(b))
-            end
-            transform.Translation.Z = transform.Translation.Z + 45
-            shop_item:K2_DestroyActor()
+        local transform = item:GetTransform()
+        transform.Rotation.Z = transform.Rotation.Z + 0.785
+        transform.Translation.Z = transform.Translation.Z + 45
+        if name == "BuyWalletx16" then
+            transform.Translation = {X = 0, Y=0, Z=0}
+        end
+        --print(item.Name.Text:ToString())
+        --item.Name:K2_SetText(FText(""))
+        item:K2_DestroyActor()
 
+        if util.ModActor ~= nil then
+            Actor = util.ModActor:SpawnActor(transform)
 
-            if util.ModActor == nil then
-                print("Modactor not valid")
-                util.ModActor = FindFirstOf("ModActor_C")
-                if util.ModActor ~= nil and util.ModActor:IsValid() then
-                    print("Modactor valid now")
+            if Actor ~= nil  and Actor:IsValid() then
+                Actor.TextTop:K2_SetText(FText(title))
+                if cost ~= 0 then
+                    Actor.TextBottom:K2_SetText(FText(tostring(cost) .. " Coins"))
+                    Actor.Cost = cost
                 else
-                    print("Modactor still not valid")
+                    Actor.TextBottom:K2_SetText(FText(""))
+                    Actor.Cost = 0
+                end
+                if data.L[name] ~= nil then
+                    Actor.Contains = data.L[name]
+                else
+                    error("Could not find ".. name)
                 end
             end
-            
-            if util.ModActor ~= nil then
-                Actor = util.ModActor:SpawnActor(transform)
 
-                if Actor ~= nil  and Actor:IsValid() then
-                    Actor.TextTop:K2_SetText(FText("Hylian Shield"))
-                    Actor.TextBottom:K2_SetText(FText("15 Coins"))
-                end
-
-                
-            end
+            return Actor
         end
-        
-
-        --print("Taken: " .. tostring(wallet.Taken))
-
-        --print(wallet:type())
-        --wallet.ABuyWalletx2_C = FindFirstOf("Coin_C")
-
     end
 
-    
-    -- ExecuteInGameThread(function ()
-    --     LoadAsset("/Game/Mods/APMod/APLogo")
-    -- end)
-    
-    -- local aplogo = StaticFindObject("APLogo")
-    -- --UEHelpers:GetWorld():SpawnActor()
-    -- print(aplogo:IsValid())
-    --BuyWallet+50_737
-    -- RegisterHook("/Script/Engine.Actor:ReceiveActorOnClicked", function( self, param, ...)
-    --     local item = self:get()
-    --     if item:GetPropertyValue("Cost") and type(item.Cost) == "number" then
-    --         print("A: " .. util.GetObjectName(item))
-    --     end
-    -- end)
+    return nil
+end
 
-    -- RegisterHook("/Game/Blueprints/Levelobjects/BuyWalletx2.BuyWalletx2_C:AddToShop_Event", function( self, param, ...)
-    --     local item = self:get()
-    --     print(util.GetObjectName(item))
-    -- end)
-end)
+--RegisterKeyBind(Key.F6, ReplaceActorWithLogo)
 
-RegisterKeyBind(Key.F2, { ModifierKey.CONTROL }, function ()
-    SetupObjectLists()
-end)
+
 
 local function SetupHooks()
     Map = FindFirstOf("Map_C")
@@ -245,15 +231,6 @@ function util.Startup()
     SetupHooks()
 end
 
-RegisterHook("/Script/Engine.PlayerController:ServerAcknowledgePossession", function(self, pawn)
-    if pawn:get():GetFullName():find("DefaultPawn") then
-        return
-    end
 
-    -- need delay to load things
-    ExecuteWithDelay(1000, function()
-        SetupObjectLists()
-    end)
-end)
 
 return util

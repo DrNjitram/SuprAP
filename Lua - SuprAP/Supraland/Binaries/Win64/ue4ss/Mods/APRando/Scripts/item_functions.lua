@@ -176,7 +176,8 @@ function funcs.DoubleHealth()
 end
 
 function funcs.Strong()
-    Player.Player.Strong = true
+    --Player.Player.Strong = true
+    Player.Player:GetStrong()
     return true
 end
 
@@ -208,6 +209,7 @@ end
 function funcs.ProgSword(count)
     if count == 1 then
         Player.Player.SkillHasSword = true
+        Player.Player:EquipSword()
     elseif count == 2 then
         Player.Player.SkillHasSword2 = true
     end
@@ -339,12 +341,12 @@ function funcs.StompRadius()
 end
 
 function funcs.Wallet2()
-    Player.Player.MaxCoins = Player.Player.MaxCoins * 2.0
+    Player.Player.MaxCoins = math.floor(Player.Player.MaxCoins * 2)
     return true
 end
 
 function funcs.Wallet15()
-    Player.Player.MaxCoins = Player.Player.MaxCoins * 1.5
+    Player.Player.MaxCoins = math.floor(Player.Player.MaxCoins * 1.5)
     return true
 end
 
@@ -359,47 +361,58 @@ function funcs.HealthBar()
 end
 
 function funcs.Armor()
-    Player.player.Armor = Player.player.Armor + 3
+    Player.Player:PutOnArmor()
+    --Player.Player.Armor = Player.Player.Armor + 3
     return true
 end
 
 function funcs.Coin()
-    Player.player.Coins = Player.player.Coins + 1
+    Player.Player.Coins = Player.Player.Coins + 1
     return true
 end
 
 function funcs.BigCoin()
-    Player.player.Coins = Player.player.Coins + 5
+    Player.Player.Coins = Player.Player.Coins + 5
     return true
 end
 
 function funcs.CoinBundle()
-    Player.player.Coins = Player.player.Coins + 25
+    Player.Player.Coins = Player.Player.Coins + 25
     return true
 end
 
 function funcs.Splash()
-    Player.player.Projectile1Radius = Player.player.Projectile1Radius + 275
+    Player.Player.Projectile1Radius = Player.Player.Projectile1Radius + 275
     return true
 end
 
 function funcs.GreenMoon()
-    Player.player.Moons = Player.player.Moons + 1
+    Player.Player.Moons = Player.Player.Moons + 1
     return true
 end
 
 function funcs.RedMoon()
-    Player.player.RedCrystals = Player.player.RedCrystals + 1
+    Player.Player.RedCrystals = Player.Player.RedCrystals + 1
     return true
 end
 
-function funcs.Shells()
-    Player.player.Shells = Player.player.Shells + 1
+function funcs.Shell()
+    Player.Player.Shells = Player.Player.Shells + 1
+    return true
+end
+
+function funcs.Subtract(coins)
+    Player.Player.Coins = Player.Player.Coins - coins
+end
+
+
+function funcs.Map()
+    Player.Player.SkillsPlayerMapUnlocks.bOwnsPlayerMap_1_334798A047B7B6B429BB59BB08130507 = true
     return true
 end
 
 funcs.item_to_func = {
-    Map = nil,
+    Map = funcs.Map,
     Buckle = funcs.Buckle,
     ChestDetector = funcs.ChestDetector,
     ChestDetectorRadius = funcs.ChestDetectorRadius,
@@ -429,7 +442,6 @@ funcs.item_to_func = {
     StompRadius = funcs.StompRadius,
     GunComboDamage = funcs.GunComboDamage,
     CoinBundle = funcs.CoinBundle,
-    EnemyHealth = nil,
     TransDamage = funcs.TransDamage,
     TransCooldown = funcs.TransCooldown,
     GreenMoon = funcs.GreenMoon,
@@ -453,23 +465,8 @@ funcs.item_to_func = {
     CoinMagnet = funcs.CoinMagnet,
     Coin = funcs.Coin,
     BigCoin = funcs.BigCoin,
-    HeroAustin = nil,
-    HeroLink = nil,
-    HeroHeman = nil,
-    HeroAsh = nil,
-    HeroPicard = nil,
-    HeroSanta = nil,
-    HeroVault = nil,
-    HeroStar = nil,
-    HeroMagic = nil,
-    HeroGoku = nil,
-    HeroGuy = nil,
-    HeroIndy = nil,
-    EnemySpawn1 = nil,
-    EnemySpawn2 = nil,
-    EnemySpawn3 = nil,
     DoubleHealth = funcs.DoubleHealth,
-    Shell = funcs.Shells,
+    Shell = funcs.Shell,
     Strong = funcs.Strong,
     Happiness = funcs.Happiness,
     StolenBuckle = funcs.Buckle,
@@ -486,7 +483,23 @@ funcs.item_to_func = {
     ProgTrans = funcs.ProgTrans,
     ProgGraveGun = funcs.ProgGraveGun,
     ProgGraveSword = funcs.ProgGraveSword,
-    ProgHealthRegen = funcs.ProgHealthRegen
+    ProgHealthRegen = funcs.ProgHealthRegen,
+    EnemyHealth = nil,
+    HeroAustin = nil,
+    HeroLink = nil,
+    HeroHeman = nil,
+    HeroAsh = nil,
+    HeroPicard = nil,
+    HeroSanta = nil,
+    HeroVault = nil,
+    HeroStar = nil,
+    HeroMagic = nil,
+    HeroGoku = nil,
+    HeroGuy = nil,
+    HeroIndy = nil,
+    EnemySpawn1 = nil,
+    EnemySpawn2 = nil,
+    EnemySpawn3 = nil,
 }
 
 return funcs

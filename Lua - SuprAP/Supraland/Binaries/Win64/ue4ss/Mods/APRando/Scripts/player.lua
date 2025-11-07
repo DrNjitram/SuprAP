@@ -5,7 +5,7 @@ local APUtil = require("utility")
 
 local player = {}
 
----@class AFirstPersonCharacter_C
+---@type AFirstPersonCharacter_C
 player.Player = nil
 
 player.Status = {

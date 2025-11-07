@@ -84,7 +84,7 @@ local function createTextWidget(text, alignment)
 end
 
 
-local function addText()
+function AddText()
     ExecuteInGameThread(function()
         createTextWidget('SuprAP 0.0.1\nConnected\tFalse\nLast Location\tNA\nLast Item Sent\tNA\nLast Item Recieved\tNA\nLast MSG 1\tNA\nLast MSG 2\tNA\nLast MSG 3\tNA')
     end)
@@ -107,10 +107,10 @@ local function toggleText()
 end
 
 RegisterHook("/Script/Engine.PlayerController:ClientRestart", function(self)
-    addText()
+    AddText()
 end)
 
-RegisterKeyBind(Key.O, {ModifierKey.ALT}, addText)
+RegisterKeyBind(Key.O, {ModifierKey.ALT}, AddText)
 RegisterKeyBind(Key.H, {ModifierKey.ALT}, toggleText)
 RegisterKeyBind(Key.D, {ModifierKey.ALT}, function() SetText("Hello World!") end )
 
