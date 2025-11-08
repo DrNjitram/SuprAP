@@ -43,9 +43,9 @@ end
 function UpdateText()
     local str = string.format('SuprAP 0.0.1\nConnected\t%s\nLast Location\t%s\nLast Item Sent\t%s\nLast Item Recieved\t%s\n%s\n%s\n%s',
             Connected, Last_checked, Last_sent, Last_item, joinByChunk(Last_msg[1], msg_length), joinByChunk(Last_msg[2], msg_length), joinByChunk(Last_msg[3], msg_length))
-    ExecuteInGameThread(function ()
-        SetText(str)
-    end)
+    
+    SetText(str)
+    
 end
 
 function connect(server, slot, password)
@@ -116,7 +116,7 @@ function connect(server, slot, password)
             end
 
         end
-        PopulateItems()
+        ExecuteInGameThread(PopulateItems)
         UpdateTitles()
         
     end
@@ -133,7 +133,7 @@ function connect(server, slot, password)
             local item_name = Data.ID[tostring(item.item)]
             print(item.item .. ": " .. item_name .. "\n")
 
-            local f = item_functions[item_name]
+            local f = item_functions.item_to_func[item_name]
             if f == nil then
                 print("No function Found\n")
             end
@@ -196,7 +196,8 @@ function connect(server, slot, password)
         UpdateText()
         if APLogos == nil then
             print("Populating Items")
-            PopulateItems()
+            ExecuteInGameThread(PopulateItems)
+           
         end
         print("Updating titles")
         UpdateTitles()
@@ -557,6 +558,12 @@ local function SetupObjectLists()
         print("Failed to hook Fatty")
         --print(err)
     end
+
+    pcall(function (...)
+        ---@class ADoor_C
+        local door = StaticFindObject("/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.Door94")
+        door:K2_DestroyActor()
+    end)
 
     AddText()
 end

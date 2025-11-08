@@ -356,7 +356,7 @@ function funcs.GunComboDamage()
 end
 
 function funcs.HealthBar()
-    Player.Player['Show Health Bar?'] = Player.Player['Show Health Bar?'] + 50
+    Player.Player['Show Health Bar?'] = true
     return true
 end
 

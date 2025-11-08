@@ -86,7 +86,7 @@ RegisterKeyBind(Key.F1, { ModifierKey.CONTROL }, function ()
 end)
 
 function UpdateHud()
-    Player.Player:SetupHUD()
+    --Player.Player:SetupHUD()
     Player.Player:ShowHudNow()
 end
 
