@@ -1,0 +1,18 @@
+---@meta
+
+---@class FPipesystem
+---@field PipeShape_6_A6DA0C8D4A6888DEFA7408877E0E74DA PipeType::Type
+---@field PipeType_10_C70C797349DCF63B68D601B44B1DCF34 PipeInteriorType::Type
+---@field RotX_13_88772BDD4D731716D13905AB0CA8130B RotationEnum::Type
+---@field RotY_16_9DE225EB4078084C7507C39BE26AB8DF RotationEnum::Type
+---@field RotZ_17_6F134FCA4B184A1E7F64CC83058A0C23 RotationEnum::Type
+---@field bStartWithCarryPipeIfSnappy_20_A5EBCAFE4833AEB14287FC94FE8C9CA5 boolean
+---@field CarryPipeRespawnLocation_44_D395A08743BED3F069BDA88E95553613 AActor
+---@field bFlipTeleportPipe_26_54235FEF4589A766A5E64CB7A73D9D84 boolean
+---@field pipeActor_29_D15E7FDB43DC1D400B2EC2A5681E0330 AActor
+---@field launchPower_32_89ADECCA4045210355A37DA928B1F097 float
+---@field CanTransportPlayer_41_0211944B4E56806828BF3FA970F0FFBC boolean
+local FPipesystem = {}
+
+
+

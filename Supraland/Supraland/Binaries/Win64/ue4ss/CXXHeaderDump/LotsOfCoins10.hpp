@@ -1,0 +1,16 @@
+#ifndef UE4SS_SDK_LotsOfCoins10_HPP
+#define UE4SS_SDK_LotsOfCoins10_HPP
+
+class ALotsOfCoins10_C : public AActor
+{
+    FPointerToUberGraphFrame UberGraphFrame;                                          // 0x0220 (size: 0x8)
+    class USceneComponent* DefaultSceneRoot;                                          // 0x0228 (size: 0x8)
+    int32 Amount;                                                                     // 0x0230 (size: 0x4)
+    bool Taken;                                                                       // 0x0234 (size: 0x1)
+    TArray<FName> Tag;                                                                // 0x0238 (size: 0x10)
+
+    void ReceiveBeginPlay();
+    void ExecuteUbergraph_LotsOfCoins10(int32 EntryPoint);
+}; // Size: 0x248
+
+#endif

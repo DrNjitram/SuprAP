@@ -1,21 +1,23 @@
 ---@diagnostic disable: assign-type-mismatch
-print("[Randomizer] Mod loaded\n")
-print("Running on " .. _VERSION .. "\n") --Lua 5.4
+print("[Archipelago] Mod Loading\n")
+print("Running on " .. _VERSION .. "\n") --Lua 5.4 clang static
 local UEHelpers = require("UEHelpers")
-print("Loaded UEHelpers")
+print("Loaded UEHelpers\n")
 --AP = require("lua-apclientpp")
 local Data = require("data")
-print("Loaded Data")
+print("Loaded Data\n")
 local APUtil = require("utility")
-print("Loaded Utility")
+print("Loaded Utility\n")
 require("AP_Functions")
-print("Loaded AP Functions")
+print("Loaded AP Functions\n")
 require("GetHit")
+require("DeployItems")
+print("Loaded additional functions\n")
 
 local Player = require("player")
 
 local ItemFunc = require("item_functions")
-require("lua-apclientpp")
+--require "lua-apclientpp"
 
 -- TODO: user input
 local host = ""
@@ -24,44 +26,30 @@ local password = ""
 
 local BASE_ID = 678000
 
+InGame = false
+
+
 RegisterHook("/Script/Engine.PlayerController:ClientRestart", function()
-    ---@type AFirstPersonCharacter_C
-    local player = FindFirstOf("FirstPersonCharacter_C")
-    if player ~= nil and player:IsValid() then
-        Player.Player = player
-        Player.SetupHooks()
-        Player:ShowHudNow()
-        print("PLAYER LOADED IN LUA")
-    else
-        print("PLAYER FAILED TO LOAD IN LUA")
+    print("Client Restarting\n")
+    if InGame then
+        ---@type AFirstPersonCharacter_C
+        local player = FindFirstOf("FirstPersonCharacter_C")
+        if player ~= nil and player:IsValid() then
+            Player.Player = player
+            Player.SetupHooks()
+            Player.Player:ShowHudNow()
+            print("PLAYER LOADED IN LUA\n")
+        else
+            print("PLAYER FAILED TO LOAD IN LUA\n")
+        end 
     end
-end)
-
-ExecuteAsync(function ()
-    local player = FindFirstOf("PlayerController")
-    if player ~= nil and player:IsValid() then
-        Player.Player = player
-        --Player.SetupHooks()
-        print("PLAYER LOADED IN LUA")
-    else
-        print("PLAYER FAILED TO LOAD IN LUA")
-    end
-    if player ~= nil and player:IsValid() then
-        APUtil.Startup()
-        
-        return
-    end
-
-    NotifyOnNewObject("/Script/Engine.PlayerController", function ()
-        APUtil.Startup()
-    end)
 end)
 
 
 -- Toggle debug menu
 RegisterKeyBind(Key.F5, {}, function()
     if APUtil.ModActor and APUtil.ModActor:IsValid() then
-        print("Toggling debug tools")
+        print("Toggling debug tools\n")
         APUtil.ModActor:ToggleDebug()
     end
 end)
@@ -75,9 +63,8 @@ RegisterKeyBind(Key.NUM_ZERO, {}, function ()
 end)
 
 local function disconnect()
-    print("Key pressed!\nShutting down")
-    ap = nil
-    collectgarbage("collect")
+    print("Key pressed!\nShutting down\n")
+    UnLoadAP()
     return true
 end
 
@@ -88,6 +75,7 @@ end)
 function UpdateHud()
     --Player.Player:SetupHUD()
     Player.Player:ShowHudNow()
+    Player.Player.HideHud = false
 end
 
 function Test(FullCommand, Parameters, OutputDevice)
@@ -105,7 +93,12 @@ end
 
 
 function Send(FullCommand, Parameters, OutputDevice)
-    ap:LocationChecks({math.floor(tonumber(Parameters[1]))})
+    local ans = AP_server:LocationChecks({math.floor(tonumber(Parameters[1]))})
+    if ans then
+        print("Item sent")
+    else
+        print("Failed to queue")
+    end
     return true
 end
 
@@ -138,9 +131,14 @@ function get_item(names, send_hint)
     for _, item in ipairs(ids) do
             print(item .. "\n")
     end
-    ap:LocationScouts(ids, send_hint)
+    AP_server:LocationScouts(ids, send_hint)
 end
 
+
+
+function GetSaveSlot()
+    return tonumber(Player.Player.SaveSlot:ToString():gsub("Save", "")[1])
+end
 
 function Connect(FullCommand, Parameters, OutputDevice)
     print(string.format("Full command: %s\n", FullCommand))
@@ -155,114 +153,45 @@ function Connect(FullCommand, Parameters, OutputDevice)
 
     ExecuteAsync(function ()
         --connect(host, slot, password)
-        connect(Parameters[1], Parameters[2], "")
-
-        
-        while ap do
-            ap:poll()
+        --ConnectAP(Parameters[1], Parameters[2], "")
+        AP_save_data["server"] = Parameters[1]
+        AP_save_data["slot"] = Parameters[2]
+        if #Parameters >2 then
+            AP_save_data["password"] = Parameters[3]
+        else
+            AP_save_data["password"] = ""
         end
+        
+        ConnectAndPoll()
+        -- while AP_server do
+        --     ExecuteInGameThread(function ()
+        --           AP_server:poll()  
+        --         end)
+        -- end
 
     end)
     
     return true
 end
 
--- RegisterKeyBind(Key.F4, { ModifierKey.CONTROL }, function ()
---     print("Spawning APLogo")
 
---     if APUtil.ModActor == nil then
---         print("Modactor not valid")
---         APUtil.ModActor = FindFirstOf("ModActor_C")
---         if APUtil.ModActor ~= nil and APUtil.ModActor:IsValid() then
---             print("Modactor valid now")
---         else
---             print("Modactor still not valid")
---         end
---     end
-
---     ---@type APawn
---     local Pawn = UEHelpers.GetPlayer()
---     local transform = Pawn:GetTransform()
---     print(transform.Translation.X, transform.Translation.Y, transform.Translation.Z)
-
---     if APUtil.ModActor ~= nil then
---         local obj = APUtil.ModActor:SpawnActor(transform)
---     else
---         print("ModActor not valid")
---     end
-    
---     print(APUtil.GetObjectName(APUtil.APLogo))
---     local transform = APUtil.APLogo:GetTransform()
---     print(transform.Translation.X, transform.Translation.Y, transform.Translation.Z)
-
-
--- end)
-
-
--- local cost = 10
-
--- RegisterKeyBind(Key.F5, { ModifierKey.CONTROL }, function ()
---     ---@type APawn
---     local Pawn = UEHelpers.GetPlayer()
---     local transform = Pawn:GetTransform()
---     print(transform.Translation.X, transform.Translation.Y, transform.Translation.Z)
-
---     ---@type AAPLogo_C
---     local Actor = nil
-
---     if APUtil.ModActor == nil then
---         print("Modactor not valid")
---         APUtil.ModActor = FindFirstOf("ModActor_C")
---         if APUtil.ModActor ~= nil and APUtil.ModActor:IsValid() then
---             print("Modactor valid now")
---         else
---             print("Modactor still not valid")
---         end
---     end
-    
---     if APUtil.ModActor ~= nil then
---         transform.Translation.X = transform.Translation.X + 10
---         Actor = APUtil.ModActor:SpawnActor(transform)
-
---         if Actor ~= nil  and Actor:IsValid() then
---             print(Actor:GetFullName())
---             local transform = Actor:GetTransform()
---             print(transform.Translation.X, transform.Translation.Y, transform.Translation.Z)
---             Actor.Cost = cost
---             cost = cost + 10
---             Actor.TextBottom:K2_SetText(FText(tostring(Actor.Cost) .. " Coins"))
---         end
-
-        
---     end
-
-
--- end)
-
--- local timer = -1
 
 local function HitObject()
-    -- if timer == -1 then
-    --     timer = os.clock()
-    -- elseif os.clock() - timer < 1.0 then
-    --     return
-    -- else
-    --     timer = os.clock()
-    -- end
-    
+
     ---@type AAPLogo_C
-    local Actor = GetObjectName(250.0)
+    --local Actor = GetObjectName(250.0)
+    local Actor = Player.Player.LookedAt_TraceActor
     if Actor == nil or not Actor:IsValid() then
-        print("No Hit")
+        print("No Hit\n")
         return
     end
     print(APUtil.GetObjectName(Actor))
     if Actor ~= nil and Actor:IsValid() and HasSubstring(APUtil.GetObjectName(Actor), {"APLogo"}) then
         print(string.format("HitActor: %s\n", Actor:GetFullName()))
         if Actor:GetPropertyValue("Cost") and type(Actor.Cost) == "number" then
-            print("Item has Cost of " .. tostring(Actor.Cost))
+            print("Item has Cost of " .. tostring(Actor.Cost) .. "\n")
             if Actor:GetPropertyValue("Contains") and type(Actor.Contains) == "number" then
-                print("Contains " .. tostring(Actor.Contains))
+                print("Contains " .. tostring(Actor.Contains) .. "\n")
             end
             -- if Player.Player ~= nil then
             --     print("Player has " .. tostring(Player.Player.Coins) .. " Coins")
@@ -272,22 +201,22 @@ local function HitObject()
                 if Actor.Cost ~= nil and Actor.Cost > 0 then
                     Player.Player.Coins = Player.Player.Coins - Actor.Cost
                 end
-                print("Buying item")
+                print("Buying item\n")
                 local location = Actor.Contains
                 if APUtil.locations_checked[location] ~= 1 then
                     Last_checked = tostring(location)
                     Last_sent = names_scouted[location]
                     APUtil.locations_checked[location] = 1
 
-                    if ap then
-                        ap:LocationChecks({location})
+                    if AP_server then
+                        AP_server:LocationChecks({location})
                         AddProgressPoint()
                         --ap:LocationScouts({location})
                     end
-                    print("Updating Text")
+                    print("Updating Text\n")
                     UpdateText()
                 else
-                    print("Already owns item, refunding")
+                    print("Already owns item, refunding\n")
                     if Actor.Cost ~= nil and Actor.Cost > 0 then
                         Player.Player.Coins = Player.Player.Coins + Actor.Cost
                     end
@@ -297,7 +226,7 @@ local function HitObject()
                 Actor:K2_DestroyActor()
             else
                 Actor:CannotAfford()
-                print("Cannot afford")
+                print("Cannot afford\n")
             end
             --print("Player has " .. tostring(Player.Player.Coins) .. " Coins")
         end
@@ -325,4 +254,4 @@ RegisterConsoleCommandHandler("send", Send)
 RegisterConsoleCommandHandler("scout", Scout)
 RegisterConsoleCommandHandler("msg", UpdateMessage)
 
-require("DeployItems")
+

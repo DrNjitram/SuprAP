@@ -1,0 +1,15 @@
+#ifndef UE4SS_SDK_Candlestick_Floor_01_HPP
+#define UE4SS_SDK_Candlestick_Floor_01_HPP
+
+class ACandlestick_Floor_01_C : public AStaticMeshActor
+{
+    class UPointLightComponent* PointLight;                                           // 0x0230 (size: 0x8)
+    class UParticleSystemComponent* ParticleSystem4;                                  // 0x0238 (size: 0x8)
+    class UParticleSystemComponent* ParticleSystem3;                                  // 0x0240 (size: 0x8)
+    class UParticleSystemComponent* ParticleSystem2;                                  // 0x0248 (size: 0x8)
+    class UParticleSystemComponent* ParticleSystem1;                                  // 0x0250 (size: 0x8)
+    class UParticleSystemComponent* ParticleSystem;                                   // 0x0258 (size: 0x8)
+
+}; // Size: 0x260
+
+#endif

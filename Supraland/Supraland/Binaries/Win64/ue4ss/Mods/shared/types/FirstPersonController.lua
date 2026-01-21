@@ -1,0 +1,122 @@
+---@meta
+
+---@class AFirstPersonController_C : APlayerController
+---@field UberGraphFrame FPointerToUberGraphFrame
+---@field FF UForceFeedbackComponent
+---@field ActionManager UBP_ActionManager_C
+---@field ['Game Settings'] UBP_GameSettings_C
+---@field ['Settings Menu'] UWB_ClassicSettingsMain_C
+---@field FirstPersonCharacter AFirstPersonCharacter_C
+---@field ['Pause Menu'] UPauseMenu_C
+---@field cinematicactive boolean
+---@field MayFire boolean
+---@field MayMove boolean
+---@field CameraModifier UBP_SettingsCameraModifer_C
+---@field tempint int32
+---@field ActiveCutsceneModes TArray<ACutSceneMode_C>
+---@field bPlayerIsHoldingFireButton boolean
+---@field bUsingMap boolean
+---@field MapZoomControlInput FKey
+---@field SmoothZoomAxis float
+---@field ['Player Map Component'] UPlayerMapComponent_C
+---@field bToggleStraightEdgeOnRelease boolean
+local AFirstPersonController_C = {}
+
+---@param PlayerMapComponent UPlayerMapComponent_C
+function AFirstPersonController_C:RegisterPlayerMapComponent(PlayerMapComponent) end
+---@param Action FString
+---@param GamePad_ boolean
+---@param Index int32
+---@param Key FKey
+function AFirstPersonController_C:GetKey(Action, GamePad_, Index, Key) end
+---@param newCutscene ACutSceneMode_C
+function AFirstPersonController_C:StopAllOtherCutscenes(newCutscene) end
+---@param CutSceneMode ACutSceneMode_C
+function AFirstPersonController_C:RemoveActiveCutsceneMode(CutSceneMode) end
+---@param CutSceneMode ACutSceneMode_C
+function AFirstPersonController_C:AddActiveCutsceneMode(CutSceneMode) end
+function AFirstPersonController_C:EnablePlayerInputActions() end
+function AFirstPersonController_C:DisablePlayerInputActions() end
+---@param bActive boolean
+function AFirstPersonController_C:IsFFBActive(bActive) end
+---@param InputPin boolean
+AFirstPersonController_C['Set Running'] = function(self, InputPin) end
+---@param Key FKey
+function AFirstPersonController_C:InpActEvt_AnyKey_K2Node_InputKeyEvent_0(Key) end
+---@param Key FKey
+function AFirstPersonController_C:InpActEvt_Menu_K2Node_InputActionEvent_0(Key) end
+function AFirstPersonController_C:ReceiveBeginPlay() end
+AFirstPersonController_C['Custom Event Menu Closed'] = function(self, ) end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_213_JumpPressed__DelegateSignature() end
+---@param AxisValue float
+AFirstPersonController_C['InpAxisEvt_Update Keybinding_K2Node_InputAxisEvent_10'] = function(self, AxisValue) end
+---@param Axis float
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_0_LookUp__DelegateSignature(Axis) end
+---@param Axis float
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_1_LookRight__DelegateSignature(Axis) end
+---@param Axis float
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_2_MoveForward__DelegateSignature(Axis) end
+---@param Axis float
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_3_MoveRight__DelegateSignature(Axis) end
+function AFirstPersonController_C:SwitchOptionsMenu() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_0_CrouchPressed__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_1_FirePressed__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_2_FireReleased__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_3_2ndfirepressed__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_4_2ndfirereleased__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_6_ForceCubePressed__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_7_ForceCubeReleased__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_8_BucklePressed__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_10_Select1Call__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_11_Select2Call__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_12_Select3Call__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_13_Select4Call__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_16_UsePressed__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_17_UseReleased__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_20_JumpReleased__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_21_CrouchReleased__DelegateSignature() end
+function AFirstPersonController_C:CinematicOn() end
+function AFirstPersonController_C:CinematicOff() end
+AFirstPersonController_C['dontallow menu'] = function(self, ) end
+AFirstPersonController_C['allow menu'] = function(self, ) end
+function AFirstPersonController_C:ToggleMenu() end
+---@param FF_Effect UForceFeedbackEffect
+---@param Intensity float
+function AFirstPersonController_C:FFEffect(FF_Effect, Intensity) end
+---@param Intensity float
+function AFirstPersonController_C:FFChargeUpdate(Intensity) end
+function AFirstPersonController_C:FFChargeStop() end
+function AFirstPersonController_C:FFChargeStart() end
+---@param Intensity float
+function AFirstPersonController_C:FFFizzleStart(Intensity) end
+function AFirstPersonController_C:FFFizzleStop() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_5_NextItemCall__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_9_PreviousItemCall__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_14_DetectorPressed__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_15_DischargePressed__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_18_DischargeReleased__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_19_SelectNothingPressed__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_22_Select5Call__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_23_Select6Call__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_24_MapPressed__DelegateSignature() end
+---@param Axis float
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_25_MapZoomAxis__DelegateSignature(Axis) end
+---@param bShowMap boolean
+function AFirstPersonController_C:SetShowMap(bShowMap) end
+---@param bUsingGamepad boolean
+function AFirstPersonController_C:KeyboardGamepadUsageChanged(bUsingGamepad) end
+---@param Axis float
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_26_MapMoveUpAxis__DelegateSignature(Axis) end
+---@param Axis float
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_27_MapMoveRightAxis__DelegateSignature(Axis) end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_28_MapStraightEdgePressed__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_29_MapStraightEdgeUnpressed__DelegateSignature() end
+function AFirstPersonController_C:BndEvt__ActionManager_K2Node_ComponentBoundEvent_30_MapCenterOnPlayerPressed__DelegateSignature() end
+---@param Axis float
+function AFirstPersonController_C:BndEvt__FirstPersonController_ActionManager_K2Node_ComponentBoundEvent_31_MapMoveCursorUpAxis__DelegateSignature(Axis) end
+---@param Axis float
+function AFirstPersonController_C:BndEvt__FirstPersonController_ActionManager_K2Node_ComponentBoundEvent_32_MapMoveCursorRightAxis__DelegateSignature(Axis) end
+---@param EntryPoint int32
+function AFirstPersonController_C:ExecuteUbergraph_FirstPersonController(EntryPoint) end
+
+

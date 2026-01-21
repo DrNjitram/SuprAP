@@ -119,7 +119,9 @@ player.Status = {
     Shells = 0,
 }
 
+
 function player.SetupHooks()
+
     --- This works well enough
     --- GetStatus can't be run as part of the client restart because the player status isn't fully loaded
     RegisterCustomEvent("ChangePlayerBool", function(self, Name, State)
@@ -133,12 +135,14 @@ function player.SetupHooks()
         player.UpdateStatus(Name:get():ToString(), Value:get())
     end)
     RegisterCustomEvent("Lua_ModInitialized", function (ModActor)
-    if ModActor:get() ~= nil and ModActor:get():IsValid() then
-        APUtil.ModActor = ModActor:get()
-        print("AP ModActor loaded in LUA")
-    end
-    --player.UpdateStatus("SkillHasSword", true)
-end)
+        if ModActor:get() ~= nil and ModActor:get():IsValid() then
+            APUtil.ModActor = ModActor:get()
+            print("AP ModActor loaded in LUA\n")
+        end
+        --player.UpdateStatus("SkillHasSword", true)
+    end)    
+    
+    
 end
 
 function player.Heal()
@@ -174,23 +178,6 @@ function player.UpdateStatus(KeyName, Value)
         StatToWidget(upgrade, status)
     end
     APUtil.ModActor:StatusToDebugWidget()
-end
-
-local function SetPlayerProperty(name, stringValue)
-    local obj = FindFirstOf("FirstPersonCharacter_C")
-    if not obj or not obj:IsValid() then
-        return false, "not found"
-    end
-
-    local value = coerceValue(obj, name, stringValue)
-
-    if value~=nil then
-        obj[name] = value -- setting value
-        obj:SaveSTuff()
-        return true
-    end
-
-    return false, "not found or could not find type"
 end
 
 local function coerceValue(obj, name, value)
@@ -237,6 +224,7 @@ local function GetPlayerProperties()
 end
 
 local function SetPlayerProperty(name, stringValue)
+    ---@type AFirstPersonCharacter_C
     local obj = FindFirstOf("FirstPersonCharacter_C")
     if not obj or not obj:IsValid() then
         return false, "not found"
@@ -254,7 +242,9 @@ local function SetPlayerProperty(name, stringValue)
 end
 
 RegisterConsoleCommandHandler("poke", function(FullCommand, Parameters, Ar)
+    ---@type string
     local name = Parameters[1]
+    name = name:gsub("_", " ")
 
     if not name then
         local res = GetPlayerProperties()
@@ -280,6 +270,7 @@ end)
 
 RegisterConsoleCommandHandler("peek", function(FullCommand, Parameters, Ar)
     local name = Parameters[1]
+    name = name:gsub("_", " ")
 
     if not name then
         local res = GetPlayerProperties()

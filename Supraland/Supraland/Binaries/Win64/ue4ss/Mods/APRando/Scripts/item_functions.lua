@@ -368,16 +368,28 @@ end
 
 function funcs.Coin()
     Player.Player.Coins = Player.Player.Coins + 1
+    if Player.Player.Coins > Player.Player.MaxCoins then
+        Player.Player.Coins = Player.Player.MaxCoins
+    end
     return true
 end
 
 function funcs.BigCoin()
     Player.Player.Coins = Player.Player.Coins + 5
+    if Player.Player.Coins > Player.Player.MaxCoins then
+        Player.Player.Coins = Player.Player.MaxCoins
+    end
     return true
 end
 
-function funcs.CoinBundle()
-    Player.Player.Coins = Player.Player.Coins + 25
+function funcs.CoinBundle(coins)
+    if coins == nil then
+        coins = 25
+    end
+    Player.Player.Coins = Player.Player.Coins + coins
+    if Player.Player.Coins > Player.Player.MaxCoins then
+        Player.Player.Coins = Player.Player.MaxCoins
+    end
     return true
 end
 
@@ -409,6 +421,152 @@ end
 function funcs.Map()
     Player.Player.SkillsPlayerMapUnlocks.bOwnsPlayerMap_1_334798A047B7B6B429BB59BB08130507 = true
     return true
+end
+
+function funcs.StolenCoins()
+    return true
+end
+
+function funcs.Coin1()
+    funcs.CoinBundle(1)
+    return true
+end
+
+function funcs.Coin2()
+    funcs.CoinBundle(2)
+    return true
+end
+
+function funcs.Coin3()
+    funcs.CoinBundle(3)
+    return true
+end
+
+function funcs.Coin5()
+    funcs.CoinBundle(5)
+    return true
+end
+
+function funcs.Coin10()
+    funcs.CoinBundle(10)
+    return true
+end
+
+function funcs.Coin15()
+    funcs.CoinBundle(15)
+    return true
+end
+
+function funcs.Coin30()
+    funcs.CoinBundle(30)
+    return true
+end
+
+function funcs.Coin50()
+    funcs.CoinBundle(50)
+    return true
+end
+
+function funcs.Coin200()
+    funcs.CoinBundle(200)
+    return true
+end
+
+function funcs.NumberRising()
+    Player.Player.HasDamageNumberRising = true
+    return true
+end
+
+function funcs.HeroAustin()
+    ---@type AHeroSouvenir_C
+    local souvenir = StaticFindObject("/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.HeroSouvenir7_13")
+    souvenir:showit()
+    return true
+end
+
+function funcs.HeroLink()
+    ---@type AHeroSouvenir_C
+    local souvenir = StaticFindObject("/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.HeroSouvenir3")
+    souvenir:showit()
+    return true
+end
+
+function funcs.HeroHeman()
+    ---@type AHeroSouvenir_C
+    local souvenir = StaticFindObject("/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.HeroSouvenir")
+    souvenir:showit()
+    return true
+end
+
+function funcs.HeroAsh()
+    ---@type AHeroSouvenir_C
+    local souvenir = StaticFindObject("/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.HeroSouvenir8")
+    souvenir:showit()
+    return true
+end
+
+function funcs.HeroPicard()
+    ---@type AHeroSouvenir_C
+    local souvenir = StaticFindObject("/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.HeroSouvenir9_17")
+    souvenir:showit()
+    return true
+end
+
+function funcs.HeroSanta()
+    ---@type AHeroSouvenir_C
+    local souvenir = StaticFindObject("/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.HeroSouvenir4")
+    souvenir:showit()
+    return true
+end
+
+function funcs.HeroVault()
+    ---@type AHeroSouvenir_C
+    local souvenir = StaticFindObject("/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.HeroSouvenir5_7")
+    souvenir:showit()
+    return true
+end
+
+function funcs.HeroStar()
+    ---@type AHeroSouvenir_C
+    local souvenir = StaticFindObject("/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.HeroSouvenir11_2")
+    souvenir:showit()
+    return true
+end
+
+function funcs.HeroMagic()
+    ---@type AHeroSouvenir_C
+    local souvenir = StaticFindObject("/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.HeroSouvenir12")
+    souvenir:showit()
+    return true
+end
+
+function funcs.HeroGoku()
+    ---@type AHeroSouvenir_C
+    local souvenir = StaticFindObject("/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.HeroSouvenir10")
+    souvenir:showit()
+    return true
+end
+
+function funcs.HeroGuy()
+    ---@type AHeroSouvenir_C
+    local souvenir = StaticFindObject("/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.HeroSouvenir6_10")
+    souvenir:showit()
+    return true
+end
+
+function funcs.HeroIndy()
+    ---@type AHeroSouvenir_C
+    local souvenir = StaticFindObject("/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.HeroSouvenir2")
+    souvenir:showit()
+    return true
+end
+
+function funcs.FixCoins()
+    if Player.Player.Coins < 0 then
+        Player.Player.Coins = 0
+    elseif Player.Player.Coins > Player.Player.MaxCoins then
+        Player.Player.Coins = Player.Player.MaxCoins
+    end
 end
 
 funcs.item_to_func = {
@@ -465,6 +623,22 @@ funcs.item_to_func = {
     CoinMagnet = funcs.CoinMagnet,
     Coin = funcs.Coin,
     BigCoin = funcs.BigCoin,
+    EnemyHealth = funcs.NumberRising,
+    HeroAustin = funcs.HeroAustin,
+    HeroLink = funcs.HeroLink,
+    HeroHeman = funcs.HeroHeman,
+    HeroAsh = funcs.HeroAsh,
+    HeroPicard = funcs.HeroPicard,
+    HeroSanta = funcs.HeroSanta,
+    HeroVault = funcs.HeroVault,
+    HeroStar = funcs.HeroStar,
+    HeroMagic = funcs.HeroMagic,
+    HeroGoku = funcs.HeroGoku,
+    HeroGuy = funcs.HeroGuy,
+    HeroIndy = funcs.HeroIndy,
+    EnemySpawn1 = nil,
+    EnemySpawn2 = nil,
+    EnemySpawn3 = nil,
     DoubleHealth = funcs.DoubleHealth,
     Shell = funcs.Shell,
     Strong = funcs.Strong,
@@ -484,22 +658,16 @@ funcs.item_to_func = {
     ProgGraveGun = funcs.ProgGraveGun,
     ProgGraveSword = funcs.ProgGraveSword,
     ProgHealthRegen = funcs.ProgHealthRegen,
-    EnemyHealth = nil,
-    HeroAustin = nil,
-    HeroLink = nil,
-    HeroHeman = nil,
-    HeroAsh = nil,
-    HeroPicard = nil,
-    HeroSanta = nil,
-    HeroVault = nil,
-    HeroStar = nil,
-    HeroMagic = nil,
-    HeroGoku = nil,
-    HeroGuy = nil,
-    HeroIndy = nil,
-    EnemySpawn1 = nil,
-    EnemySpawn2 = nil,
-    EnemySpawn3 = nil,
+    StolenCoins = funcs.StolenCoins,
+	LotOfCoin1 = funcs.Coin1,
+    LotOfCoin2 = funcs.Coin2,
+    LotOfCoin3 = funcs.Coin3,
+    LotOfCoin5 = funcs.Coin5,
+    LotOfCoin10 = funcs.Coin10,
+    LotOfCoin15 = funcs.Coin15,
+    LotOfCoin30 = funcs.Coin30,
+    LotOfCoin50 = funcs.Coin50,
+    LotOfCoin200 = funcs.Coin200,
 }
 
 return funcs

@@ -1,0 +1,21 @@
+---@meta
+
+---@class FRedGuySettings
+---@field RedGuy_2_F8C026FE48A3E5892A4210816B7DDF90 AActor
+---@field TextStatus_5_C2F023504D402E64380A629D5E431A9C int32
+---@field TalkSound_7_8F5DB5034D863BBA00769B8832168A44 int32
+---@field ['ShowsSomething?_9_D3E12BA24590E62E5B0479BCF54DD7DE'] boolean
+---@field ShowThis_12_CB15EDF5458E250C38D67AB78BE88148 AActor
+---@field Visible_17_C7B0A5654739FBDA182DD786646D14B2 boolean
+---@field Wave_16_9C3A1A404705533ACDCE0495E89FE931 boolean
+---@field TalkWhenPlayerClose_31_594416BE4EC810743646E78352D4AC1B boolean
+---@field Alwayslookatplayer_34_A27BD135418363CF858ECFA0916CCE5A boolean
+---@field Neverlookatplayer_36_7622B5E54CFAA5F8BA55B78A269ABA9C boolean
+---@field Keeptextonscreen_38_49FC466847A3EC142D7B3D81A52CE2FE boolean
+---@field CurrentDynamicTextStatus_41_9C3956C64EA79598BBD5968CE3B570CB FName
+---@field Canbeinterrupted_46_242E154542AE747A296C198EBCEF9F21 boolean
+---@field Interruptsothers_47_2478E3E84E480533B9EBBB9C3C623DE9 boolean
+local FRedGuySettings = {}
+
+
+

@@ -1,0 +1,89 @@
+---@meta
+
+---@class ULanguageSelection_C : UUserWidget
+---@field UberGraphFrame FPointerToUberGraphFrame
+---@field Close UWidgetAnimation
+---@field Open UWidgetAnimation
+---@field ButtonSpanish UButton
+---@field Chinese UButton
+---@field ChineseSimpli UButton
+---@field Deutsch UButton
+---@field English UButton
+---@field Finnish UButton
+---@field FlagCh UImage
+---@field FlagChSim UImage
+---@field FlagDe UImage
+---@field FlagFi UImage
+---@field FlagFre UImage
+---@field FlagHu UImage
+---@field FlagIt UImage
+---@field FlagJapanese UImage
+---@field flagpol UImage
+---@field FlagPor UImage
+---@field FlagRus UImage
+---@field flagser UImage
+---@field FlagSpanish UImage
+---@field FlagTur UImage
+---@field FlagUSUK UImage
+---@field French UButton
+---@field GridPanel_15 UGridPanel
+---@field Hung UButton
+---@field Italy UButton
+---@field Japanese UButton
+---@field JapaneseText UTextBlock
+---@field korean UImage
+---@field KoreanButton UButton
+---@field LanguageFinnish UTextBlock
+---@field LanguageSerbian UTextBlock
+---@field LanguageTurkish UTextBlock
+---@field Pol UButton
+---@field Port UButton
+---@field Russian UButton
+---@field Serbian UButton
+---@field SimplifiedChineseText UTextBlock
+---@field SpanishText UTextBlock
+---@field TextChinese UTextBlock
+---@field TextDeutsch UTextBlock
+---@field TextEnglish UTextBlock
+---@field TextFrench UTextBlock
+---@field TextHungarian UTextBlock
+---@field TextItaliano UTextBlock
+---@field TextKorean UTextBlock
+---@field TextPolski UTextBlock
+---@field TextPortuguese UTextBlock
+---@field TextRussian UTextBlock
+---@field Turkish UButton
+---@field CurrentLanguageText UTextBlock
+---@field Opened boolean
+---@field PauseMenu UPauseMenu_C
+---@field Flagnumber int32
+local ULanguageSelection_C = {}
+
+function ULanguageSelection_C:BndEvt__Chinese_K2Node_ComponentBoundEvent_0_OnButtonClickedEvent__DelegateSignature() end
+function ULanguageSelection_C:BndEvt__Deutsch_K2Node_ComponentBoundEvent_1_OnButtonClickedEvent__DelegateSignature() end
+function ULanguageSelection_C:BndEvt__English_K2Node_ComponentBoundEvent_2_OnButtonClickedEvent__DelegateSignature() end
+function ULanguageSelection_C:BndEvt__Italy_K2Node_ComponentBoundEvent_3_OnButtonClickedEvent__DelegateSignature() end
+function ULanguageSelection_C:BndEvt__Russian_K2Node_ComponentBoundEvent_4_OnButtonClickedEvent__DelegateSignature() end
+function ULanguageSelection_C:BndEvt__French_K2Node_ComponentBoundEvent_5_OnButtonClickedEvent__DelegateSignature() end
+function ULanguageSelection_C:Construct() end
+---@param Menu UPauseMenu_C
+function ULanguageSelection_C:GetCurrentLanguage(Menu) end
+ULanguageSelection_C['Set Language in Menu'] = function(self, ) end
+function ULanguageSelection_C:OpenLanguageSelection() end
+function ULanguageSelection_C:CloseLanguageSelection() end
+---@param IsDesignTime boolean
+function ULanguageSelection_C:PreConstruct(IsDesignTime) end
+function ULanguageSelection_C:BndEvt__Port_K2Node_ComponentBoundEvent_6_OnButtonClickedEvent__DelegateSignature() end
+function ULanguageSelection_C:BndEvt__Finnish_K2Node_ComponentBoundEvent_7_OnButtonClickedEvent__DelegateSignature() end
+function ULanguageSelection_C:BndEvt__Japanese_K2Node_ComponentBoundEvent_8_OnButtonClickedEvent__DelegateSignature() end
+function ULanguageSelection_C:BndEvt__ChineseSimpli_K2Node_ComponentBoundEvent_9_OnButtonClickedEvent__DelegateSignature() end
+function ULanguageSelection_C:BndEvt__ButtonSpanish_K2Node_ComponentBoundEvent_10_OnButtonClickedEvent__DelegateSignature() end
+function ULanguageSelection_C:BndEvt__Turkish_K2Node_ComponentBoundEvent_11_OnButtonClickedEvent__DelegateSignature() end
+function ULanguageSelection_C:BndEvt__Hung_K2Node_ComponentBoundEvent_12_OnButtonClickedEvent__DelegateSignature() end
+function ULanguageSelection_C:BndEvt__Pol_K2Node_ComponentBoundEvent_13_OnButtonClickedEvent__DelegateSignature() end
+function ULanguageSelection_C:BndEvt__Serbian_K2Node_ComponentBoundEvent_14_OnButtonClickedEvent__DelegateSignature() end
+function ULanguageSelection_C:BndEvt__KoreanButton_K2Node_ComponentBoundEvent_15_OnButtonClickedEvent__DelegateSignature() end
+---@param EntryPoint int32
+function ULanguageSelection_C:ExecuteUbergraph_LanguageSelection(EntryPoint) end
+
+

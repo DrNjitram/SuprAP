@@ -1,6 +1,6 @@
 Locations = {
-    --RH = 678000,
-	--MB = 678001,
+    -- RH = 678000,
+	-- MB = 678001,
 	BP_UnlockMap_2 = 678002,
 	BuyBelt2_2 = 678003,
 	BuyChestDetector_30 = 678004,
@@ -229,25 +229,28 @@ Locations = {
 	Chest99_2116 = 678227,
 	Chest9_2231 = 678228,
 	Chest_622 = 678229,
-	Juicer2 = 678230,
-	Juicer3 = 678231,
-	Juicer_286 = 678232,
-	Shell13_3781 = 678233,
-	Shell16_5895 = 678234,
-	shell2_1957 = 678235,
-	Shell5_1015 = 678236,
-	Shell9_2044 = 678237,
-	Shell_1483 = 678238,
-	-- DeadHero2Austin = 678243,
-	-- DeadHero2Link = 678240,
-	-- DeadHero3Heman = 678241,
-	-- DeadHero3Pokemon = 678242,
-	-- DeadHero4Santa = 678245,
-	-- DeadHero4Santa3 = 678246,
-	-- DeadHero_3 = 678247,
-	-- DeadHeroGoku = 678248,
-	-- DeadHeroGuybrush = 678249,
-	-- DeadHeroIndy = 678250
+	UpgradeHappiness2_2 = 678230,
+	Juicer2 = 678231,
+	Juicer3 = 678232,
+	Juicer_286 = 678233,
+	Shell13_3781 = 678234,
+	Shell16_5895 = 678235,
+	shell2_1957 = 678236,
+	Shell5_1015 = 678237,
+	Shell9_2044 = 678238,
+	Shell_1483 = 678239,
+	DeadHero2Austin = 678240,
+	DeadHero2Link = 678241,
+	DeadHero3Heman = 678242,
+	DeadHero3Pokemon = 678243,
+	DeadHero4Picard = 678244,
+	DeadHero4Santa = 678245,
+	DeadHero4Santa2 = 678246,
+	DeadHero4Santa3 = 678247,
+	DeadHero_3 = 678248,
+	DeadHeroGoku = 678249,
+	DeadHeroGuybrush = 678250,
+	DeadHeroIndy = 678251,
 }
 
 Item_IDs = {
@@ -338,8 +341,18 @@ Item_IDs = {
 	["678084"] = "StolenCube",
 	["678085"] = "StolenJump2",
 	["678086"] = "StolenJump3",
-	["678087"] = "Health10"
-}
+	["678087"] = "Health10",
+	["678088"] = "StolenCoins",
+	["678089"] = "LotOfCoin1",
+	["678090"] = "LotOfCoin2",
+	["678091"] = "LotOfCoin3",
+	["678092"] = "LotOfCoin5",
+	["678093"] = "LotOfCoin10",
+	["678094"] = "LotOfCoin15",
+	["678095"] = "LotOfCoin30",
+	["678096"] = "LotOfCoin50",
+	["678097"] = "LotOfCoin200",
+	}
 
 
 Blueprints = {
@@ -437,6 +450,8 @@ Progressives = {
 }
 
 Pretty_Name = {
+	RH = "Rattlehag",
+	MB = "Victory",
 	Map = "Map",
 	Buckle = "Float Buckle",
 	ChestDetector = "Chest Detector",
@@ -523,7 +538,17 @@ Pretty_Name = {
 	StolenGun = "Might MacGuffin",
 	StolenCube = "Force Cube",
 	StolenJump = "Double Jump",
-	Health10 = "Max Health +10"
+	Health10 = "Max Health +10",
+	StolenCoins = "Stolen Coins",
+	LotOfCoin1 = "1 Coin",
+    LotOfCoin2 = "2 Coins",
+    LotOfCoin3 = "3 Coins",
+    LotOfCoin5 = "5 Coins",
+    LotOfCoin10 = "10 Coins",
+    LotOfCoin15 = "15 Coins",
+    LotOfCoin30 = "30 Coins",
+    LotOfCoin50 = "50 Coins",
+    LotOfCoin200 = "200 Coins",
 }
 
 Barrels = {

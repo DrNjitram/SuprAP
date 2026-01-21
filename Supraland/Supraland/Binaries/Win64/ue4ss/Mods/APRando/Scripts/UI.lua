@@ -9,7 +9,9 @@ local Visibility_HITTESTINVISIBLE = 3
 local Visibility_SELFHITTESTINVISIBLE = 4
 local Visibility_ALL = 5
 
+---@type UCanvasPanel
 local textWidget = nil
+---@type UTextBlock
 local textControl = nil
 
 local function FLinearColor(R,G,B,A) return {R=R,G=G,B=B,A=A} end
@@ -86,12 +88,13 @@ end
 
 function AddText()
     ExecuteInGameThread(function()
-        createTextWidget('SuprAP 0.0.1\nConnected\tFalse\nLast Location\tNA\nLast Item Sent\tNA\nLast Item Recieved\tNA\nLast MSG 1\tNA\nLast MSG 2\tNA\nLast MSG 3\tNA')
+        createTextWidget('SuprAP 0.1.0\nConnected\tFalse\nLast Location\tNA\nLast Item Sent\tNA\nLast Item Recieved\tNA\nLast MSG 1\tNA\nLast MSG 2\tNA\nLast MSG 3\tNA')
     end)
 end
 
+
 function SetText(text)
-    if not textControl then return end
+    if not textControl or not textControl:IsValid() then return end
     textControl:SetText(FText(text))
 end
 
@@ -100,17 +103,30 @@ local function setTextVisibility(visibility)
     textWidget:SetVisibility(visibility)
 end
 
-local function toggleText()
+function HideText()
+    setTextVisibility(Visibility_HIDDEN)
+end
+
+function ToggleText()
     if not textWidget or not textWidget:IsValid() then return end
     local current = textWidget:GetVisibility()
     setTextVisibility(current == Visibility_SELFHITTESTINVISIBLE and Visibility_HIDDEN or Visibility_SELFHITTESTINVISIBLE)
 end
 
-RegisterHook("/Script/Engine.PlayerController:ClientRestart", function(self)
-    AddText()
-end)
+function AddOrToggleText(visibility)
+    if not textWidget or not textWidget:IsValid() then
+        AddText()
+    else
+        setTextVisibility(visibility)
+    end
+end
+
+
+-- RegisterHook("/Script/Engine.PlayerController:ClientRestart", function(self)
+--     AddText()
+-- end)
 
 RegisterKeyBind(Key.O, {ModifierKey.ALT}, AddText)
-RegisterKeyBind(Key.H, {ModifierKey.ALT}, toggleText)
+RegisterKeyBind(Key.H, {ModifierKey.ALT}, ToggleText)
 RegisterKeyBind(Key.D, {ModifierKey.ALT}, function() SetText("Hello World!") end )
 

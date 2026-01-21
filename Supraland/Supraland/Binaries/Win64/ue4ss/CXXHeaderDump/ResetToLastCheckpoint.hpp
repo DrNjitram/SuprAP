@@ -1,0 +1,16 @@
+#ifndef UE4SS_SDK_ResetToLastCheckpoint_HPP
+#define UE4SS_SDK_ResetToLastCheckpoint_HPP
+
+class AResetToLastCheckpoint_C : public AActor
+{
+    FPointerToUberGraphFrame UberGraphFrame;                                          // 0x0220 (size: 0x8)
+    class UBillboardComponent* Billboard;                                             // 0x0228 (size: 0x8)
+    class UBoxComponent* Box;                                                         // 0x0230 (size: 0x8)
+    bool RespawnWithoutKill;                                                          // 0x0238 (size: 0x1)
+    class AActor* Always send here;                                                   // 0x0240 (size: 0x8)
+
+    void BndEvt__Box_K2Node_ComponentBoundEvent_0_ComponentBeginOverlapSignature__DelegateSignature(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+    void ExecuteUbergraph_ResetToLastCheckpoint(int32 EntryPoint);
+}; // Size: 0x248
+
+#endif

@@ -1,0 +1,10 @@
+{
+  "Watches":[
+    {
+      "AcquisitionID":"FirstPersonCharacter_C",
+      "PropertyName":"LookedAt_TraceActor",
+      "AcquisitionMethod":1,
+      "WatchType":0
+    }
+  ]
+}

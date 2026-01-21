@@ -1,0 +1,16 @@
+---@meta
+
+---@class FEnemyBaseSettings
+---@field Health_2_CFEB975743A2680657A1CF984B8B2556 float
+---@field BaseDamage_4_CFCC68A54C83E7B65241368D56C3D65C float
+---@field CanRoam_7_0F5801E442E69D317727B692112DCB86 boolean
+---@field RoamRadius_11_092B81C241F66C3FBE4A079B95AE96C4 float
+---@field Blind_13_D42672F340F7C52F76BE90A8CE3E18C1 boolean
+---@field Numb_15_190A34D04091FD9C831F36BD9FF7F5C4 boolean
+---@field Deaf_17_881C3B1543DEF61E9AB816BD161C6D15 boolean
+---@field AlwaysChasing_23_5702CC09443A7E7C910513B9E065E5B6 boolean
+---@field CanBreakBeam_25_6D7CD290428BE7311962A3BA876947F1 boolean
+local FEnemyBaseSettings = {}
+
+
+
