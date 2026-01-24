@@ -116,7 +116,7 @@ function ConnectAP(server, slot, password)
         print("missing locations: " .. table.concat(AP_server.missing_locations, ", ") .. "\n")
         print("checked locations: " .. table.concat(AP_server.checked_locations, ", ") .. "\n")
         
-        if slot_data["deathlink"] then
+        if slot_data["deathlink"] == 1 then
             AP_server:ConnectUpdate(nil, {"Lua-APClientPP", "DeathLink"})
         else
             AP_server:ConnectUpdate(nil, {"Lua-APClientPP"})
@@ -418,6 +418,7 @@ local function TryReplaceActor(actor, cost)
     end)
     if not succes then
         print("Failed to replace " .. util.GetObjectName(actor) .. "\n")
+        print(err)
     end
 end
 
