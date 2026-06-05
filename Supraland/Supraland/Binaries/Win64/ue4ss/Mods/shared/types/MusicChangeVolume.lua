@@ -18,8 +18,8 @@
 ---@field ['Retrigger Delay Muting'] float
 ---@field ['Retrigger Delay Music'] float
 ---@field ['CanMute?'] boolean
----@field TriggerOnceOnly boolean
----@field Closed boolean
+---@field triggeronceonly boolean
+---@field closed boolean
 local AMusicChangeVolume_C = {}
 
 ---@param IsActive boolean

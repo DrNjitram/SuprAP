@@ -30,7 +30,7 @@
 ---@field Meshskin0 UMaterialInstanceDynamic
 ---@field GettingHurt boolean
 ---@field IsSensingPlayer boolean
----@field IsDead boolean
+---@field isDead boolean
 ---@field InitialHealth float
 ---@field TraceComplex boolean
 ---@field ['Region#'] int32
@@ -102,8 +102,8 @@ function AEnemy5_C:DestroyHealthBarOfBoss() end
 AEnemy5_C['Healthbar Show'] = function(self, ) end
 AEnemy5_C['Healthbar Hide'] = function(self, ) end
 AEnemy5_C['Healthbar Update'] = function(self, ) end
----@param Rightfoot boolean
-function AEnemy5_C:FootSteps(Rightfoot) end
+---@param rightfoot boolean
+function AEnemy5_C:FootSteps(rightfoot) end
 function AEnemy5_C:Running() end
 function AEnemy5_C:Die() end
 function AEnemy5_C:explode() end

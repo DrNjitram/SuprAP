@@ -9,7 +9,7 @@
 ---@field PointLight UPointLightComponent
 ---@field Impact UParticleSystemComponent
 ---@field Muzzle UParticleSystemComponent
----@field trail UParticleSystemComponent
+---@field Trail UParticleSystemComponent
 ---@field Body UParticleSystemComponent
 ---@field ProjectileMovement UProjectileMovementComponent
 ---@field Color FPC_ColorList::Type

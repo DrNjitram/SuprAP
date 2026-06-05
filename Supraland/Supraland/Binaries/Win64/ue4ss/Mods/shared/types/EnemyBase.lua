@@ -42,7 +42,7 @@
 ---@field OriginalTransform FTransform
 ---@field InEncounter boolean
 ---@field Attack1_BaseDamage float
----@field IsDead boolean
+---@field isDead boolean
 ---@field HandleTakeDamage_Damage float
 ---@field HandleTakeDamage_DamageModification float
 ---@field HandleTakeDamage_ActualDamageDealt float
@@ -445,8 +445,8 @@ function AEnemyBase_C:SetMovementSpeed(MovementSpeed, Duration) end
 function AEnemyBase_C:ReceiveTick(DeltaSeconds) end
 function AEnemyBase_C:UpdateShouldTickBeEnabled() end
 function AEnemyBase_C:CheckStandGround() end
----@param Rightfoot boolean
-function AEnemyBase_C:FootSteps(Rightfoot) end
+---@param rightfoot boolean
+function AEnemyBase_C:FootSteps(rightfoot) end
 ---@param MovementSpeedMultiplier float
 ---@param Delay float
 ---@param Duration float

@@ -8,7 +8,7 @@
 ---@field Player AFirstPersonCharacter_C
 ---@field Region int32
 ---@field RemainingSpawners TArray<AActor>
----@field ['Activate these Actors'] TArray<AActor>
+---@field ['Activate These Actors'] TArray<AActor>
 ---@field CheckGravesExt boolean
 ---@field done boolean
 local ATaskGetTheGraves_C = {}

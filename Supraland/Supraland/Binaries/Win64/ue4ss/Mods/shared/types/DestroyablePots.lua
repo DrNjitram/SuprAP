@@ -8,12 +8,12 @@
 ---@field Timeline_0__Direction_E0686C7843878971D7159FA049F8C5DB ETimelineDirection::Type
 ---@field Timeline_0 UTimelineComponent
 ---@field Variation int32
----@field SaveDestroy boolean
+---@field Savedestroy boolean
 ---@field destroyed boolean
 ---@field ['Contains Coin'] boolean
 ---@field Respawned FDestroyablePots_CRespawned
 ---@field Broken FDestroyablePots_CBroken
----@field tempscale FVector
+---@field TempScale FVector
 ---@field Unbreakable boolean
 local ADestroyablePots_C = {}
 

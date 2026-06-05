@@ -3,7 +3,7 @@
 ---@class USmallHealthbar_C : UUserWidget
 ---@field UberGraphFrame FPointerToUberGraphFrame
 ---@field Disappear UWidgetAnimation
----@field appear UWidgetAnimation
+---@field Appear UWidgetAnimation
 ---@field Flash UWidgetAnimation
 ---@field Box UCanvasPanel
 ---@field DamageNumber UDamageNumber_C

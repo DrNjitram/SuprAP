@@ -10,7 +10,7 @@
 ---@field Volume float
 ---@field ['Fade In duration'] float
 ---@field ['CanMute?'] boolean
----@field Closed boolean
+---@field closed boolean
 ---@field ['RequiresTutorialBeDone?'] boolean
 ---@field OnlyTriggered boolean
 local AMusicChangeVolumeNew_C = {}

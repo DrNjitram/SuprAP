@@ -90,9 +90,9 @@ function UBP_EnemyBeamGrapple_C:GetPullStrength(PullStrength) end
 ---@param BeamAttachedComponent AActor
 ---@param BeamCollision AActor
 function UBP_EnemyBeamGrapple_C:SetIgnoreBeamCollisions(BeamAttachedComponent, BeamCollision) end
----@param Attachpoint UBP_EnemyBeamGrapple_AttachPoint_C
+---@param AttachPoint UBP_EnemyBeamGrapple_AttachPoint_C
 ---@param Location FVector
-function UBP_EnemyBeamGrapple_C:SetAttachPointLocation(Attachpoint, Location) end
+function UBP_EnemyBeamGrapple_C:SetAttachPointLocation(AttachPoint, Location) end
 ---@return boolean
 function UBP_EnemyBeamGrapple_C:GetHasOnlyBaseAttachPoint() end
 ---@param AttachLocation FVector
@@ -101,8 +101,8 @@ function UBP_EnemyBeamGrapple_C:GetAttachPointLocation(AttachLocation) end
 ---@param Modifier float
 ---@param Unit_Direction FVector
 function UBP_EnemyBeamGrapple_C:GetPullDirection(BeamGrappleLocation, Modifier, Unit_Direction) end
----@param Attachpoint UBP_EnemyBeamGrapple_AttachPoint_C
-function UBP_EnemyBeamGrapple_C:GetAttachPoint(Attachpoint) end
+---@param AttachPoint UBP_EnemyBeamGrapple_AttachPoint_C
+function UBP_EnemyBeamGrapple_C:GetAttachPoint(AttachPoint) end
 ---@param CanGrapple boolean
 function UBP_EnemyBeamGrapple_C:SetCanGrapple(CanGrapple) end
 ---@param CanGrapple boolean
@@ -112,8 +112,8 @@ function UBP_EnemyBeamGrapple_C:DetachReaction(TimeUntilFinished) end
 ---@return float
 function UBP_EnemyBeamGrapple_C:AttachReaction() end
 ---@param GrappleLocation FVector
----@param Attachpoint UBP_EnemyBeamGrapple_AttachPoint_C
-function UBP_EnemyBeamGrapple_C:GetClosestAttachPoint(GrappleLocation, Attachpoint) end
+---@param AttachPoint UBP_EnemyBeamGrapple_AttachPoint_C
+function UBP_EnemyBeamGrapple_C:GetClosestAttachPoint(GrappleLocation, AttachPoint) end
 ---@param Text FString
 function UBP_EnemyBeamGrapple_C:PrintWithDisplay(Text) end
 ---@return boolean

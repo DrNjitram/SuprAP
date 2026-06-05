@@ -3,8 +3,8 @@
 ---@class AQuestActivator_C : AActor
 ---@field UberGraphFrame FPointerToUberGraphFrame
 ---@field Billboard UBillboardComponent
----@field QuestText FText
----@field TriggerOnceOnly boolean
+---@field Questtext FText
+---@field triggeronceonly boolean
 ---@field ['RequireCrashLoop?'] boolean
 ---@field CrashLoop Loop::Type
 ---@field ReplaceStuff boolean

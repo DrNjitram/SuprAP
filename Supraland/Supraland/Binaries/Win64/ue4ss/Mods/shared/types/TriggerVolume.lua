@@ -10,12 +10,12 @@
 ---@field Objects TArray<AActor>
 ---@field ['Trigger Once Only'] boolean
 ---@field ['LeavingCloses?'] boolean
----@field Retriggerdelay float
+---@field RetriggerDelay float
 ---@field EventOnEntering Events::Type
 ---@field ['Save?'] boolean
 ---@field ['Achievement?'] boolean
 ---@field ['Achievement Name'] FName
----@field Closed boolean
+---@field closed boolean
 ---@field RequiredForceBeam boolean
 ---@field ['DestroyTranslocator?'] boolean
 ---@field WorksWithTutorialDone boolean

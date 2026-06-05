@@ -4,7 +4,7 @@
 ---@field UberGraphFrame FPointerToUberGraphFrame
 ---@field AnimOut UWidgetAnimation
 ---@field AnimIn UWidgetAnimation
----@field Textbox UMultiLineEditableTextBox
+---@field TextBox UMultiLineEditableTextBox
 local U3dText_C = {}
 
 function U3dText_C:AnimationIN() end

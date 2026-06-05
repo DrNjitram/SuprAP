@@ -24,7 +24,7 @@
 ---@field MusicWhenFighting AMusicChangeVolume_C
 ---@field Farting boolean
 ---@field DieSequence ALevelSequenceActor
----@field dead boolean
+---@field Dead boolean
 ---@field Hintguy ARedGuy_C
 local AFatty_C = {}
 
@@ -70,7 +70,7 @@ function AFatty_C:Kill() end
 ---@param InstigatedBy AController
 ---@param DamageCauser AActor
 function AFatty_C:ReceiveAnyDamage(Damage, DamageType, InstigatedBy, DamageCauser) end
-function AFatty_C:SaveDestroy() end
+function AFatty_C:Savedestroy() end
 AFatty_C['remove it'] = function(self, ) end
 function AFatty_C:DestroyAllComponents() end
 AFatty_C['reset thrown amount'] = function(self, ) end

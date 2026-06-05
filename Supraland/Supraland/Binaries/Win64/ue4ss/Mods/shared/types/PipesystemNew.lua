@@ -16,7 +16,7 @@
 ---@field Timeline_0_Size_C96AC7064BDD12A80933949FC715859D float
 ---@field Timeline_0__Direction_C96AC7064BDD12A80933949FC715859D ETimelineDirection::Type
 ---@field Timeline_0 UTimelineComponent
----@field Launchpower float
+---@field LaunchPower float
 ---@field Player AFirstPersonCharacter_C
 ---@field OtherPipe APipesystemNew_C
 ---@field ['Allow Force Cube'] boolean

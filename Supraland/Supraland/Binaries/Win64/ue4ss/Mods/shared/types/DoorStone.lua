@@ -21,7 +21,7 @@
 ---@field ['Give Achievement'] boolean
 ---@field OpenDelay float
 ---@field Opened FDoorStone_COpened
----@field Closed FDoorStone_CClosed
+---@field closed FDoorStone_CClosed
 local ADoorStone_C = {}
 
 ---@param IsActive boolean

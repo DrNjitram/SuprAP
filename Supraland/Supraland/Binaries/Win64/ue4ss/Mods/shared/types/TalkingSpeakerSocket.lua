@@ -17,7 +17,7 @@
 ---@field Timeline_0 UTimelineComponent
 ---@field InUse boolean
 ---@field TempTransform FTransform
----@field ['Activate these Actors'] TArray<AActor>
+---@field ['Activate These Actors'] TArray<AActor>
 ---@field StartWithThisSpeakerInstalled ATalkingSpeaker_C
 ---@field socketTransform FTransform
 ---@field MeanSpeakerInstalled FTalkingSpeakerSocket_CMeanSpeakerInstalled

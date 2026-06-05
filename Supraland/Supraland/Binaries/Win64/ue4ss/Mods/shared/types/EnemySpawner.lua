@@ -16,7 +16,7 @@
 ---@field ['Spawn Radius'] float
 ---@field DeleteForeverAfterUse boolean
 ---@field Region int32
----@field Retriggerdelay float
+---@field RetriggerDelay float
 ---@field ['Roam?'] boolean
 ---@field SpawnLikeliness float
 ---@field ['RequireEndgame?'] boolean

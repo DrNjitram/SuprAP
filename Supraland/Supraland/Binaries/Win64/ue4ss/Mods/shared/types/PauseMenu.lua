@@ -145,10 +145,10 @@ function UPauseMenu_C:Get_PlayDLC2_Visibility() end
 ---@param TextBlock UTextBlock
 ---@param StatisticText__ FText
 ---@param YesInsteadofInt boolean
----@param show boolean
+---@param Show boolean
 ---@param RequireStats boolean
 ---@param AlsoShowWhenIntIs0 boolean
-function UPauseMenu_C:Greaterthan0orHide(Number, TextBlock, StatisticText__, YesInsteadofInt, show, RequireStats, AlsoShowWhenIntIs0) end
+function UPauseMenu_C:Greaterthan0orHide(Number, TextBlock, StatisticText__, YesInsteadofInt, Show, RequireStats, AlsoShowWhenIntIs0) end
 ---@param PlayerController APlayerController
 function UPauseMenu_C:OnFailure_30923C2E497EDDEFD42E0BA78528F92A(PlayerController) end
 ---@param PlayerController APlayerController

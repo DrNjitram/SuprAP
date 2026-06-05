@@ -31,8 +31,8 @@
 ---@field steampunk_gun_static UStaticMeshComponent
 ---@field PostProcessPipeVignette UPostProcessComponent
 ---@field Heartbeat_Cue UAudioComponent
----@field shoe2 UStaticMeshComponent
----@field shoe1 UStaticMeshComponent
+---@field Shoe2 UStaticMeshComponent
+---@field Shoe1 UStaticMeshComponent
 ---@field Belt UStaticMeshComponent
 ---@field PostProcessMagnet UPostProcessComponent
 ---@field Electricity UAudioComponent
@@ -124,7 +124,7 @@
 ---@field EditingPlayerValues boolean
 ---@field EditingNoMapLoad boolean
 ---@field EditingNoTeleport boolean
----@field Tutorialdone boolean
+---@field TutorialDone boolean
 ---@field ProgressPoints int32
 ---@field SkillHasSword boolean
 ---@field HealthIsRegenerating boolean
@@ -221,7 +221,7 @@
 ---@field SwordAnimationLength float
 ---@field ForceCubeSpawned boolean
 ---@field ['Last Checkpoint'] FVector
----@field IsDead boolean
+---@field isDead boolean
 ---@field ['Pause Menu'] UPauseMenu_C
 ---@field DiedCounter int32
 ---@field TempSpeed float
@@ -466,7 +466,7 @@
 ---@field bRecoiling boolean
 ---@field PlayerReleasedObject FFirstPersonCharacter_CPlayerReleasedObject
 ---@field PlayerHasTeleportedAfterDeath FFirstPersonCharacter_CPlayerHasTeleportedAfterDeath
----@field HatMesh UStaticMeshComponent
+---@field hatMesh UStaticMeshComponent
 ---@field SkillMultijump_Quintuple boolean
 ---@field SkillHasFiregun boolean
 ---@field IsHeldStart FFirstPersonCharacter_CIsHeldStart
@@ -765,9 +765,9 @@ function AFirstPersonCharacter_C:UpdateShouldBeInWater(OverrideFlying) end
 function AFirstPersonCharacter_C:BndEvt__BP_AquaticBuoyancy_K2Node_ComponentBoundEvent_0_OnAquaticSurfaceChanged__DelegateSignature(AquaticBuoyancy, Actor, AquaticSurface) end
 ---@param OtherPipeSpawnLocation USceneComponent
 ---@param Rotate boolean
----@param Launchpower float
+---@param LaunchPower float
 ---@param MiddleStartPipe FVector
-function AFirstPersonCharacter_C:PipeTraveling(OtherPipeSpawnLocation, Rotate, Launchpower, MiddleStartPipe) end
+function AFirstPersonCharacter_C:PipeTraveling(OtherPipeSpawnLocation, Rotate, LaunchPower, MiddleStartPipe) end
 ---@param Color int32
 ---@param Wash_ boolean
 function AFirstPersonCharacter_C:SetMyColor(Color, Wash_) end
@@ -780,7 +780,7 @@ function AFirstPersonCharacter_C:CubeRelease() end
 function AFirstPersonCharacter_C:ProjectCubeagain() end
 function AFirstPersonCharacter_C:ResetCubeSet() end
 function AFirstPersonCharacter_C:ForceCubeStopGrowing() end
-function AFirstPersonCharacter_C:DestroyForceCube() end
+function AFirstPersonCharacter_C:destroyforcecube() end
 function AFirstPersonCharacter_C:BrightenObjectTick() end
 function AFirstPersonCharacter_C:Interact() end
 function AFirstPersonCharacter_C:ReleaseObject_Event() end

@@ -43,7 +43,7 @@ Added new build definition "LessEqual421".  Using this definition for games on U
 Added optional scans for GUObjectHashTables, GNatives and ConsoleManagerSingleton; made FText an optional scan; externed the found GNatives for use by mods([UE4SS #744](https://github.com/UE4SS-RE/RE-UE4SS/pull/744)) 
 - GUObjectHashTables and ConsoleManagerSingleton are currently unused and a WIP.
 
-UE Platform support, which allows for much easier internal implementation of new Unreal classes ([UEPseudo #80](https://github.com/Re-UE4SS/UEPseudo/pull/80)) - narknon, localcc 
+UE Platform support, which allows for much easier internal implementation of new Unreal classes ([UEPseudo #80](https://github.com/Re-UE4SS/UEPseudo/pull/80)) - narknon, localcc
 
 Added new installation method by allowing overriding of the location of the `UE4SS.dll`, [documentation](https://docs.ue4ss.com/installation-guide.html#overriding-install-location). - ([UE4SS #506](https://github.com/UE4SS-RE/RE-UE4SS/pull/506)) - Buckminsterfullerene 
 
@@ -73,6 +73,14 @@ Add error messages in places where only error codes were previously logged (e.g.
 Added `[f: <address_or_module_offset>` section to UE4SS_ObjectDump.txt [UE4SS #866](https://github.com/UE4SS-RE/RE-UE4SS/pull/866) 
 
 Added line in the [docs](https://docs.ue4ss.com/dev/guides/fixing-compatibility-problems.html) to add `FText::FromString(FString&)` as an alternative to `FText::FText(FString&)` for UE5 games - ([UE4SS #1078](https://github.com/UE4SS-RE/RE-UE4SS/pull/1078))
+
+Added `FUObjectItem`, `FUObjectArray`, and `TUObjectArray` to MemberVariableLayout.ini ([UE4SS #????](https://github.com/UE4SS-RE/RE-UE4SS/pull/????))
+- This means we can now support games with a customized GUObjectArray.
+- There are now also sizes, padding, and type name comments to help understand.
+- We've also added a special `UEP_TotalSize` entry to every section.
+- It's currently only crucial for `FUObjectItem`, but in the future, we may use this entry for more types.
+
+Fixed the ingame console (Tilde, or F10 key) not working for some games - ([UE4SS #1252](https://github.com/UE4SS-RE/RE-UE4SS/pull/1252))
 
 ### Live View 
 Added search filter: `IncludeClassNames`. ([UE4SS #472](https://github.com/UE4SS-RE/RE-UE4SS/pull/472)) - Buckminsterfullerene
@@ -107,6 +115,10 @@ Added individual mod restart/uninstall/start functionality to Lua Debugger ([UE4
 ### UHT Dumper
 
 Added support for generating `FUtf8String` and `FAnsiString` properties in UHT-compatible headers ([UE4SS #1015](https://github.com/UE4SS-RE/RE-UE4SS/pull/1015))
+
+### Static Mesh Dumper
+
+Fixed Static Mesh Dumper crashing on material interfaces in UE 5.6 and above due to FStaticMaterial layout changes. - Okaetsu
 
 ### Lua API
 
@@ -201,6 +213,8 @@ Added custom module searcher with UTF-8 path support for Lua `require()` ([UE4SS
 - Fixed global Lua `print` function to properly handle UTF-8 string conversion
 
 Added support for `UScriptStruct` when using `RegisterCustomProprety` ([UE4SS #1036](https://github.com/UE4SS-RE/RE-UE4SS/pull/1036))
+
+Added support for handling structs as userdata (Fixed `StructData as userdata is not yet implemented`). ([UE4SS #1169](https://github.com/UE4SS-RE/RE-UE4SS/pull/1169)) - Corporalwill123
 
 #### Types.lua [PR #650](https://github.com/UE4SS-RE/RE-UE4SS/pull/650) 
 - Added `NAME_None` definition 
@@ -315,6 +329,8 @@ The execution of the game is now paused durin the first AOB scan, and then resum
 
 Removed the FText constructor AOB, replaced it with more consistent non-AOB method of constructing FText instances ([UE4SS #1139](https://github.com/UE4SS-RE/RE-UE4SS/pull/1139))
 
+Made the scan for FName::ToString optional. ([UE4SS #1175](https://github.com/UE4SS-RE/RE-UE4SS/pull/1175) - [UEPseudo 169](https://github.com/Re-UE4SS/UEPseudo/pull/169))
+
 ### Live View 
 Fixed the majority of the lag ([UE4SS #512](https://github.com/UE4SS-RE/RE-UE4SS/pull/512)) 
 
@@ -345,6 +361,8 @@ Improved performance of script hooks created with `RegisterHook`, and
 **BREAKING:** `AActor:GetWorld()` and `AActor:GetLevel()` functions are now returning an invalid `UObject` instead of `nil`. ([UE4SS #810](https://github.com/UE4SS-RE/RE-UE4SS/pull/810))
 
 Types with `get` or `Get` functions now have both variants. ([UE4SS #877](https://github.com/UE4SS-RE/RE-UE4SS/pull/877))
+
+The `NotifyOnNewObject` function now works even if the supplied class hasn't yet been loaded. ([UE4SS #1134](https://github.com/UE4SS-RE/RE-UE4SS/pull/1134))
 
 Improved error messages when improperly indexing into `LocalUnrealParam`, and `RemoteUnrealParam` without first calling `Get`. ([UE4SS #1154](https://github.com/UE4SS-RE/RE-UE4SS/pull/1154))
 
@@ -396,6 +414,10 @@ Fixed `attempt to index a nil value (global 'NewController')` error in `SplitScr
 
 Fixed the GUI not closing properly with CTRL + O when OpenGL is enabled in
 `UE4SS-settings.ini`. ([UE4SS #780](https://github.com/UE4SS-RE/RE-UE4SS/pull/780))
+
+Fixed PalServer crashing when debug console is enabled in `UE4SS-settings.ini` ([UE4SS #1160](https://github.com/UE4SS-RE/RE-UE4SS/pull/1160)) - Okaetsu
+
+Fixed PalServer console having broken text when running under Proton/Wine ([UE4SS #1160](https://github.com/UE4SS-RE/RE-UE4SS/pull/1160)) - Okaetsu
 
 ### Live View 
 Fixed the "Write to file" checkbox not working for functions in the `Watches` tab ([UE4SS #419](https://github.com/UE4SS-RE/RE-UE4SS/pull/419)) 
@@ -474,6 +496,10 @@ Fixed UEHelpers sometimes causing a runtime error. ([UE4SS #987](https://github.
 
 Fixed callbacks only working for the first registrant of several hooks. ([UE4SS #1143](https://github.com/UE4SS-RE/RE-UE4SS/pull/1143)
 
+Fixed callbacks being executed in the wrong thread. ([UE4SS #1170](https://github.com/UE4SS-RE/RE-UE4SS/pull/1170)
+
+Fixed UFunction and UClass properly inheriting from UStruct in Lua. ([UE4SS #1158](https://github.com/UE4SS-RE/RE-UE4SS/pull/1158)) - Corporalwill123
+
 ### C++ API 
 Fixed a crash caused by a race condition enabled by C++ mods using `UE4SS_ENABLE_IMGUI` in their constructor ([UE4SS #481](https://github.com/UE4SS-RE/RE-UE4SS/pull/481)) 
 
@@ -521,6 +547,11 @@ ControllingModsTxt =
 ; Valid values (case-insensitive): Anything from Mods/Keybinds/Scripts/main.lua
 ; Default: R
 HotReloadKey = R
+
+; The default method for converting FName to string.
+; Valid values (case-insensitive): Scan, Conv_NameToString
+; Default: Scan
+DefaultFNameToStringMethod = Scan
 
 [EngineVersionOverride]
 ; True if the game is built as Debug, Development, or Test.

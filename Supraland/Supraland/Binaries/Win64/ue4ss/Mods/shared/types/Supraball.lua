@@ -3,7 +3,7 @@
 ---@class ASupraball_C : AActor
 ---@field UberGraphFrame FPointerToUberGraphFrame
 ---@field Sphere2 USphereComponent
----@field trail UParticleSystemComponent
+---@field Trail UParticleSystemComponent
 ---@field Sphere USphereComponent
 ---@field StaticMesh UStaticMeshComponent
 ---@field DefaultSceneRoot USceneComponent

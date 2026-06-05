@@ -242,9 +242,13 @@ local function SetPlayerProperty(name, stringValue)
 end
 
 RegisterConsoleCommandHandler("poke", function(FullCommand, Parameters, Ar)
-    ---@type string
-    local name = Parameters[1]
-    name = name:gsub("_", " ")
+    local name = nil
+    if #Parameters > 0 then
+        ---@type string
+        name = Parameters[1]
+        name = name:gsub("_", " ")        
+    end
+
 
     if not name then
         local res = GetPlayerProperties()

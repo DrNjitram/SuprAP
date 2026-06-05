@@ -3,8 +3,8 @@
 ---@class IEnemyInterface_C : IInterface
 local IEnemyInterface_C = {}
 
----@param Rightfoot boolean
-function IEnemyInterface_C:FootSteps(Rightfoot) end
+---@param rightfoot boolean
+function IEnemyInterface_C:FootSteps(rightfoot) end
 IEnemyInterface_C['Healthbar Update'] = function(self, ) end
 IEnemyInterface_C['Healthbar Hide'] = function(self, ) end
 IEnemyInterface_C['Healthbar Show'] = function(self, ) end

@@ -1,4 +1,5 @@
 KismetDebuggerMod : 1
+EventViewerMod : 1
 CheatManagerEnablerMod : 1
 ActorDumperMod : 0
 ConsoleCommandsMod : 1

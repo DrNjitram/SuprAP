@@ -4,7 +4,7 @@
 ---@field UberGraphFrame FPointerToUberGraphFrame
 ---@field AnimOut UWidgetAnimation
 ---@field AnimIn UWidgetAnimation
----@field Textbox UMultiLineEditableTextBox
+---@field TextBox UMultiLineEditableTextBox
 local UUpgradeName_C = {}
 
 function UUpgradeName_C:AnimationIN() end

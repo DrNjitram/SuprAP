@@ -82,7 +82,7 @@ local function createTextWidget(text, alignment)
     textWidget = canvas
     textControl = textBlock
 
-    print("added text", textWidget and textWidget:IsValid())
+    print("added text " .. tostring(textWidget and textWidget:IsValid()) .. "\n")
 end
 
 
@@ -114,7 +114,7 @@ function ToggleText()
 end
 
 function AddOrToggleText(visibility)
-    if not textWidget or not textWidget:IsValid() then
+    if InGame and (not textWidget or not textWidget:IsValid()) then
         AddText()
     else
         setTextVisibility(visibility)

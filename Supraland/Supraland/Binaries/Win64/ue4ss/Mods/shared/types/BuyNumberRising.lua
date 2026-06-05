@@ -18,7 +18,7 @@
 ---@field Taken boolean
 ---@field Tag TArray<FName>
 ---@field Widget AWeirdLanguageShower_C
----@field silent boolean
+---@field Silent boolean
 local ABuyNumberRising_C = {}
 
 function ABuyNumberRising_C:Timeline_0__FinishedFunc() end

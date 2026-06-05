@@ -13,7 +13,7 @@
 ---@field DefaultSceneRoot USceneComponent
 ---@field grow_NewTrack_0_E158885B4599C7B147A80889F18CC31A float
 ---@field grow__Direction_E158885B4599C7B147A80889F18CC31A ETimelineDirection::Type
----@field grow UTimelineComponent
+---@field Grow UTimelineComponent
 ---@field Timeline_1_NewTrack_0_0AA31C454BFA7C20CD5C35BBD351C9D4 float
 ---@field Timeline_1__Direction_0AA31C454BFA7C20CD5C35BBD351C9D4 ETimelineDirection::Type
 ---@field Timeline_1 UTimelineComponent

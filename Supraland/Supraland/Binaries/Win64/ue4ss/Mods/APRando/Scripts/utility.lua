@@ -66,18 +66,29 @@ end
 function SkipIntroMovie()
     print("Skipping Intro\n")
     local succ, err = pcall(function (...)
+        
         ---@type ULevelSequencePlayer
-        local IntroPlayer = FindFirstOf("LevelSequencePlayer")
+        local IntroPlayer = StaticFindObject("/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.Intro.AnimationPlayer")
         IntroPlayer.DurationFrames = 1
-        ---@type AFirstPersonController_C
-        local FPCtrl = FindFirstOf("FirstPersonController_C")
-        ExecuteWithDelay(1000, function ()
+        
+        
+        ExecuteInGameThreadWithDelay(1000, function ()
+            ---@type AFirstPersonController_C
+            --local FPCtrl = FindFirstOf("FirstPersonController_C")
+            local FPCtrl = PlayerController()
+            print("Enable input\n")
             FPCtrl:EnablePlayerInputActions()
+            
             FPCtrl.MayMove = true
+            --AddOrToggleText(5)
+
+            
+            --UpdateText()
         end)
     end)
     if not succ then
         print("Failed to Skip Intro\n")
+        print(err)
     end
 end
 
@@ -185,7 +196,23 @@ RegisterKeyBind(Key.F6, function ()
     end
 )
 
+function tableContains(table, value)
+    for i = 1, #table do
+        if (table[i] == value) then
+            return true
+        end
+    end
+    return false
+end
 
+function Kill()
+    ---@type AFirstPersonCharacter_C
+    local player = FindFirstOf("FirstPersonCharacter_C")
+    player.Health = 0
+    player.IsDead = true
+    
+
+end
 
 
 return util

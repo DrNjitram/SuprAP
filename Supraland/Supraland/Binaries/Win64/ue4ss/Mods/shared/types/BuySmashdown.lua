@@ -2,10 +2,10 @@
 
 ---@class ABuySmashdown_C : AActor
 ---@field UberGraphFrame FPointerToUberGraphFrame
----@field shoe2 UStaticMeshComponent
+---@field Shoe2 UStaticMeshComponent
 ---@field Name UTextRenderComponent
 ---@field CostText UTextRenderComponent
----@field shoe1 UStaticMeshComponent
+---@field Shoe1 UStaticMeshComponent
 ---@field DefaultSceneRoot USceneComponent
 ---@field Timeline_1_Move_543FB7D5442EBF1C089561AF31FAAA5A float
 ---@field Timeline_1__Direction_543FB7D5442EBF1C089561AF31FAAA5A ETimelineDirection::Type

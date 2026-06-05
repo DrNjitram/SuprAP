@@ -84,7 +84,7 @@
 ---@field FogDensityTemp float
 ---@field JumppadCheckpoint boolean
 ---@field Player AFirstPersonCharacter_C
----@field Tutorialdone boolean
+---@field TutorialDone boolean
 ---@field BlueGuyTalk int32
 ---@field ['Don\'t Respawn Enemies before'] float
 ---@field GoldenbarrelsRemaining TArray<ABarrelClosed_Blueprint_C>

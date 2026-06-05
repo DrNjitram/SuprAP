@@ -2,7 +2,7 @@
 
 ---@class UCharacterTextHUD_C : UUserWidget
 ---@field UberGraphFrame FPointerToUberGraphFrame
----@field grow UWidgetAnimation
+---@field Grow UWidgetAnimation
 ---@field Arrow1_Back UCharacterTextArrow_C
 ---@field Arrow1_Front UCharacterTextArrow_C
 ---@field ArrowOld UImage
@@ -82,8 +82,8 @@ function UCharacterTextHUD_C:UpdateMagnificent(ScreenLocation) end
 function UCharacterTextHUD_C:CosmeticClampTextBoxToScreen(Value, bClamped) end
 ---@param IsDesignTime boolean
 function UCharacterTextHUD_C:PreConstruct(IsDesignTime) end
-function UCharacterTextHUD_C:hide() end
-function UCharacterTextHUD_C:show() end
+function UCharacterTextHUD_C:Hide() end
+function UCharacterTextHUD_C:Show() end
 ---@param Text FText
 ---@param TalkerActor AActor
 ---@param TalkerSkeletalMesh USkeletalMeshComponent

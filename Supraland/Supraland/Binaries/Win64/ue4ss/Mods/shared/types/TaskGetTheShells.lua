@@ -17,7 +17,7 @@
 ---@field Player AFirstPersonCharacter_C
 ---@field Region int32
 ---@field RemainingShells TArray<AActor>
----@field ['Activate these Actors'] TArray<AActor>
+---@field ['Activate These Actors'] TArray<AActor>
 local ATaskGetTheShells_C = {}
 
 ---@param IsActive boolean

@@ -15,7 +15,7 @@
 ---@field WaveRadius USphereComponent
 ---@field FrontOfGuy USceneComponent
 ---@field PersonalSpace USphereComponent
----@field HatMesh UStaticMeshComponent
+---@field hatMesh UStaticMeshComponent
 ---@field Supraball_Character USkeletalMeshComponent
 ---@field Timeline_PointingAlpha_Alpha_296529064883822DF23D2C90FF3A834A float
 ---@field Timeline_PointingAlpha__Direction_296529064883822DF23D2C90FF3A834A ETimelineDirection::Type
@@ -130,7 +130,7 @@
 ---@field ['Max Head Yaw'] float
 ---@field IsPointing boolean
 ---@field IsThreatening boolean
----@field dead boolean
+---@field Dead boolean
 ---@field ['Shows player something on Talk?'] boolean
 ---@field ['Show this'] AActor
 ---@field Confirm FRedGuy_CConfirm
@@ -580,8 +580,8 @@ function ARedGuy_C:DoHeadBob() end
 function ARedGuy_C:StopCurrentBlink() end
 ---@param bNewBlinkingAllowed boolean
 function ARedGuy_C:SetBlinkingAllowed(bNewBlinkingAllowed) end
----@param hide boolean
-function ARedGuy_C:ShowHideAttachthings(hide) end
+---@param Hide boolean
+function ARedGuy_C:ShowHideAttachthings(Hide) end
 ---@param bNewBlinkWaiting boolean
 ---@param Delay float
 function ARedGuy_C:SetBlinkWaiting(bNewBlinkWaiting, Delay) end

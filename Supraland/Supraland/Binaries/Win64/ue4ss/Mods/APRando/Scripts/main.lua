@@ -14,8 +14,9 @@ require("GetHit")
 require("DeployItems")
 print("Loaded additional functions\n")
 
-local Player = require("player")
+Player = require("player")
 
+local KismethMath = UEHelpers.GetKismetMathLibrary()
 local ItemFunc = require("item_functions")
 --require "lua-apclientpp"
 
@@ -28,6 +29,7 @@ local BASE_ID = 678000
 
 InGame = false
 
+Player.SetupHooks()
 
 RegisterHook("/Script/Engine.PlayerController:ClientRestart", function()
     print("Client Restarting\n")
@@ -36,9 +38,64 @@ RegisterHook("/Script/Engine.PlayerController:ClientRestart", function()
         local player = FindFirstOf("FirstPersonCharacter_C")
         if player ~= nil and player:IsValid() then
             Player.Player = player
-            Player.SetupHooks()
+            --Player.SetupHooks()
             Player.Player:ShowHudNow()
             print("PLAYER LOADED IN LUA\n")
+
+            if InGame then
+                if AP_server ~= nil then
+                    
+                    ExecuteInGameThreadWithDelay(3000, function ()
+                        print("Already Connected. Syncing\n")
+                        
+                        AP_server:Sync()
+                        
+                        AddOrToggleText(5)
+                        UpdateText()
+                        SaveSave()
+                    end)
+                    
+
+                elseif AP_server == nil then
+                    print("Attempting Auto Connect\n")
+
+                    -- ---@type AFirstPersonCharacter_C
+                    -- local player = FindFirstOf("FirstPersonCharacter_C")
+                    -- Player.Player = player
+                    --if player ~= nil and player:IsValid() then
+                    ExecuteInGameThreadWithDelay(3000, function ()
+                        
+                            print("Done Loading\n")
+
+
+                            --UpdateText()
+                            if AP_save_data ~= nil and AP_save_data["server"] ~= nil and AP_save_data["slot"] ~= nil then
+                                print("Found server data\n")
+                                
+                                if AP_server == nil then
+                                    ConnectAndPoll()
+                                    Last_msg[1] = "Connecting"
+                                    UpdateText()
+                                end
+
+                                
+                                -- ExecuteInGameThreadWithDelay(5000, function ()
+                                --     if not FirstReplaced then
+                                --         PopulateItems()
+                                --     end
+                                -- end)
+                                
+                            end
+
+                            
+                            
+                    end)
+                        
+                    --end
+                end
+            end    
+
+
         else
             print("PLAYER FAILED TO LOAD IN LUA\n")
         end 
@@ -141,7 +198,7 @@ function GetSaveSlot()
 end
 
 function Connect(FullCommand, Parameters, OutputDevice)
-    print(string.format("Full command: %s\n", FullCommand))
+    print(string.format("Full connect command: %s\n", FullCommand))
     print(string.format("Number of parameters: %i\n", #Parameters))
     items_owned = {}
     
@@ -156,13 +213,14 @@ function Connect(FullCommand, Parameters, OutputDevice)
         --ConnectAP(Parameters[1], Parameters[2], "")
         AP_save_data["server"] = Parameters[1]
         AP_save_data["slot"] = Parameters[2]
-        if #Parameters >2 then
+        if #Parameters > 2 then
             AP_save_data["password"] = Parameters[3]
         else
             AP_save_data["password"] = ""
         end
-        
+        AP_server = nil
         ConnectAndPoll()
+        
         -- while AP_server do
         --     ExecuteInGameThread(function ()
         --           AP_server:poll()  
@@ -174,65 +232,79 @@ function Connect(FullCommand, Parameters, OutputDevice)
     return true
 end
 
-
+function Say(FullCommand, Parameters, OutputDevice)
+    local res = AP_server:Say(table.concat(Parameters, " "))
+    if not res then
+        print("Failed to send message")
+    end
+    return true
+end
 
 local function HitObject()
-
-    ---@type AAPLogo_C
-    --local Actor = GetObjectName(250.0)
-    local Actor = Player.Player.LookedAt_TraceActor
-    if Actor == nil or not Actor:IsValid() then
-        print("No Hit\n")
-        return
-    end
-    print(APUtil.GetObjectName(Actor))
-    if Actor ~= nil and Actor:IsValid() and HasSubstring(APUtil.GetObjectName(Actor), {"APLogo"}) then
-        print(string.format("HitActor: %s\n", Actor:GetFullName()))
-        if Actor:GetPropertyValue("Cost") and type(Actor.Cost) == "number" then
-            print("Item has Cost of " .. tostring(Actor.Cost) .. "\n")
-            if Actor:GetPropertyValue("Contains") and type(Actor.Contains) == "number" then
-                print("Contains " .. tostring(Actor.Contains) .. "\n")
-            end
-            -- if Player.Player ~= nil then
-            --     print("Player has " .. tostring(Player.Player.Coins) .. " Coins")
-            -- end
-            
-            if Actor.Cost == nil or Actor.Cost == 0 or Actor.Cost <= Player.Player.Coins then
-                if Actor.Cost ~= nil and Actor.Cost > 0 then
-                    Player.Player.Coins = Player.Player.Coins - Actor.Cost
-                end
-                print("Buying item\n")
-                local location = Actor.Contains
-                if APUtil.locations_checked[location] ~= 1 then
-                    Last_checked = tostring(location)
-                    Last_sent = names_scouted[location]
-                    APUtil.locations_checked[location] = 1
-
-                    if AP_server then
-                        AP_server:LocationChecks({location})
-                        AddProgressPoint()
-                        --ap:LocationScouts({location})
-                    end
-                    print("Updating Text\n")
-                    UpdateText()
-                else
-                    print("Already owns item, refunding\n")
-                    if Actor.Cost ~= nil and Actor.Cost > 0 then
-                        Player.Player.Coins = Player.Player.Coins + Actor.Cost
-                    end
-                end
-                
-
-                Actor:K2_DestroyActor()
-            else
-                Actor:CannotAfford()
-                print("Cannot afford\n")
-            end
-            --print("Player has " .. tostring(Player.Player.Coins) .. " Coins")
+    local succes, err = pcall(function (...)
+        ---@type AAPLogo_C
+        --local Actor = GetObjectName(250.0)
+        if Player ~= true or Player.Player:IsValid() == false then
+            print("Player was not valid?\n")
+            local player = FindFirstOf("FirstPersonCharacter_C")
+            Player.Player = player
         end
-    end
+        local Actor = Player.Player.LookedAt_TraceActor
+        if Actor == nil or not Actor:IsValid() then
+            print("No Hit\n")
+            return
+        end
+        print(APUtil.GetObjectName(Actor) .. "\n")
+        if Actor ~= nil and Actor:IsValid() and HasSubstring(APUtil.GetObjectName(Actor), {"APLogo"}) then
+            print(string.format("HitActor: %s\n", Actor:GetFullName()))
+            if Actor:GetPropertyValue("Cost") and type(Actor.Cost) == "number" then
+                print("Item has Cost of " .. tostring(Actor.Cost) .. "\n")
+                if Actor:GetPropertyValue("Contains") and type(Actor.Contains) == "number" then
+                    print("Contains " .. tostring(Actor.Contains) .. "\n")
+                end
+                -- if Player.Player ~= nil then
+                --     print("Player has " .. tostring(Player.Player.Coins) .. " Coins")
+                -- end
+                
+                if Actor.Cost == nil or Actor.Cost == 0 or Actor.Cost <= Player.Player.Coins then
+                    if Actor.Cost ~= nil and Actor.Cost > 0 then
+                        Player.Player.Coins = Player.Player.Coins - Actor.Cost
+                    end
+                    print("Buying item\n")
+                    local location = Actor.Contains
+                    if APUtil.locations_checked[location] ~= 1 then
+                        Last_checked = tostring(location)
+                        Last_sent = names_scouted[location]
+                        APUtil.locations_checked[location] = 1
 
-    return
+                        if AP_server then
+                            AP_server:LocationChecks({location})
+                            AddProgressPoint()
+                            --ap:LocationScouts({location})
+                        end
+                        print("Updating Text\n")
+                        UpdateText()
+                    else
+                        print("Already owns item, refunding\n")
+                        if Actor.Cost ~= nil and Actor.Cost > 0 then
+                            Player.Player.Coins = Player.Player.Coins + Actor.Cost
+                        end
+                    end
+                    
+
+                    Actor:K2_DestroyActor()
+                else
+                    Actor:CannotAfford()
+                    print("Cannot afford\n")
+                end
+                --print("Player has " .. tostring(Player.Player.Coins) .. " Coins")
+            end
+        end    
+    end)
+    if not succes then
+        print("Failed to buy item\n")
+        print(err)
+    end
 end
 
 function AddProgressPoint()
@@ -244,14 +316,65 @@ end
 --     print(Player.Player.SaveSlot:ToString())
 -- end)
 
+function FindNearby(FullCommand, Parameters, OutputDevice)
+    local class = Parameters[1]
+    local range = 1000.0
+    if #Parameters>1 then
+        range = tonumber(Parameters[2])
+    end
+    print("Finding close items named " .. class .. " within " .. tostring(range) .. " units\n")
+    local close_items = {}
+    local pos = Player.Player:GetTransform().Translation
+    print(string.format("from %0.1f %0.1f %0.1f\n", pos.X, pos.Y, pos.Z))
+    local succes, err = pcall(function (...)
+        local objects = FindAllOf(class)
+
+        if #objects == 0 then
+            print("Could not find any classes\n")
+            return true
+        end
+        ---@type AActor
+        for _, obj in ipairs(objects) do
+            if obj.GetTransform == nil then
+                print("Class does not have a transform component\n")
+                return true
+            end
+            local other_pos = obj:GetTransform().Translation
+            local dist = KismethMath:Vector_Distance(pos, other_pos)
+
+            if dist < range then
+                print( string.format("%0.1f", dist) .. ": ".. APUtil.GetObjectName(obj) .. "\n")
+            end
+        end
+    end)
+    if not succes then
+        print(err)
+    end
+
+    return true
+end
 
 
-RegisterKeyBind(Key.E, function () ExecuteInGameThread(HitObject) end)
+RegisterKeyBind(Key.E, function ()
+    local succes, err, _ = pcall(function (...)
+        ExecuteInGameThread(HitObject) 
+    end)
+    if succes ~= true then
+        print(err)
+    end
+end)
+
 RegisterConsoleCommandHandler("disconnect", disconnect)
 RegisterConsoleCommandHandler("test", Test)
 RegisterConsoleCommandHandler("connect", Connect)
 RegisterConsoleCommandHandler("send", Send)
 RegisterConsoleCommandHandler("scout", Scout)
 RegisterConsoleCommandHandler("msg", UpdateMessage)
-
-
+RegisterConsoleCommandHandler("say", Say)
+RegisterConsoleCommandHandler("FindNearby", FindNearby)
+RegisterConsoleCommandHandler("sync", function (Cmd, CommandParts, Ar)
+    if AP_server ~= nil then
+        AP_server:Sync()
+    end
+    return true
+end)

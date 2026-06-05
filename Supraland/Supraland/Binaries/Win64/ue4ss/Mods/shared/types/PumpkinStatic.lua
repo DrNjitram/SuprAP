@@ -6,7 +6,7 @@
 ---@field Timeline_0__Direction_2E71D66B47933ED42DAF09A5476CE571 ETimelineDirection::Type
 ---@field Timeline_0 UTimelineComponent
 ---@field Actorstotrigger TArray<AActor>
----@field tempscale FVector
+---@field TempScale FVector
 local APumpkinStatic_C = {}
 
 function APumpkinStatic_C:Timeline_0__FinishedFunc() end

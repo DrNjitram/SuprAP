@@ -28,7 +28,7 @@
 ---@field MeshSkin3 UMaterialInstanceDynamic
 ---@field GettingHurt boolean
 ---@field IsSensingPlayer boolean
----@field IsDead boolean
+---@field isDead boolean
 ---@field InitialHealth float
 ---@field TraceComplex boolean
 ---@field ['Region#'] int32
@@ -87,8 +87,8 @@ function AEnemy4_C:OpenBossSpawner() end
 AEnemy4_C['Healthbar Show'] = function(self, ) end
 AEnemy4_C['Healthbar Hide'] = function(self, ) end
 AEnemy4_C['Healthbar Update'] = function(self, ) end
----@param Rightfoot boolean
-function AEnemy4_C:FootSteps(Rightfoot) end
+---@param rightfoot boolean
+function AEnemy4_C:FootSteps(rightfoot) end
 function AEnemy4_C:ReceiveBeginPlay() end
 ---@param DeltaSeconds float
 function AEnemy4_C:ReceiveTick(DeltaSeconds) end

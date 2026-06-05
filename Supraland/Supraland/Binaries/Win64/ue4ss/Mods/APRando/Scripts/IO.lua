@@ -19,7 +19,7 @@ end
 
 SaveID = {Save1 = 1, Save2 = 2, Save3 = 3, Save4 = 4, Save5 = 5}
 
--- save to the game save directory, e.g. %LOCALAPPDATA%/Supraworld/SpawnThings.txt
+-- save to the game save directory, e.g. %LOCALAPPDATA%/Supraland
 
 local function getSavePath(slot)
     local gameName = UEHelpers.GetKismetSystemLibrary():GetGameName():ToString()
@@ -50,6 +50,9 @@ local function parseLine(p1, p2)
         end
         if prefix:sub(1,1) == "i" then
             game_items_recieved[name] = value
+        end
+        if prefix:sub(1,1) == "f" then
+            item_flags[name] = value
         end
     end
     
@@ -83,8 +86,8 @@ local function loadActions(slot)
                 split_line[2] = ""
             end
             AP_save_data[split_line[1]] = split_line[2]
-            print(split_line[1] .. ": " .. split_line[2].. "\n")
-            local act = parseLine(split_line[1], split_line[2])    
+            --print(split_line[1] .. ": " .. split_line[2].. "\n")
+            --local act = parseLine(split_line[1], split_line[2])
         end
 
     end
@@ -106,6 +109,31 @@ function LoadSave(slot)
     loadActions(slot)
 end
 
+function CheckSlotAP(slot)
+local savePath = getSavePath(slot)
+    --print("Loading from", savePath.. "\n")
+
+    local f = io.open(savePath, "r")
+    if not f then return false end
+
+    for line in f:lines() do
+        if line:len() > 0 then
+            local split_line = split(line, "\t")
+            if split_line[2] == nil then
+                split_line[2] = ""
+            end
+            if split_line[1] == "server" then
+                f:close()
+                return true
+            end
+            
+        end
+
+    end
+    f:close()
+    return false
+end
+
 function SaveSave(slot)
     if slot == nil then
         if Last_Slot == -1 then
@@ -119,6 +147,9 @@ function SaveSave(slot)
     end
     for k,v in pairs(names_scouted) do
         AP_save_data["n_".. tostring(k)] = base64.encode(v, true)
+    end
+    for k,v in pairs(item_flags) do
+        AP_save_data["f_".. tostring(k)] = v
     end
     saveActions(slot)
 end

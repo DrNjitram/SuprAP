@@ -6,7 +6,7 @@
 ---@field TextRender UTextRenderComponent
 ---@field Box UBoxComponent
 ---@field DefaultSceneRoot USceneComponent
----@field Retriggerdelay float
+---@field RetriggerDelay float
 ---@field ['Save?'] boolean
 ---@field SetPlayerAllowSaving boolean
 ---@field Checkpointtriggered FSetLastCheckpoint_CCheckpointtriggered

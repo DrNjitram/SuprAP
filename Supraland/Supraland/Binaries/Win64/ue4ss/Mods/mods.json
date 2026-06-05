@@ -42,5 +42,9 @@
     {
         "mod_name": "KismetDebuggerMod",
         "mod_enabled": true
+    },
+    {
+        "mod_name": "EventViewerMod",
+        "mod_enabled": true
     }
 ]

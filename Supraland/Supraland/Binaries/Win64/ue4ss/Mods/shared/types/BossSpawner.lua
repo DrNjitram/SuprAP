@@ -49,8 +49,8 @@ function ABossSpawner_C:DestroyHealthBarOfBoss() end
 ABossSpawner_C['Healthbar Show'] = function(self, ) end
 ABossSpawner_C['Healthbar Hide'] = function(self, ) end
 ABossSpawner_C['Healthbar Update'] = function(self, ) end
----@param Rightfoot boolean
-function ABossSpawner_C:FootSteps(Rightfoot) end
+---@param rightfoot boolean
+function ABossSpawner_C:FootSteps(rightfoot) end
 ---@param SaveGame USaveGame
 ---@param SavingObject USaving_C
 function ABossSpawner_C:Save(SaveGame, SavingObject) end

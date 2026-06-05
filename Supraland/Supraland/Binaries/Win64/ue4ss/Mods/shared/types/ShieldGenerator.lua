@@ -39,8 +39,8 @@ function AShieldGenerator_C:Load() end
 function AShieldGenerator_C:Save(SaveGame, SavingObject) end
 AShieldGenerator_C['Check Overlapping'] = function(self, ) end
 ---@param On_ boolean
----@param silent boolean
-AShieldGenerator_C['Set State'] = function(self, On_, silent) end
+---@param Silent boolean
+AShieldGenerator_C['Set State'] = function(self, On_, Silent) end
 function AShieldGenerator_C:Toggle() end
 ---@param OverlappedComponent UPrimitiveComponent
 ---@param OtherActor AActor

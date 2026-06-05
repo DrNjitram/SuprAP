@@ -1,0 +1,12 @@
+[?] Fix Red moons and Green Moons given at start (one last red slot)
+[] Fix Green moons from chest
+[?] Check Gun and supra sword spawn
+[] Check AP logos on save menu
+[] check other native saved items
+[] shells
+[] Automate Item application
+[] Remove teleport walls
+[] Shop items are not kept through restarts
+[?] Progresspoints sync
+[] Correct logo type (adv, normal, waste) when loading
+[] Theft (RedGuy_C_2147478009)

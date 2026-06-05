@@ -5,7 +5,7 @@
 ---@field Brick UStaticMeshComponent
 ---@field HitsToBreak int32
 ---@field HitsTaken int32
----@field CustomColor FColor
+---@field Customcolor FColor
 ---@field ['Sandstone?'] boolean
 ---@field BrickBroken FMinecraftBrick_CBrickBroken
 ---@field bObsidian boolean

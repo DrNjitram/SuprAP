@@ -10,11 +10,11 @@
 ---@field IsLava boolean
 ---@field DestroyTranslocator boolean
 ---@field ['Open on playerdead'] TArray<AActor>
----@field DestroyForceCube boolean
+---@field destroyforcecube boolean
 ---@field IsOn boolean
 ---@field Particles TArray<AEmitter>
 ---@field Audio TArray<AAmbientSound>
----@field TriggerOnceOnly boolean
+---@field triggeronceonly boolean
 ---@field ['Don\'t Color Transball'] boolean
 local AKillvolume_C = {}
 

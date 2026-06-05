@@ -17,7 +17,7 @@
 ---@field WasSpawned boolean
 ---@field ['Visible?'] boolean
 ---@field OpenSpawnDelay float
----@field tempscale FVector
+---@field TempScale FVector
 ---@field grab FScrap_CGrab
 ---@field RedguyCanPickup boolean
 ---@field RedguyPickeditUp boolean
@@ -53,8 +53,8 @@ function AScrap_C:UseInteraction() end
 ---@param Float float
 function AScrap_C:Open(Bool, Int, Float) end
 function AScrap_C:Activate() end
-function AScrap_C:hide() end
-function AScrap_C:show() end
+function AScrap_C:Hide() end
+function AScrap_C:Show() end
 function AScrap_C:ShowGrow() end
 ---@param OverlappedComponent UPrimitiveComponent
 ---@param OtherActor AActor

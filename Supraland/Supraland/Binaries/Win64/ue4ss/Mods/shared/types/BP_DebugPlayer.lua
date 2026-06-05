@@ -71,7 +71,7 @@
 ---@field bIntroDone boolean
 ---@field bEnding boolean
 ---@field HasMap boolean
----@field Sword2 boolean
+---@field sword2 boolean
 ---@field sword3 boolean
 local ABP_DebugPlayer_C = {}
 

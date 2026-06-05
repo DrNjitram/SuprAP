@@ -1,5 +1,6 @@
 local Player = require("player")
 
+
 local funcs = {}
 
 
@@ -51,26 +52,31 @@ end
 
 function funcs.Health1()
     Player.Player.MaxHealth = Player.Player.MaxHealth + 1
+    Player.Player.Health = Player.Player.Health + 1
     return true
 end
 
 function funcs.Health2()
     Player.Player.MaxHealth = Player.Player.MaxHealth + 2
+    Player.Player.Health = Player.Player.Health + 2
     return true
 end
 
 function funcs.Health5()
     Player.Player.MaxHealth = Player.Player.MaxHealth + 5
+    Player.Player.Health = Player.Player.Health + 5
     return true
 end
 
 function funcs.Health10()
     Player.Player.MaxHealth = Player.Player.MaxHealth + 10
+    Player.Player.Health = Player.Player.Health + 10
     return true
 end
 
 function funcs.Health15()
     Player.Player.MaxHealth = Player.Player.MaxHealth + 15
+    Player.Player.Health = Player.Player.Health + 15
     return true
 end
 
@@ -172,6 +178,7 @@ end
 
 function funcs.DoubleHealth()
     Player.Player.DoubleHealth = true
+    Player.Player.Health = Player.Player.Health * 2
     return true
 end
 
@@ -219,10 +226,10 @@ end
 function funcs.ProgSpeedJump(count)
     if count == 1 then
         Player.Player.SkillWalkSpeedx2 = true
-    elseif count == 2 then
-        Player.Player.SkillWalkSpeedx15 = true
-    elseif count == 3 then
+    elseif count == 2 then 
         Player.Player.SkillMultijump1 = true
+    elseif count == 3 then
+        Player.Player.SkillWalkSpeedx15 = true
     elseif count == 4 then
         Player.Player.SkillMultijump2 = true
     end
@@ -266,7 +273,7 @@ function funcs.ProgTrans(count)
     if count == 1 then
         Player.Player.SkillHasTranslocator = true
     elseif count == 2 then
-        print("Shotforce not available")
+        Player.Player.TranslocatorThrowForce = Player.Player.TranslocatorThrowForce*2
     end
     return true
 end
@@ -410,6 +417,22 @@ end
 
 function funcs.Shell()
     Player.Player.Shells = Player.Player.Shells + 1
+    local succes, err = pcall(function (...)
+        ---@class ATaskGetTheShells_C
+        local task = StaticFindObject("/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.TaskGetTheShells_218")
+        task.RemainingShells:Empty()
+        local remaining = 6 - Player.Player.Shells
+        local i = 1
+        while i < remaining + 1 do
+            task.RemainingShells[i] = task.TaskGiver
+            i = i + 1
+        end
+    end)
+    if not succes then
+        print("Couldnt set shells\n")
+        print(err)
+    end
+    
     return true
 end
 
