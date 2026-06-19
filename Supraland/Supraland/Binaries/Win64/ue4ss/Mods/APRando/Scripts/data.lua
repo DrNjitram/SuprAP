@@ -1,4 +1,4 @@
-Locations = {
+local Locations = {
     -- RH = 678000,
 	-- MB = 678001,
 	BP_UnlockMap_2 = 678002,
@@ -253,7 +253,7 @@ Locations = {
 	DeadHeroIndy = 678251,
 }
 
-Item_IDs = {
+local Item_IDs = {
 	["678000"] = "Map",
 	["678001"] = "Buckle",
 	["678002"] = "ChestDetector",
@@ -352,10 +352,11 @@ Item_IDs = {
 	["678095"] = "LotOfCoin30",
 	["678096"] = "LotOfCoin50",
 	["678097"] = "LotOfCoin200",
+	["678098"] = "ProgLoot"
 	}
 
 
-Blueprints = {
+local Blueprints = {
 	Map = "BP_UnlockMap_C",
 	Buckle = "BuyBelt_C",
 	ChestDetector = "BuyChestDetector_C",
@@ -437,7 +438,7 @@ Blueprints = {
 	Health10 = "_BuyHealth+10_C"
 }
 
-Progressives = {
+local Progressives = {
 	ProgSword = {"BuySword_C", "BuySword2_C"},
     ProgSpeedJump = {"BuySpeedx2_C", "BuySpeedx15_C", "BuyDoubleJump_C", "BuyTripleJump_C"},
     ProgForceBeam = {"BuyForceBeam_C", "BuyForceBeamGold_C", "BuyForceCubeBeam_C"},
@@ -446,10 +447,11 @@ Progressives = {
     ProgTrans = {"BuyTranslocator_C", "BuyTranslocatorShotForce_C"},
     ProgGraveGun = {"BuyGunHoly1_C", "BuyGunHoly2_C"},
     ProgGraveSword = {"BuySwordHoly1_C", "BuySwordHoly2_C"},
-	ProgHealthRegen = {"BuyHealthRegen_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax10_C"}
+	ProgHealthRegen = {"BuyHealthRegen_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax5_C", "BuyHealthRegenMax10_C"},
+	ProgLoot = {"BuyEnemiesLoot_C", "BuyMoreLoot_C", "BuyHeartLuck_C"}
 }
 
-Pretty_Name = {
+local Pretty_Name = {
 	RH = "Rattlehag",
 	MB = "Victory",
 	Map = "Map",
@@ -549,9 +551,10 @@ Pretty_Name = {
     LotOfCoin30 = "30 Coins",
     LotOfCoin50 = "50 Coins",
     LotOfCoin200 = "200 Coins",
+	ProgLoot = "Progressive Loot"
 }
 
-Barrels = {
+local Barrels = {
 	gunrefire = "BuyGunRefireRate50",
 	SwordDamage = "BuySwordDamage+3",
 	refill = "BuyGunRefillSpeed+66",
@@ -567,13 +570,13 @@ Barrels = {
 	--Sword = "BuySword_C"
 }
 
-Juicers = {
+local Juicers = {
 	Juicer1 = "BP_A3_StrengthQuest",
 	Juicer2 = "BP_DoubleHealthLoot",
 	Juicer3 = "_BuyHealth+10"
 }
 
-Blueville_Shop = {
+local Blueville_Shop = {
 	"BuyBelt2_2",
 	"BuyDoubleJump2",
 	"BuyTripleJump2",
@@ -581,4 +584,83 @@ Blueville_Shop = {
 	"BuyGun2_2"
 }
 
-return {L = Locations, ID = Item_IDs, P = Progressives, BP = Blueprints, PN = Pretty_Name, B=Barrels, J=Juicers, BV=Blueville_Shop}
+local Transforms = {
+	["BuyDoubleJump_786"] = {
+		Translation = {X = -14.8561, Y = -33901.1, Z = -163.892},
+		Rotation = {Pitch = 0, Yaw = 53.4375, Roll = 0},
+		Scale3D = {X = 1, Y = 1, Z = 1}
+	},
+	["BuyForceBlock_695"] = {
+		Translation = {X = 135.09, Y = -33724.1, Z = -163.892},
+		Rotation = {Pitch = 0, Yaw = 53.4375, Roll = 0},
+		Scale3D = {X = 1, Y = 1, Z = 1}
+	},
+	["BuyGunDamage+15_1234"] = {
+		Translation = {X = -23101.9, Y = -11550.9, Z = -1615.38},
+		Rotation = {Pitch = 0, Yaw = 90, Roll = 0},
+		Scale3D = {X = 1, Y = 1, Z = 1}
+	},
+	["BuySilentFeet2"] = {
+		Translation = {X = -23095.5, Y = -12392.7, Z = -1624},
+		Rotation = {Pitch = 0, Yaw = 90.1157, Roll = 0},
+		Scale3D = {X = 1, Y = 1, Z = 1}
+	},
+	["BuyGunRefireRate50_506"] = {
+		Translation = {X = -23100.4, Y = -11320.4, Z = -1618.2},
+		Rotation = {Pitch = 0, Yaw = 90, Roll = 0}, --Yaw = 53.4375
+		Scale3D = {X = 1, Y = 1, Z = 1}
+	},
+	["BuyGunSpeedx2_436"]  = {
+		Translation = {X = -23131.4, Y = -11697, Z = -1695.81},
+		Rotation = {Pitch = 0, Yaw = 90, Roll = 0},
+		Scale3D = {X = 1, Y = 1, Z = 1}
+	},
+	["BuyHealth+15_765"] = {
+		Translation = {X = 275.44, Y = -33490.2, Z = -163.892},
+		Rotation = {Pitch = 0, Yaw = 53.4375, Roll = 0},
+		Scale3D = {X = 1, Y = 1, Z = 1}
+	},
+	["BuyHealth+16_457"] = {
+		Translation = {X = -23116.9, Y = -11908.5, Z = -1668.57},
+		Rotation = {Pitch = 0, Yaw = 90, Roll = 0},
+		Scale3D = {X = 1, Y = 1, Z = 1}
+	},
+	["BuyHealthRegen2_695"] = {
+		Translation = {X = -67.002, Y = -34003.7, Z = -163.892},
+		Rotation = {Pitch = 0, Yaw = 53.4375, Roll = 0},
+		Scale3D = {X = 1, Y = 1, Z = 1}
+	},
+	["UpgradeSwordDamageX2_716"] = {
+		Translation = {X = -23106.6, Y = -12066.7, Z = -1625.89},
+		Rotation = {Pitch = 0, Yaw = 91.3032, Roll = 0},
+		Scale3D = {X = 1, Y = 1, Z = 1}
+	},
+	["BuyTripleJump_877"] = {
+		Translation = {X = 55.4377, Y = -33882.1, Z = -163.892},
+		Rotation = {Pitch = 0, Yaw = 53.4375, Roll = 0},
+		Scale3D = {X = 1, Y = 1, Z = 1}
+	},
+	["UpgradeHappiness2_2"] = {
+		Translation = {X = 115.09, Y = -33724.1, Z = -163.892},
+		Rotation = {Pitch = 0, Yaw = 53.4375, Roll = 0},
+		Scale3D = {X = 1, Y = 1, Z = 1}
+	}
+
+} --StaticFindObject("/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.APLogo_C_2147478505"):K2_GetActorLocation().X
+
+local Costs = {
+	["BuyDoubleJump_786"] = 36,
+	["BuyForceBlock_695"] = 20,
+	["BuyGunDamage+15_1234"] = 120,
+	["BuySilentFeet2"] = 40,
+	["BuyGunRefireRate50_506"] = 140,
+	["BuyGunSpeedx2_436"] = 5,
+	["BuyHealth+15_765"] = 10,
+	["BuyHealth+16_457"] = 120, --Need to check
+	["BuyHealthRegen2_695"] = 5,
+	["UpgradeSwordDamageX2_716"] = 40,
+	["BuyTripleJump_877"] = 30,
+	["UpgradeHappiness2_2"] = 1337
+}
+
+return {L = Locations, ID = Item_IDs, P = Progressives, BP = Blueprints, PN = Pretty_Name, B=Barrels, J=Juicers, BV=Blueville_Shop, T = Transforms, C = Costs}

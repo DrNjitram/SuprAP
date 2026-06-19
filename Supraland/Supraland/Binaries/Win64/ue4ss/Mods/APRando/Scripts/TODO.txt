@@ -1,12 +1,34 @@
+Crucial
+[] Reconnecting
+[?] Check checks behind bars
+[] Check loss of awesome points
 [?] Fix Red moons and Green Moons given at start (one last red slot)
 [] Fix Green moons from chest
 [?] Check Gun and supra sword spawn
-[] Check AP logos on save menu
-[] check other native saved items
-[] shells
-[] Automate Item application
-[] Remove teleport walls
 [] Shop items are not kept through restarts
 [?] Progresspoints sync
-[] Correct logo type (adv, normal, waste) when loading
 [] Theft (RedGuy_C_2147478009)
+[] Remove teleport walls (TriggerVolume) (TeleportRedville)
+- Boxcomponent
+- bHiddenInGame
+- Spherecomponent, DetectPlayerRange
+-  -13102.1 -26954.1 1367.6 check from
+- Removing all capsules teleports to 0 0 0 
+
+Important
+[?] Double Heatlth
+[?] Progressive Loot
+[] LootLuck
+[?] Armor
+[?] Regeneration
+[] check other native saved items
+
+
+Nice to have
+[] Fix Approach Mr. Miracle from back
+[v] live disable deathlink
+[] shells
+-Teleport shells downward, replace location
+[] Check AP logos on save menu
+[] Correct logo type (adv, normal, waste) when loading
+[] Automate Item application

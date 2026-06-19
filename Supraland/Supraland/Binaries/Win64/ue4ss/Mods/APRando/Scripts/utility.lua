@@ -148,7 +148,7 @@ function ReplaceActorWithLogo(toReplace, title, cost, logo_type)
         item:K2_DestroyActor()
         
         if util.ModActor ~= nil then
-            Actor = util.ModActor:SpawnActor(transform, logo_type)
+            local Actor = util.ModActor:SpawnActor(transform, logo_type)
 
             if Actor ~= nil  and Actor:IsValid() then
                 Actor.TextTop:K2_SetText(FText(title))
@@ -167,10 +167,55 @@ function ReplaceActorWithLogo(toReplace, title, cost, logo_type)
             end
 
             return Actor
+        else
+            print("Error in spawning item due to missing ModActor\n")
         end
     end
 
     return nil
+end
+
+function SpawnActorAtTransform(transform, title, name, cost, logo_type)
+    if cost == nil then
+        cost = 0
+    end
+    if logo_type == nil then
+        logo_type = 0
+    end
+    name = name:gsub("+", "_")
+
+
+    if util.ModActor == nil then
+        util.ModActor = FindFirstOf("ModActor_C")
+    end
+
+    if util.ModActor ~= nil then
+        ---@type AAPLogo_C
+        local Actor = util.ModActor:SpawnActor(transform, logo_type)
+
+        if Actor ~= nil  and Actor:IsValid() then
+            Actor.TextTop:K2_SetText(FText(title))
+            if cost ~= 0 then
+                Actor.TextBottom:K2_SetText(FText(tostring(cost) .. " Coins"))
+                Actor.Cost = cost
+            else
+                Actor.TextBottom:K2_SetText(FText(""))
+                Actor.Cost = 0
+            end
+            if data.L[name] ~= nil then
+                Actor.Contains = data.L[name]
+            else
+                error("Could not find ".. name)
+            end
+        end
+
+        return Actor
+    else
+        print("Error in spawning item due to missing ModActor\n")
+    end
+    
+
+    return nil    
 end
 
 RegisterKeyBind(Key.F6, function ()

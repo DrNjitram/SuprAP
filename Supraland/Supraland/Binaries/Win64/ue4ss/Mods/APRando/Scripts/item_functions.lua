@@ -142,6 +142,7 @@ function funcs.CubeTelefrag()
 end
 
 function funcs.HealthRegenSpeed()
+    Player.Player['Show Health Bar?'] = true
     Player.Player.HealthRegenerateSpeed = Player.Player.HealthRegenerateSpeed * 2
     return true
 end
@@ -178,6 +179,7 @@ end
 
 function funcs.DoubleHealth()
     Player.Player.DoubleHealth = true
+    Player.Player.MaxHealth = Player.Player.MaxHealth * 2
     Player.Player.Health = Player.Player.Health * 2
     return true
 end
@@ -263,8 +265,8 @@ function funcs.ProgGun(count)
         Player.Player.SkillHasGun = true
     elseif count == 2 then
         Player.Player.SkillHasGunAlt = true
-    elseif count > 2 and count <= 7 then
-        Player.Player.Projectile1Damage = Player.Player.Projectile1Damage * 2 --Might be wrong
+    elseif count > 2 and count <= 8 then
+        Player.Player.GunAltDamage = Player.Player.GunAltDamage * 2 --Might be wrong
     end
     return true
 end
@@ -369,7 +371,7 @@ end
 
 function funcs.Armor()
     Player.Player:PutOnArmor()
-    --Player.Player.Armor = Player.Player.Armor + 3
+    Player.Player.Armor = 3.0
     return true
 end
 
@@ -590,6 +592,18 @@ function funcs.FixCoins()
     elseif Player.Player.Coins > Player.Player.MaxCoins then
         Player.Player.Coins = Player.Player.MaxCoins
     end
+    return true
+end
+
+function funcs.ProgLoot(count)
+    if count == 1 then
+        Player.Player.EnemiesLoot = true
+    elseif count == 2  then
+        Player.Player.LootHealthLuck = Player.Player.LootHealthLuck + 0.33
+    elseif count == 3 then
+        Player.Player.LootHealthLuck = Player.Player.LootHealthLuck + 0.33
+    end
+    return true
 end
 
 funcs.item_to_func = {
@@ -691,6 +705,7 @@ funcs.item_to_func = {
     LotOfCoin30 = funcs.Coin30,
     LotOfCoin50 = funcs.Coin50,
     LotOfCoin200 = funcs.Coin200,
+    ProgLoot = funcs.ProgLoot
 }
 
 return funcs

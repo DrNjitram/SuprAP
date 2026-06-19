@@ -94,12 +94,12 @@ end
 
 
 function SetText(text)
-    if not textControl or not textControl:IsValid() then return end
+    if not InGame or not textControl or not textControl:IsValid() then return end
     textControl:SetText(FText(text))
 end
 
 local function setTextVisibility(visibility)
-    if not textWidget or not textWidget:IsValid() then return end
+    if not InGame or not textWidget or not textWidget:IsValid() then return end
     textWidget:SetVisibility(visibility)
 end
 
@@ -108,17 +108,28 @@ function HideText()
 end
 
 function ToggleText()
-    if not textWidget or not textWidget:IsValid() then return end
+    if not InGame or not textWidget or not textWidget:IsValid() then return end
     local current = textWidget:GetVisibility()
     setTextVisibility(current == Visibility_SELFHITTESTINVISIBLE and Visibility_HIDDEN or Visibility_SELFHITTESTINVISIBLE)
 end
 
+function ShowText()
+    AddOrToggleText(Visibility_VISIBLE)
+end
+
 function AddOrToggleText(visibility)
-    if InGame and (not textWidget or not textWidget:IsValid()) then
-        AddText()
-    else
-        setTextVisibility(visibility)
+    local succes, err = pcall(function (...)
+        if InGame and (not textWidget or not textWidget:IsValid()) then
+            AddText()
+        else
+            setTextVisibility(visibility)
+        end
+    end)
+    if not succes then
+        print("Failed to Add/Toggle text\n")
+        print(err)
     end
+
 end
 
 

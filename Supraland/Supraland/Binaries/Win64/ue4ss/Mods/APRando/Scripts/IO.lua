@@ -38,22 +38,30 @@ local function parseLine(p1, p2)
     local prefix = p1:sub(1, 2)
     --print(prefix .. ": " .. p1:sub(3) .. ": " .. p2.. "\n")
     if prefix:sub(2, 2) == "_" then
-        ---@type string | number
+        ---@type string | number | nil
         local value = p2
         local name = p1:sub(3)
         if prefix:sub(1,1) == "n" then
            names_scouted[tonumber(name)] = base64.decode(value, true)
+        else
+            value = tonumber(p2)
+            if value == nil then
+                print(string.format("Error loading values %s %s\n", p1, p2))
+            elseif prefix:sub(1,1) == "l" then
+                util.locations_checked[tonumber(name)] = value
+            elseif prefix:sub(1,1) == "i" then
+                game_items_recieved[name] = value
+            elseif prefix:sub(1,1) == "f" then
+                item_flags[name] = value
+            elseif p1 == "s_deathlink" then
+                DeathLink_Enabled = value
+            elseif prefix:sub(1,1) == "v" then
+                if Player.Player ~= nil then
+                    Player.Player.ProgressPoints = value
+                end
+            end
         end
-        value = tonumber(p2)
-        if prefix:sub(1,1) == "l" then
-            util.locations_checked[tonumber(name)] = value
-        end
-        if prefix:sub(1,1) == "i" then
-            game_items_recieved[name] = value
-        end
-        if prefix:sub(1,1) == "f" then
-            item_flags[name] = value
-        end
+        
     end
     
 end
@@ -85,9 +93,16 @@ local function loadActions(slot)
             if split_line[2] == nil then
                 split_line[2] = ""
             end
-            AP_save_data[split_line[1]] = split_line[2]
+
+            local p2 = tonumber(split_line[2])
+            if p2 == nil then
+                AP_save_data[split_line[1]] = split_line[2]
+            else
+               AP_save_data[split_line[1]] = p2
+            end
+            
             --print(split_line[1] .. ": " .. split_line[2].. "\n")
-            --local act = parseLine(split_line[1], split_line[2])
+            parseLine(split_line[1], split_line[2])
         end
 
     end
@@ -106,11 +121,17 @@ end
 
 function LoadSave(slot)
     print("Loading " .. tostring(slot) .. "\n")
-    loadActions(slot)
+    local succes, err = pcall(function (...)
+        loadActions(slot)  
+    end)
+    if not succes then
+        print("Failed to load from  slot " .. tostring(slot) .. "\n")
+        print(err)
+    end
 end
 
 function CheckSlotAP(slot)
-local savePath = getSavePath(slot)
+    local savePath = getSavePath(slot)
     --print("Loading from", savePath.. "\n")
 
     local f = io.open(savePath, "r")
@@ -134,6 +155,7 @@ local savePath = getSavePath(slot)
     return false
 end
 
+
 function SaveSave(slot)
     if slot == nil then
         if Last_Slot == -1 then
@@ -151,5 +173,19 @@ function SaveSave(slot)
     for k,v in pairs(item_flags) do
         AP_save_data["f_".. tostring(k)] = v
     end
-    saveActions(slot)
+    if DeathLink_Enabled then
+        AP_save_data["s_deathlink"] = DeathLink_Enabled
+    end
+    if Player.Player == nil then
+        Player.Player = FindFirstOf("FirstPersonCharacter_C")
+    end
+    AP_save_data["v_progresspoints"] = Player.Player.ProgressPoints
+    local succes, err = pcall(function (...)
+        saveActions(slot)
+        saveActions(0)
+    end)
+    if not succes then
+        print("Failed to save to slot " .. tostring(slot) .. "\n")
+        print(err)
+    end
 end
