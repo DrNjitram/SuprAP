@@ -193,3 +193,7 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 /Pack/*
+/Supraland.zip
+/lua54.dll
+/lua-apclientpp.dll
+/liblua54.a

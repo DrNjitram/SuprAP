@@ -5,6 +5,7 @@ local base64 = require("base64")
 AP_save_data = {}
 Last_Slot = -1
 LoadedSave = false
+IsSaving = false
 
 local function split(inputstr, sep)
   if sep == nil then
@@ -67,6 +68,9 @@ local function parseLine(p1, p2)
 end
 
 local function saveActions(slot)
+    if slot == nil then
+        slot = 0
+    end
     local savePath = getSavePath(slot)
     print("Saving to", savePath.. "\n")
     local f = io.open(savePath, "w")
@@ -74,7 +78,9 @@ local function saveActions(slot)
     for k,v in pairs(AP_save_data) do
         local line = serializeLine(k,v)
         if line and line ~= "" then
-            f:write(line .. "\n")
+            if (slot == 0 and HasSubstring(k, {"server", "slot", "password"})) or slot > 0 then
+                f:write(line .. "\n")
+            end
         end
     end
     f:close()
@@ -157,6 +163,10 @@ end
 
 
 function SaveSave(slot)
+    if IsSaving then
+        return
+    end
+    IsSaving = true
     if slot == nil then
         if Last_Slot == -1 then
             Last_Slot = GetSaveSlot()
@@ -188,4 +198,5 @@ function SaveSave(slot)
         print("Failed to save to slot " .. tostring(slot) .. "\n")
         print(err)
     end
+    IsSaving = false
 end

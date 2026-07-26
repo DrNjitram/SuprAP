@@ -15,7 +15,7 @@ local game_name = "Supraland" --"Supraland"
 local items_handling = 3  -- full remote
 local message_format = AP.RenderFormat.TEXT
 local AP_version = {0, 6, 7}
-local ModVersion = "0.3.0"
+local ModVersion = "0.3.6"
 
 ---@type APClient
 AP_server = nil
@@ -1477,7 +1477,7 @@ function ConnectionDialogue(show)
     
     --if AP_save_data == nil then
     print("Loading last known server data")
-        LoadSave(0)
+    LoadSave(0)
     --end
     
 
