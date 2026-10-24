@@ -4,7 +4,7 @@
 ---@field UberGraphFrame FPointerToUberGraphFrame
 ---@field Billboard UBillboardComponent
 ---@field Questtext FText
----@field triggeronceonly boolean
+---@field TriggerOnceOnly boolean
 ---@field ['RequireCrashLoop?'] boolean
 ---@field CrashLoop Loop::Type
 ---@field ReplaceStuff boolean

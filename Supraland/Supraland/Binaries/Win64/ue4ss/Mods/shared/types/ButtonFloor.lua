@@ -21,7 +21,7 @@
 ---@field ActivateWhenFullyPressed boolean
 ---@field MoveDownTime float
 ---@field MoveUpTime float
----@field triggeronceonly boolean
+---@field TriggerOnceOnly boolean
 ---@field MinWeight float
 ---@field PlayerCanPush boolean
 ---@field NPCCanPush boolean

@@ -14,7 +14,7 @@
 ---@field IsOn boolean
 ---@field Particles TArray<AEmitter>
 ---@field Audio TArray<AAmbientSound>
----@field triggeronceonly boolean
+---@field TriggerOnceOnly boolean
 ---@field ['Don\'t Color Transball'] boolean
 local AKillvolume_C = {}
 

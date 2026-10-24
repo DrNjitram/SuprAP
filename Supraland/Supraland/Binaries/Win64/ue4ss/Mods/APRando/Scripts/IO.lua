@@ -53,7 +53,9 @@ local function parseLine(p1, p2)
             elseif prefix:sub(1,1) == "i" then
                 game_items_recieved[name] = value
             elseif prefix:sub(1,1) == "f" then
-                item_flags[name] = value
+                item_flags["f_" .. name] = value
+            elseif prefix:sub(1,1) == "b" then
+                barrels_found[name] = value
             elseif p1 == "s_deathlink" then
                 DeathLink_Enabled = value
             elseif prefix:sub(1,1) == "v" then
@@ -181,10 +183,13 @@ function SaveSave(slot)
         AP_save_data["n_".. tostring(k)] = base64.encode(v, true)
     end
     for k,v in pairs(item_flags) do
-        AP_save_data["f_".. tostring(k)] = v
+        AP_save_data[tostring(k)] = v
     end
     if DeathLink_Enabled then
         AP_save_data["s_deathlink"] = DeathLink_Enabled
+    end
+    for k,v in pairs(barrels_found) do
+        AP_save_data["b_".. tostring(k)] = v
     end
     if Player.Player == nil then
         Player.Player = FindFirstOf("FirstPersonCharacter_C")

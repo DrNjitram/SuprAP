@@ -15,7 +15,7 @@
 ---@field WasSpawned boolean
 ---@field ['Visible?'] boolean
 ---@field OpenSpawnDelay float
----@field tempscale FVector
+---@field TempScale FVector
 ---@field grab FBones_CGrab
 ---@field CantGrab boolean
 local ABones_C = {}
@@ -46,8 +46,8 @@ function ABones_C:Toggle() end
 function ABones_C:Open(Bool, Int, Float) end
 function ABones_C:Activate() end
 function ABones_C:Open2() end
-function ABones_C:hide() end
-function ABones_C:show() end
+function ABones_C:Hide() end
+function ABones_C:Show() end
 function ABones_C:ShowGrow() end
 function ABones_C:Close() end
 ABones_C['Make Grabable'] = function(self, ) end

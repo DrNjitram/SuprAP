@@ -201,6 +201,114 @@ FORCEINLINE const TCHAR* operator*() const { return Data.Num() ? Data.GetData() 
    TArray<TCHAR>& arr = myString.GetCharArray();
    ```
 
+#### FSoftObjectPath Member Variables Replaced By Accessors
+
+**What Changed:**  
+`FSoftObjectPath` no longer exposes the `AssetPathName` and `SubPathString` member variables. The struct now stores opaque bytes and resolves the engine's actual layout at runtime, because UE 5.1 changed the layout (`FName AssetPathName` became `FTopLevelAssetPath AssetPath`, moving `SubPathString` from offset 0x8 to 0x10). The old compile-time members read the wrong memory on every 5.1+ game.
+
+**Before (v3.x):**
+```cpp
+FSoftObjectPath Path = ...;
+FName AssetName = Path.AssetPathName;
+FString& SubPath = Path.SubPathString;
+Path.SubPathString = NewSubPath;
+```
+
+**After (v4.x):**
+```cpp
+FSoftObjectPath Path = ...;
+FName AssetName = Path.GetAssetPathName();
+FString& SubPath = Path.GetSubPathString();
+Path.GetSubPathString() = NewSubPath;
+
+// New: package/asset name pair, works on every engine version
+FTopLevelAssetPath AssetPath = Path.GetAssetPath();
+```
+
+**Migration Steps:**
+
+1. Replace `Path.AssetPathName` with `Path.GetAssetPathName()`.
+2. Replace `Path.SubPathString` with `Path.GetSubPathString()`. A non-const overload exists, so reads, writes, and passing by reference all work.
+3. If you need the package and asset names separately, prefer `GetAssetPath()`, which returns an `FTopLevelAssetPath` in every engine version (synthesized by splitting the path on pre-5.1).
+
+**Important Notes:**
+- On 5.1+ engines there is no single-FName representation in memory, so `GetAssetPathName()` creates the combined `/Package/Path.Asset` FName on demand (with `FNAME_Add`).
+- Writing the asset path goes through `SetPath()` or `operator=(const FString&)`, unchanged from before.
+- `TArray<FSoftObjectPath>` now strides by the runtime size (`FSoftObjectPath::StaticSize()`), fixing element access on 5.1+ and case-preserving builds.
+- The Lua API (`GetAssetPathName()`, `GetSubPathString()`) is unchanged; Lua mods are unaffected.
+
+#### Soft Object Pointer Member Variables Replaced By Accessors
+
+**What Changed:**
+
+`FSoftObjectPtr` and its `TPersistentObjectPtr<FSoftObjectPath>` base no longer expose `ObjectID` and `TagAtLastTest` as member variables. Their layout is resolved from the engine's reflected soft object/class property size, with an engine-version fallback when reflection is unavailable. This also applies to the storage inside `TSoftObjectPtr<T>` and `TSoftClassPtr<T>`.
+
+UE 5.3 removed `TagAtLastTest`, moving `ObjectID` from offset `0x10` to `0x08`. This is separate from the UE 5.1 `FSoftObjectPath` change described above. Reading the path at the old offset could interpret string length and capacity as a pointer, causing the crash reported in [issue #1433](https://github.com/UE4SS-RE/RE-UE4SS/issues/1433) when `FUObjectArray::AllocateSerialNumber` converted an object to a soft reference.
+
+**Before (v3.x / earlier experimental builds):**
+
+```cpp
+FSoftObjectPtr SoftPtr;
+FSoftObjectPath& Path = SoftPtr.ObjectID;
+int32 Tag = SoftPtr.TagAtLastTest;
+SoftPtr.TagAtLastTest = 0;
+```
+
+**After (v4.x):**
+
+```cpp
+FSoftObjectPtr SoftPtr;
+FSoftObjectPath& Path = SoftPtr.GetUniqueID();
+int32 Tag = SoftPtr.GetTagAtLastTest();
+SoftPtr.SetTagAtLastTest(0);
+```
+
+**Migration Steps:**
+
+1. Replace direct `ObjectID` access with `GetUniqueID()`. Const and non-const overloads return references.
+2. Replace tag reads with `GetTagAtLastTest()` and writes with `SetTagAtLastTest(value)`.
+3. When replacing a path, prefer `SoftPtr = NewPath`, which also resets the cached weak pointer. If you modify the path through the non-const `GetUniqueID()` reference, call `ResetWeakPtr()` afterward.
+4. For manual traversal of engine-owned memory, use `FSoftObjectPtr::StaticSize()`, `TSoftObjectPtr<T>::StaticSize()` or `TSoftClassPtr<T>::StaticSize()` instead of `sizeof` or a hard-coded stride. `sizeof` includes storage for the largest supported layout and remains the size to use for locally allocated C++ objects.
+5. Rebuild affected C++ mods against the updated UE4SS headers and libraries.
+
+**Important Notes:**
+
+- On engines without the tag field, `GetTagAtLastTest()` returns zero and `SetTagAtLastTest()` has no effect.
+- `WeakPtr` remains accessible. Existing `TSoftObjectPtr<T>` and `TSoftClassPtr<T>` methods such as `Get()`, `Reset()` and `ToSoftObjectPath()` remain available.
+- Copy and assign soft pointers through their C++ operations so the path's `FString` is copied correctly; a byte-wise copy does not establish ownership of the string.
+- Lua's `GetWeakPtr()`, `GetObjectID()` and `GetTagAtLastTest()` methods are unchanged. Lua mods require no migration; `GetTagAtLastTest()` returns zero when the engine has no tag field.
+
+#### FText Member Variables Replaced By Accessors
+
+**What Changed:**  
+`FText` no longer exposes the `Data`, `SharedRefCollector`, `Flags` and `Unk` member variables. UE 5.4 changed the internal representation from `TSharedRef<ITextData>` (FText is 0x18 bytes) to `TRefCountPtr<ITextData>` (0x10 bytes), so a fixed member layout cannot be correct everywhere. FText now stores opaque bytes sized by `FText::StaticSize()`, and copies, assignments and destruction go through the engine's own `FTextProperty` value operations, which means FText copies are properly reference counted in every engine version.
+
+**Before (v3.x):**
+```cpp
+FText Text = ...;
+ITextData* Data = Text.Data;
+uint32 Flags = Text.Flags;
+```
+
+**After (v4.x):**
+```cpp
+FText Text = ...;
+ITextData* Data = Text.GetTextData();
+uint32 Flags = Text.GetFlags();
+```
+
+**Migration Steps:**
+
+1. Replace `Text.Data` with `Text.GetTextData()`.
+2. Replace `Text.Flags` with `Text.GetFlags()`.
+3. Remove any use of `SharedRefCollector` or `Unk`; they were artifacts of the guessed layout. The reference controller is engine-managed now.
+4. Code that constructs, copies, assigns, or converts FText (`ToString()`, `ToFString()`, `SetString()`, `FText(FString)`) requires no changes.
+
+**Important Notes:**
+- Copies made through C++ are now owning references; they are released automatically when the FText is destroyed. Byte-wise duplication of FText values (memcpy into a buffer that outlives the source) should be replaced with assignment, or with `FText::StealFromBuffer` / `CopyBorrowedTo` when interacting with engine param buffers.
+- Passing FText by value to engine functions works unchanged; the temporary carries its own reference.
+- The Lua API is unchanged; Lua mods are unaffected.
+
 ### Deprecations
 
 - `GetCharTArray()` is now deprecated but still available for compatibility.

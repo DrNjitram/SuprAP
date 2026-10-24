@@ -32,7 +32,7 @@
       },
       {
          "FilterData": {
-            "Enabled": true
+            "Enabled": false
          },
          "FilterName": "IncludeDefaultObjects"
       },
@@ -51,7 +51,7 @@
       {
          "FilterData": {
             "ClassNames": [],
-            "IsExclude": true
+            "IsExclude": false
          },
          "FilterName": "ClassNamesFilter"
       },
@@ -332,7 +332,7 @@
       },
       {
          "FilterData": {
-            "Value": 500
+            "Value": 1000
          },
          "FilterName": "MaxValueSize"
       }

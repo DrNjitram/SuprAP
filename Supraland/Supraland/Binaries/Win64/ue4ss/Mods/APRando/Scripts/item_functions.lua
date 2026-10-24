@@ -51,32 +51,52 @@ function funcs.GunProjSpeed()
 end
 
 function funcs.Health1()
-    Player.Player.MaxHealth = Player.Player.MaxHealth + 1
-    Player.Player.Health = Player.Player.Health + 1
+    local add = 1
+    if Player.Player.DoubleHealth then
+        add = add * 2
+    end
+    Player.Player.MaxHealth = Player.Player.MaxHealth + add
+    Player.Player.Health = Player.Player.Health + add
     return true
 end
 
 function funcs.Health2()
-    Player.Player.MaxHealth = Player.Player.MaxHealth + 2
-    Player.Player.Health = Player.Player.Health + 2
+    local add = 2
+    if Player.Player.DoubleHealth then
+        add = add * 2
+    end
+    Player.Player.MaxHealth = Player.Player.MaxHealth + add
+    Player.Player.Health = Player.Player.Health + add
     return true
 end
 
 function funcs.Health5()
-    Player.Player.MaxHealth = Player.Player.MaxHealth + 5
-    Player.Player.Health = Player.Player.Health + 5
+    local add = 5
+    if Player.Player.DoubleHealth then
+        add = add * 2
+    end
+    Player.Player.MaxHealth = Player.Player.MaxHealth + add
+    Player.Player.Health = Player.Player.Health + add
     return true
 end
 
 function funcs.Health10()
-    Player.Player.MaxHealth = Player.Player.MaxHealth + 10
-    Player.Player.Health = Player.Player.Health + 10
+    local add = 10
+    if Player.Player.DoubleHealth then
+        add = add * 2
+    end
+    Player.Player.MaxHealth = Player.Player.MaxHealth + add
+    Player.Player.Health = Player.Player.Health + add
     return true
 end
 
 function funcs.Health15()
-    Player.Player.MaxHealth = Player.Player.MaxHealth + 15
-    Player.Player.Health = Player.Player.Health + 15
+    local add = 15
+    if Player.Player.DoubleHealth then
+        add = add * 2
+    end
+    Player.Player.MaxHealth = Player.Player.MaxHealth + add
+    Player.Player.Health = Player.Player.Health + add
     return true
 end
 
@@ -299,6 +319,7 @@ function funcs.ProgGraveSword(count)
 end
 
 function funcs.ProgHealthRegen(count)
+    Player.Player.HealthIsRegenerating = true
     if count == 1 then
         Player.Player.HealthRegenerateToX  = 25
     elseif count > 1 and count <= 17 then

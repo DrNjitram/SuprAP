@@ -94,7 +94,12 @@ end
 
 
 function SetText(text)
-    if not InGame or not textControl or not textControl:IsValid() then return end
+    if not InGame or not textControl or not textControl:IsValid() then 
+        if InGame then
+            AddText()
+        end 
+        return
+    end
     textControl:SetText(FText(text))
 end
 

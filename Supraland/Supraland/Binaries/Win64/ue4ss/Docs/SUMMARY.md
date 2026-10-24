@@ -12,6 +12,7 @@
 - [Blueprint Modloading](./feature-overview/blueprint-modloader.md)
 - [Live Property Viewer and Editor](./feature-overview/live-view.md)
 - [Dumpers](./feature-overview/dumpers.md)
+- [SDK Generator](./feature-overview/sdk-generator.md)
 
 ## APIs
 
@@ -66,6 +67,7 @@
     - [UWorld](./lua-api/classes/uworld.md)
   - [Global Functions]()
     - [print](./lua-api/global-functions/print.md)
+    - [println](./lua-api/global-functions/println.md)
     - [CreateInvalidObject](./lua-api/global-functions/createinvalidobject.md)
     - [FName](./lua-api/global-functions/fname.md)
     - [FText](./lua-api/global-functions/ftext.md)
@@ -109,6 +111,7 @@
     - [DumpStaticMeshes](./lua-api/global-functions/dumpstaticmeshes.md)
     - [DumpAllActors](./lua-api/global-functions/dumpallactors.md)
     - [DumpUSMAP](./lua-api/global-functions/dumpusmap.md)
+    - [DumpJMAP](./lua-api/global-functions/dumpjmap.md)
     - [LoadExport](./lua-api/global-functions/loadexport.md)
     - [Mod Management](./lua-api/global-functions/modmanagement.md)
   - [Examples](./lua-api/examples.md)
@@ -121,6 +124,7 @@
   - [Installing a C++ Mod](./guides/installing-a-c++-mod.md)
   - [GUI tabs with a C++ Mod](./guides/creating-gui-tabs-with-c++-mod.md)
   - [Accessing UE properties with a C++ mod](./guides/accessing-ue-properties-c++.md)
+  - [Debugging a C++ Mod](./guides/debugging-a-c++-mod.md)
 
 ## Guides
 

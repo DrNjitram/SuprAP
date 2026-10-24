@@ -1,10 +1,10 @@
 {
-  "Watches":[
-    {
-      "AcquisitionID":"FirstPersonCharacter_C",
-      "PropertyName":"LookedAt_TraceActor",
-      "AcquisitionMethod":1,
-      "WatchType":0
-    }
-  ]
+   "Watches": [
+      {
+         "AcquisitionID": "FirstPersonCharacter_C",
+         "AcquisitionMethod": 1,
+         "PropertyName": "LookedAt_TraceActor",
+         "WatchType": 0
+      }
+   ]
 }

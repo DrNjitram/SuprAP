@@ -29,6 +29,8 @@ local password = ""
 local BASE_ID = 678000
 
 InGame = false
+ManualConnecting = false
+Send_Queue = {}
 
 Player.SetupHooks()
 
@@ -146,12 +148,15 @@ end
 
 
 function Send(FullCommand, Parameters, OutputDevice)
-    local ans = AP_server:LocationChecks({math.floor(tonumber(Parameters[1]))})
-    if ans then
-        print("Item sent")
-    else
-        print("Failed to queue")
-    end
+    ExecuteAsync(function()
+        local ans = AP_server:LocationChecks({math.floor(tonumber(Parameters[1]))})
+        if ans then
+            print("Item sent")
+        else
+            print("Failed to queue")
+        end   
+    end)
+    
     return true
 end
 
@@ -190,13 +195,17 @@ end
 
 
 function GetSaveSlot()
-    return tonumber(Player.Player.SaveSlot:ToString():gsub("Save", "")[1])
+    if InGame then
+        return tonumber(Player.Player.SaveSlot:ToString():gsub("Save", "")[1])
+    end
+    return Last_Slot
 end
 
 function Connect(FullCommand, Parameters, OutputDevice)
     print(string.format("Full connect command: %s\n", FullCommand))
     print(string.format("Number of parameters: %i\n", #Parameters))
     items_owned = {}
+    ManualConnecting = true
     
     for ParameterNumber, Parameter in pairs(Parameters) do
         local str = string.format("Parameter #%i -> '%s (%s)'\n", ParameterNumber, Parameter, type(Parameter))
@@ -204,7 +213,7 @@ function Connect(FullCommand, Parameters, OutputDevice)
         --OutputDevice.Log(str)
     end
 
-    ExecuteAsync(function ()
+    
         --connect(host, slot, password)
         --ConnectAP(Parameters[1], Parameters[2], "")
         AP_save_data["server"] = Parameters[1]
@@ -223,7 +232,7 @@ function Connect(FullCommand, Parameters, OutputDevice)
         --         end)
         -- end
 
-    end)
+    
     
     return true
 end
@@ -275,10 +284,13 @@ local function HitObject()
                         APUtil.locations_checked[location] = 1
                         
                         
-                        if AP_server ~= nil then  
-                            AP_server:LocationChecks({location})
-                        end
-                        print("Recorded and Sent item\n")
+                        -- if AP_server ~= nil then  
+                        --     AP_server:LocationChecks({location})
+                        -- end
+                        Send_Queue[location] = 1
+                        print("Queued Item\n")    
+                        
+                        
 
 
                         AddProgressPoint()
@@ -307,6 +319,19 @@ local function HitObject()
                     print("Cannot afford\n")
                 end
                 --print("Player has " .. tostring(Player.Player.Coins) .. " Coins")
+            end
+        elseif HasSubstring(APUtil.GetObjectName(Actor), {"half_moon"}) then
+            MoonsPlaced = 0
+            local muns = {"2_2", "42_7", "63", "64", "65", "66"}
+            for _, moon in ipairs(muns)  do
+                ---@class ARedMoonSlot_C
+                local moonslot = StaticFindObject("/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel.half_moon" .. moon)
+                if moonslot and moonslot:IsValid() and moonslot.On then
+                    MoonsPlaced = MoonsPlaced + 1
+                end
+            end
+            if MoonsPlaced == 6 then
+                ExecuteWithDelay(100, PopulateItems)
             end
         end    
     end)

@@ -13,6 +13,18 @@ Added CMake build system alongside Xmake - ([UE4SS #1067](https://github.com/UE4
 - Documentation updated to reference CMake build instructions
 - xmake may be deprecated in the future. Meanwhile, we cannot guarantee ABI compatability
 
+Added a `.jmap` dumper: dumps the full UObject reflection graph (classes, structs, enums, functions, property types, class default object property values and approximate vtable layouts) to the JSON-based `.jmap` format by trumank (https://github.com/trumank/jmap). Available via the GUI `Dumpers` tab, the `DumpJMAP()` Lua function and `CTRL + Numpad 5`.
+
+Added the option to include Blueprint-generated classes, structs and enums in `.usmap` and `.jmap` dumps (enabled by default). Toggle via the checkbox in the GUI `Dumpers` tab or the optional boolean parameter of `DumpUSMAP()` / `DumpJMAP()`.
+
+SDK generator: the UE4SS backend is now compiled in, so the generator is usable without any files on disk. Previously the "Generate BP SDK" button stayed disabled unless a backend description was found in `<working_dir>/UE4SS_SDK_Backends`, which local builds never received. A backend file of the same name still overrides the built-in one.
+
+SDK generator: property types that cannot be expressed in C++ are now emitted as correctly sized and aligned opaque stand-ins in `UE4SS_SDK/PlaceholderTypes.hpp` instead of aborting the dump. Previously a single unrecognised property type (a Verse property, or a property class defined by the game) threw partway through generation and produced no files at all. Classes are no longer commented out wholesale when a member's type is unsupported.
+
+Added an SDK generator that produces memory-accurate C++ headers for reflected classes, structs and enums, intended to be dropped into a UE4SS C++ mod (`add_subdirectory(UE4SS_SDK)`). Types that UE4SS already provides are referenced from the Unreal module rather than redefined, so a generated SDK composes with an existing mod instead of colliding with it. Leading, inter-member and trailing padding, static arrays, bitfields, computed alignment and base-class trailing-padding reuse are all handled. Generated SDKs can be verified against a build at compile time via `UE4SS_SDK/LayoutAsserts.hpp` or at runtime via `UE4SS_SDK/RuntimeSDKTest.hpp`.
+
+Added support for UE Version 5.8
+
 Added support for UE Version 5.7
 
 Added support for UE Version 5.6 - ([UE4SS #977](https://github.com/UE4SS-RE/RE-UE4SS/pull/977)) 
@@ -20,6 +32,8 @@ Added support for UE Version 5.6 - ([UE4SS #977](https://github.com/UE4SS-RE/RE-
 Added support for UE Version 5.5 - ([UE4SS #708](https://github.com/UE4SS-RE/RE-UE4SS/pull/708)) 
 
 Added support for UE Version 5.4 - ([UE4SS #503](https://github.com/UE4SS-RE/RE-UE4SS/pull/503)) 
+
+Added support for UE Versions 4.7 through 4.10 - ([UE4SS #1390](https://github.com/UE4SS-RE/RE-UE4SS/pull/1390))
 
 Added basic support for Development/Debug/Test built Unreal Engine games ([UE4SS #607](https://github.com/UE4SS-RE/RE-UE4SS/pull/607)) 
 - To use this functionality, set DebugBuild to true in UE4SS-Settings.ini 
@@ -38,6 +52,25 @@ Added new build definition "LessEqual421".  Using this definition for games on U
 **BREAKING:** Changed default `EFindName` parameter for FName constructors from `FNAME_Find` to `FNAME_Add`. 
 - FName constructors will now create new name table entries by default if the name doesn't exist, rather than returning NAME_None
 - To maintain the old behavior, explicitly pass `FNAME_Find` as the second parameter
+
+**BREAKING:** `FSoftObjectPath` no longer exposes the `AssetPathName` and `SubPathString` member variables. The struct layout now adapts at runtime to the running engine (5.1+ replaced the FName with an FTopLevelAssetPath), which fixes silent memory corruption when accessing soft object paths on 5.1+ games. C++ mods must migrate:
+- `path.AssetPathName` -> `path.GetAssetPathName()` (on 5.1+ this returns the combined `/Package/Path.Asset` name; use `path.GetAssetPath()` for the package/asset name pair)
+- `path.SubPathString` -> `path.GetSubPathString()` (non-const overload available for assignment)
+- Lua mods are unaffected; the Lua API is unchanged
+
+**BREAKING:** `FSoftObjectPtr` (and its `TPersistentObjectPtr<FSoftObjectPath>` base) no longer exposes the `ObjectID` and `TagAtLastTest` member variables. Soft object and class pointers now resolve their layout at runtime, accounting for UE 5.3 removing `TagAtLastTest`. C++ mods must migrate:
+
+- `ptr.ObjectID` -> `ptr.GetUniqueID()` (const and non-const reference overloads)
+- `ptr.TagAtLastTest` -> `ptr.GetTagAtLastTest()` for reads, `ptr.SetTagAtLastTest(value)` for writes; engines without the field return zero and ignore writes
+- Use `FSoftObjectPtr::StaticSize()`, `TSoftObjectPtr<T>::StaticSize()` or `TSoftClassPtr<T>::StaticSize()` when calculating strides through engine memory
+- Rebuild affected C++ mods against the updated headers; see the [upgrade guide](../docs/upgrade-guide.md#soft-object-pointer-member-variables-replaced-by-accessors)
+- The Lua API is unchanged
+
+**BREAKING:** `FText` no longer exposes the `Data`, `SharedRefCollector`, `Flags` and `Unk` member variables. The layout adapts at runtime (5.4 changed TSharedRef to TRefCountPtr, shrinking FText from 0x18 to 0x10), and copies/destruction now use the engine's own FTextProperty value operations, so FText copies are properly reference counted in every engine version. C++ mods must migrate:
+- `text.Data` -> `text.GetTextData()`
+- `text.Flags` -> `text.GetFlags()`
+- Constructing, copying, assigning and `ToString()`/`ToFString()` are unchanged
+- Lua mods are unaffected
 - This affects all string-based FName constructors 
 
 Added optional scans for GUObjectHashTables, GNatives and ConsoleManagerSingleton; made FText an optional scan; externed the found GNatives for use by mods([UE4SS #744](https://github.com/UE4SS-RE/RE-UE4SS/pull/744)) 
@@ -61,6 +94,8 @@ Added custom game configurations for Whiskerwood ([UE4SS #1079](https://github.c
 
 Added custom game configurations for StarRupture ([UE4SS #1150](https://github.com/UE4SS-RE/RE-UE4SS/pull/1150))
 
+Added custom game configuration for The Talos Principle 2 ([UE4SS #1458](https://github.com/UE4SS-RE/RE-UE4SS/pull/1458))
+
 The GUI can now be rendered in the game thread if `RenderMode` in UE4SS-settings.ini is set to
 `EngineTick` or `GameViewportClientTick` ([UE4SS #768](https://github.com/UE4SS-RE/RE-UE4SS/pull/768), [UE4SS #794](https://github.com/UE4SS-RE/RE-UE4SS/pull/794)).
 
@@ -72,6 +107,8 @@ Add error messages in places where only error codes were previously logged (e.g.
 
 Added `[f: <address_or_module_offset>` section to UE4SS_ObjectDump.txt [UE4SS #866](https://github.com/UE4SS-RE/RE-UE4SS/pull/866) 
 
+Added option `EnableAutoReloadingLuaMods` in the `General` section of UE4SS-settings.ini [UE4SS #1004](https://github.com/UE4SS-RE/RE-UE4SS/pull/1004) 
+
 Added line in the [docs](https://docs.ue4ss.com/dev/guides/fixing-compatibility-problems.html) to add `FText::FromString(FString&)` as an alternative to `FText::FText(FString&)` for UE5 games - ([UE4SS #1078](https://github.com/UE4SS-RE/RE-UE4SS/pull/1078))
 
 Added `FUObjectItem`, `FUObjectArray`, and `TUObjectArray` to MemberVariableLayout.ini ([UE4SS #????](https://github.com/UE4SS-RE/RE-UE4SS/pull/????))
@@ -81,6 +118,8 @@ Added `FUObjectItem`, `FUObjectArray`, and `TUObjectArray` to MemberVariableLayo
 - It's currently only crucial for `FUObjectItem`, but in the future, we may use this entry for more types.
 
 Fixed the ingame console (Tilde, or F10 key) not working for some games - ([UE4SS #1252](https://github.com/UE4SS-RE/RE-UE4SS/pull/1252))
+
+Fixed random crashes (use-after-free) caused by the string intern pool storing dangling pointers to caller-owned strings, most commonly Lua GC'd strings from UObject member access ([UE4SS #1271](https://github.com/UE4SS-RE/RE-UE4SS/pull/1271))
 
 ### Live View 
 Added search filter: `IncludeClassNames`. ([UE4SS #472](https://github.com/UE4SS-RE/RE-UE4SS/pull/472)) - Buckminsterfullerene
@@ -121,6 +160,10 @@ Added support for generating `FUtf8String` and `FAnsiString` properties in UHT-c
 Fixed Static Mesh Dumper crashing on material interfaces in UE 5.6 and above due to FStaticMaterial layout changes. - Okaetsu
 
 ### Lua API
+
+Added `__eq` metamethod for `UObjectBase`, allowing comparing `UObject` instances by underlying pointer (`objA == objB`) from Lua rather than userdata reference equality.
+
+Added support for setting `FWeakObjectProperty` values (`Operation::Set`), allowing assignment of `UObject`, `FWeakObjectPtr`, or `nil` from Lua.
 
 Added support for `FUtf8String` and `FAnsiString` Unreal string types with string manipulation API ([UE4SS #1015](https://github.com/UE4SS-RE/RE-UE4SS/pull/1015))
 - Refactored FString implementation to use unified `TLuaStringBase` template for code reuse and consistency
@@ -216,6 +259,10 @@ Added support for `UScriptStruct` when using `RegisterCustomProprety` ([UE4SS #1
 
 Added support for handling structs as userdata (Fixed `StructData as userdata is not yet implemented`). ([UE4SS #1169](https://github.com/UE4SS-RE/RE-UE4SS/pull/1169)) - Corporalwill123
 
+Added `ModRef.OnUnload` lua function, registers a callback to be called when the mod is unloaded via hot reload or any other means ([UE4SS #1394](https://github.com/UE4SS-RE/RE-UE4SS/pull/1394))
+
+Added `println` global lua function, just like `print`, except adds a new line character automatically ([UE4SS #1451](https://github.com/UE4SS-RE/RE-UE4SS/pull/1451))
+
 #### Types.lua [PR #650](https://github.com/UE4SS-RE/RE-UE4SS/pull/650) 
 - Added `NAME_None` definition 
 - Added `EFindName` enum definition 
@@ -249,6 +296,8 @@ Added support for handling structs as userdata (Fixed `StructData as userdata is
 - Removed cache for `GetPlayerController` and `GetWorld` [PR #1047](https://github.com/UE4SS-RE/RE-UE4SS/pull/1047)
 
 ### C++ API 
+
+Added support for using mod name as the main dll name for C++ mods. ([UE4SS #1313](https://github.com/UE4SS-RE/RE-UE4SS/pull/1313)) - Okaetsu
 
 Added `UDataTable` class to C++ API. ([UE4SS #997](https://github.com/UE4SS-RE/RE-UE4SS/pull/997))
 - Full DataTable row access with `FindRow<T>()`, `GetAllRows<T>()`, and `ForEachRow<T>()`
@@ -298,6 +347,13 @@ Added improved string and path conversion utilities with proper UTF-8 support ([
 - Added `normalize_path_for_lua()` to convert paths to UTF-8 with forward slashes for Lua compatibility
 - Added `utf8_to_wpath()` to convert UTF-8 paths to Windows wide strings
 - **BREAKING:** `to_charT_string_path()` now returns UTF-8 encoded strings for char type instead of locale-dependent encoding
+
+Added `RC::await_debugger` in `Helpers/Debug.hpp`. ([UE4SS #1314](https://github.com/UE4SS-RE/RE-UE4SS/pull/1314))
+
+Added registration functions for C++ mod events. ([UE4SS #1431](https://github.com/UE4SS-RE/RE-UE4SS/pull/1431))
+- These are analogous to the virtual functions that can be overridden from CppUserModBase.
+- They are intended to replace the virtual functions for ABI reasons, but the virtual functions will also be maintained for now.
+- No new virtual functions will be added to CppUserModBase, and no existing virtual functions will be removed.
 
 ### BPModLoader 
 
@@ -396,6 +452,14 @@ Switch to xmake from cmake which makes building much more streamlined ([UE4SS #3
 ## Fixes 
 
 ### General 
+Fixed access violation crash on engine shutdown by terminating event loops when `UnrealInitializer::StaticStorage::bIsInitialized` is false.  
+This was fixed by introducing a new atomic bool: `UnrealInitializer::IsInitialized()`  
+The old variable will stay for ABI/API reasons.
+
+Fixed proxy injection incorrectly running UE4SS initialization inside the loader lock when the main thread was the first thread snapshot entry.
+
+Fixed a crash in `FUObjectArray::AllocateSerialNumber` when assigning an object without a serial number to an `FWeakObjectPtr` on UE 5.3+ (reported on UE 5.4.3). Soft pointer copies now use the runtime `ObjectID` offset, including in Kismet object/class reference conversions and Lua soft-property access. ([UE4SS #1433](https://github.com/UE4SS-RE/RE-UE4SS/issues/1433))
+
 Fixed BPModLoaderMod not working in games made in UE 5.2+ - ([UE4SS #503](https://github.com/UE4SS-RE/RE-UE4SS/pull/503)) 
 
 Fixed adding elements to TArray in Lua incorrectly resizing and zeroing out previous values ([UE4SS #436](https://github.com/UE4SS-RE/RE-UE4SS/pull/436)) - dnchattan 
@@ -449,8 +513,16 @@ Fixed filters incorrectly being applied when not searching ([UE4SS #1089](https:
 ### UHT Dumper 
 Fix SetupAttachment implementations randomly changing order ([UE4SS #606](https://github.com/UE4SS-RE/RE-UE4SS/pull/606)) - Buckminsterfullerene 
 
+Fix non-ascii characters in outputted .cpp files ([UE4SS #1378](https://github.com/UE4SS-RE/RE-UE4SS/pull/1378))  
+
 ### Lua API 
+Fixed crash in script hook dispatcher when `Stack.Node()` returns `nullptr` on synthetic or native thunk frames.
+
 Fixed FString use after free ([UE4SS #425](https://github.com/UE4SS-RE/RE-UE4SS/pull/425)) - localcc 
+
+Fixed `IterateGameDirectories` crashing when the game root contains a deeply nested directory tree, common once a mod manager unpacks downloads into it. The traversal never grew the Lua stack and wrote past the end of it. It now also stops at a depth of 64, skips unreadable directories, and won't follow a link back into a directory it is already inside. ([UE4SS #1092](https://github.com/UE4SS-RE/RE-UE4SS/issues/1092))
+
+Fixed `__files` leaving holes in its array when a directory was skipped, making `#files` and `table.insert` unreliable.
 
 Fixed the "IterateGameDirectories" global function throwing "bad conversion" errors ([UE4SS #398](https://github.com/UE4SS-RE/RE-UE4SS/pull/398)) 
 
@@ -500,6 +572,16 @@ Fixed callbacks being executed in the wrong thread. ([UE4SS #1170](https://githu
 
 Fixed UFunction and UClass properly inheriting from UStruct in Lua. ([UE4SS #1158](https://github.com/UE4SS-RE/RE-UE4SS/pull/1158)) - Corporalwill123
 
+Fixed crash when calling certain functions that take callbacks. ([UE4SS #1299](https://github.com/UE4SS-RE/RE-UE4SS/pull/1299))
+
+Fixed the `GetWorld` function of UObject and AActor crashing if the object was nullptr. ([UE4SS 002bca18](https://github.com/UE4SS-RE/RE-UE4SS/commit/002bca18))
+
+Fixed the `RegisterCustomProperty` sometimes not working because of an unknown property size. ([UE4SS cb897cc7](https://github.com/UE4SS-RE/RE-UE4SS/commit/cb897cc7))
+
+Fixed a memory leak when calling a UFunction with an 'Out' parameter from Lua: every call left a registry reference to the 'Out' table behind, so the table and everything in it were never garbage collected. ([UE4SS #1446](https://github.com/UE4SS-RE/RE-UE4SS/issues/1446))
+
+Fixed a crash when calling UFunctions with params taking >512 bytes. ([UE4SS #1462](https://github.com/UE4SS-RE/RE-UE4SS/issues/1462))
+
 ### C++ API 
 Fixed a crash caused by a race condition enabled by C++ mods using `UE4SS_ENABLE_IMGUI` in their constructor ([UE4SS #481](https://github.com/UE4SS-RE/RE-UE4SS/pull/481)) 
 
@@ -519,6 +601,10 @@ Fixed displaying 'PostBeginPlay not valid' when VerboseLogging is set to false (
 Fixes mods not loading when UE4SS initializes too late ([UE4SS #454](https://github.com/UE4SS-RE/RE-UE4SS/pull/454)) - localcc 
 
 Fixed `LoadMod` function issue that variables would go out-of-scope in the `ExecuteInGameThread` callback. Instead, `LoadMods` is now always called in a game thread. ([UE4SS #752](https://github.com/UE4SS-RE/RE-UE4SS/pull/752))
+
+### EventViewerMod
+
+Fixed the mod failing on LE421 builds due to plsf being added in 4.22 ([UE4SS #1426](https://github.com/UE4SS-RE/RE-UE4SS/pull/1426)) - Willow
 
 ## Settings 
 
@@ -553,10 +639,20 @@ HotReloadKey = R
 ; Default: Scan
 DefaultFNameToStringMethod = Scan
 
+; Whether to automatically reload mods when a change is detected.
+; The reload triggers when any file is edited or a new file is added to the 'Scripts' directory.
+; Default: 0
+EnableAutoReloadingLuaMods = 0
+
 [EngineVersionOverride]
 ; True if the game is built as Debug, Development, or Test.
 ; Default: false
 DebugBuild =
+
+; Auto detects pointer hashing in the object hash tables.
+; Override: Auto, HashCombine, Murmur32, or Murmur64.
+; Default: Auto
+PointerHash =
 
 [ObjectDumper]
 ; Whether to display the offset from the main executable for functions instead of the function pointer
@@ -565,6 +661,12 @@ UseModuleOffsets = 0
 
 [Debug]
 RenderMode = ExternalThread
+
+; The key that will toggle the GUI on/off if GuiConsoleEnabled is set to 1.
+; The CTRL key is always required.
+; Valid values (case-insensitive): Anything from Mods/Keybinds/Scripts/main.lua
+; Default: O
+ToggleGuiKey = O
 
 [Hooks]
 HookLoadMap = 1

@@ -197,3 +197,4 @@ cython_debug/
 /lua54.dll
 /lua-apclientpp.dll
 /liblua54.a
+*.dmp
