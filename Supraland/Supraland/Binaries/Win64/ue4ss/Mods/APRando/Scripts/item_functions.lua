@@ -41,7 +41,7 @@ function funcs.GunRefill()
 end 
 
 function funcs.GunCooldown()
-    Player.Player.GunRefireRate = Player.Player.GunRefireRate - 0.5
+    Player.Player.GunRefireRate = Player.Player.GunRefireRate * 0.5
     return true
 end
 

@@ -177,12 +177,25 @@ function ConnectAP(server, slot, password)
         
         Connected = "True"
         
-
+        
+        if slot_data["earlyspeed"] == 2 then
+            print("Granting Early Speed")
+            local item_name = "ProgSpeedJump"
+            items_owned[item_name] = 1
+            game_items_recieved[item_name] = 1
+            local f = item_functions.item_to_func[item_name]
+            f(items_owned[item_name])
+        end
+        
         local to_scout = {}
         if #names_scouted == 0 then
-            for _, value in pairs(Data.L) do
-                if names_scouted[value] == nil then
-                    to_scout[#to_scout+1] = value    
+            for name, value in pairs(Data.L) do
+                if not HasSubstring(name, {"Coin"}) or (HasSubstring(name, {"Coin"}) and slot_data["coinsanity"] == 1) then
+                    if not HasSubstring(name, {"EnemySpawn"}) or (HasSubstring(name, {"EnemySpawn"}) and slot_data["gravesanity"] == 1) then
+                        if names_scouted[value] == nil then
+                            to_scout[#to_scout+1] = value    
+                        end  
+                    end 
                 end
             end
         end
@@ -194,7 +207,7 @@ function ConnectAP(server, slot, password)
             end
         end
 
-        if util.locations_checked then
+        if #util.locations_checked > 0 then
             local checked = {}
             for k, _ in pairs(util.locations_checked) do
                 if k == 678001 then
@@ -319,14 +332,14 @@ function ConnectAP(server, slot, password)
                     items_owned[item_name] = items_owned[item_name] + 1
                     Last_item = item_name
                     if Data.P[item_name] ~= nil then
-                        Item_BP = Data.P[item_name][items_owned[item_name]]
+                        --Item_BP = Data.P[item_name][items_owned[item_name]]
                         if f ~= nil and game_items_recieved[item_name] >= items_owned[item_name] then
                             --ExecuteInGameThread(function ()
                                 Result = f(items_owned[item_name])
                             --end)  
                         end
                     else
-                        Item_BP = Data.BP[item_name]
+                        --Item_BP = Data.BP[item_name]
                         if f ~= nil and game_items_recieved[item_name] >= items_owned[item_name] then
                             --ExecuteInGameThread(function ()
                                 Result = f()
