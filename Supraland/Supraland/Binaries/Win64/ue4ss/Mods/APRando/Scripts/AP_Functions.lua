@@ -50,6 +50,7 @@ FailOnce = false
 MoonsPlaced = -1
 GreenPlaced = -1
 FirstReplaced = false
+GiveEarlySpeedAtStartup = false
 svr = ""
 slt = ""
 Result = nil
@@ -167,7 +168,7 @@ function ConnectAP(server, slot, password)
             AP_server:ConnectUpdate(nil, {"Lua-APClientPP"})
         end
         
-        print("Players:")
+        print("Players:\n")
         local players = AP_server:get_players()
         for _, player in ipairs(players) do
             print("  " .. tostring(player.slot) .. ": " .. player.name ..
@@ -177,16 +178,20 @@ function ConnectAP(server, slot, password)
         
         Connected = "True"
         
-        
+         
         if slot_data["earlyspeed"] == 2 then
-            print("Granting Early Speed")
-            local item_name = "ProgSpeedJump"
-            items_owned[item_name] = 1
-            game_items_recieved[item_name] = 1
-            local f = item_functions.item_to_func[item_name]
-            f(items_owned[item_name])
+            if InGame then
+                print("Granting Early Speed")
+                local item_name = "ProgSpeedJump"
+                items_owned[item_name] = 1
+                game_items_recieved[item_name] = 1
+                local f = item_functions.item_to_func[item_name]
+                f(items_owned[item_name])
+            else
+                GiveEarlySpeedAtStartup = true
+            end
         end
-        
+
         local to_scout = {}
         if #names_scouted == 0 then
             for name, value in pairs(Data.L) do
@@ -385,23 +390,30 @@ function ConnectAP(server, slot, password)
             -- for k,v in pairs(item) do
             --     print(k .. ": "..v)
             -- end
-            local game = AP_server:get_player_game(item.player)
-            local item_name = AP_server:get_item_name(item.item, game)
-            --print(item.item .. ": " .. game .. ": " .. ap:get_item_name(item.item, game) .. "\n") --add writing to save map here?
-            if util.locations_checked[item.location] == 1 then
-                Last_sent = item_name
-            end
+            local succes, err = pcall(function(...)
+                local game = AP_server:get_player_game(item.player)
+                local item_name = AP_server:get_item_name(item.item, game)
+                --print(item.item .. ": " .. game .. ": " .. ap:get_item_name(item.item, game) .. "\n") --add writing to save map here?
+                if util.locations_checked[item.location] == 1 then
+                    Last_sent = item_name
+                end
 
-            names_scouted[item.location] = item_name
-            if item.flags == AP_server.ItemFlags.FLAG_ADVANCEMENT then
-                item_flags["f_" .. item.location] = 2
-            elseif item.flags == AP_server.ItemFlags.FLAG_TRAP then
-                item_flags["f_" .. item.location] = 1
-            else
-                item_flags["f_" .. item.location] = 0
+                names_scouted[item.location] = item_name
+                if item.flags == AP_server.ItemFlags.FLAG_ADVANCEMENT then
+                    item_flags["f_" .. item.location] = 2
+                elseif item.flags == AP_server.ItemFlags.FLAG_TRAP then
+                    item_flags["f_" .. item.location] = 1
+                else
+                    item_flags["f_" .. item.location] = 0
+                end    
+            end)
+            if not succes then
+                print("Failed during scouting locations\n")
+                print(err)
             end
-            
         end
+            
+        
         print("Updating text\n")
         UpdateText()
         if APLogos == nil then
@@ -606,7 +618,7 @@ end
 function PopulateItems()
     print("Populating Items\n")
     if not InGame then
-        print("Not ingame yet")
+        print("Not ingame yet\n")
         return
     end
 
@@ -1518,6 +1530,22 @@ NotifyOnNewObject("/Script/Engine.Level", function ()
         InGame = true
         if AP_server ~= nil and State == AP.State.SLOT_CONNECTED then
             ExecuteInGameThread(PopulateItems)
+        end
+        if GiveEarlySpeedAtStartup then 
+            ExecuteInGameThread(function(...)
+                print("Granting Early Speed")
+                local item_name = "ProgSpeedJump"
+                if items_owned[item_name] ~= nil then
+                    items_owned[item_name] = items_owned[item_name] + 1
+                    game_items_recieved[item_name] = game_items_recieved[item_name] + 1
+                else
+                    items_owned[item_name] = 1
+                    game_items_recieved[item_name] = 1
+                end
+                local f = item_functions.item_to_func[item_name]
+                f(items_owned[item_name])
+            end)
+            
         end
     else
         InGame = nil
