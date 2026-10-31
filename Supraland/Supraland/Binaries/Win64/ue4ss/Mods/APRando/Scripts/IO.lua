@@ -2,6 +2,7 @@ local UEHelpers = require("UEHelpers")
 local util = require("utility")
 local base64 = require("base64")
 
+
 AP_save_data = {}
 Last_Slot = -1
 LoadedSave = false
@@ -49,19 +50,24 @@ local function parseLine(p1, p2)
             if value == nil then
                 print(string.format("Error loading values %s %s\n", p1, p2))
             elseif prefix:sub(1,1) == "l" then
-                util.locations_checked[tonumber(name)] = value
+                locations_checked[tonumber(name)] = value
             elseif prefix:sub(1,1) == "i" then
                 game_items_recieved[name] = value
             elseif prefix:sub(1,1) == "f" then
                 item_flags["f_" .. name] = value
             elseif prefix:sub(1,1) == "b" then
                 barrels_found[name] = value
+            elseif p1 == "u_carrot" then
+                UnlockedCarrot = value
             elseif p1 == "s_deathlink" then
                 DeathLink_Enabled = value
-            elseif prefix:sub(1,1) == "v" then
-                if Player.Player ~= nil then
-                    Player.Player.ProgressPoints = value
+            elseif p1 == "v_progresspoints" then
+                AP_save_data["v_progresspoints"] = value
+
+                if Player.Player == nil then
+                        Player.Player = FindFirstOf("FirstPersonCharacter_C")
                 end
+                Player.Player.ProgressPoints = value
             end
         end
         
@@ -143,24 +149,36 @@ function CheckSlotAP(slot)
     --print("Loading from", savePath.. "\n")
 
     local f = io.open(savePath, "r")
-    if not f then return false end
+    if not f then return nil end
 
+    local goaled = false
+    local slot = ""
+    local time = 0
+    pcall(function(...)
+        time = io.popen("stat -c %Y " .. savePath):read()    
+    end)
+    
     for line in f:lines() do
         if line:len() > 0 then
             local split_line = split(line, "\t")
             if split_line[2] == nil then
                 split_line[2] = ""
             end
-            if split_line[1] == "server" then
-                f:close()
-                return true
+            if split_line[1] == "slot" then
+                slot = split_line[2]
+            elseif split_line[1] == "l_678001" and split_line[2] == "1" then
+                goaled = true
             end
             
         end
-
     end
     f:close()
-    return false
+
+    if slot ~= "" then
+        return {slot, goaled, time}
+    else
+        return nil
+    end
 end
 
 
@@ -176,7 +194,7 @@ function SaveSave(slot)
         slot = Last_Slot
     end
     print("Saving " .. tostring(slot).. "\n")
-    for k,v in pairs(util.locations_checked) do
+    for k,v in pairs(locations_checked) do
         AP_save_data["l_" .. tostring(k)] = v
     end
     for k,v in pairs(names_scouted) do
@@ -191,6 +209,10 @@ function SaveSave(slot)
     for k,v in pairs(barrels_found) do
         AP_save_data["b_".. tostring(k)] = v
     end
+    if UnlockedCarrot == 1 then
+        AP_save_data["u_carrot"] = 1
+    end
+
     if Player.Player == nil then
         Player.Player = FindFirstOf("FirstPersonCharacter_C")
     end

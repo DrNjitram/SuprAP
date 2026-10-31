@@ -1,4 +1,4 @@
-local AP = require "lua-apclientpp"
+local AP = require 'lua-apclientpp'
 local UI = require("UI")
 local util = require("utility")
 local item_functions = require("item_functions")
@@ -30,7 +30,7 @@ game_items_recieved = {}
 names_scouted = {}
 APLogos = {}
 item_flags = {}
-slot_data = {}
+local_slot_data = {}
 barrels_found = {}
 
 ---@class UTextBlock
@@ -54,6 +54,12 @@ GiveEarlySpeedAtStartup = false
 svr = ""
 slt = ""
 Result = nil
+
+to_scout = {}
+to_send = {}
+to_hint = {}
+to_sync = false
+to_goal = false
 
 ---@param text string
 ---@param chunkSize integer
@@ -94,14 +100,17 @@ local function joinByChunk(text, chunkSize, sep)
 end
 
 function UpdateText()
-    local res, err, _ = pcall(function (...)
-        local str = string.format('SuprAP %s \nConnected\t%s\nLast Location\t%s\nLast Item Sent\t%s\nLast Item Recieved\t%s\n%s\n%s\n%s',
-                ModVersion, Connected, Last_checked, Last_sent, Last_item, joinByChunk(Last_msg[1], msg_length), joinByChunk(Last_msg[2], msg_length), joinByChunk(Last_msg[3], msg_length))
 
-        SetText(str)
-    end)
-    if res ~= true then
-        print(err)
+    if ShowChat == true or InMenu then
+        local res, err, _ = pcall(function (...)
+            local str = string.format('SuprAP %s \nConnected\t%s\nLast Location\t%s\nLast Item Sent\t%s\nLast Item Recieved\t%s\n%s\n%s\n%s',
+                    ModVersion, Connected, Last_checked, Last_sent, Last_item, joinByChunk(Last_msg[1], msg_length), joinByChunk(Last_msg[2], msg_length), joinByChunk(Last_msg[3], msg_length))
+
+            SetText(str)
+        end)
+        if res ~= true then
+            print(err)
+        end
     end
 end
 
@@ -156,12 +165,12 @@ function ConnectAP(server, slot, password)
         print("Slot connected\n")
         for k,v in pairs(slot_data) do
             print(k.." = "..v .. "\n")
-            slot_data[k] = v
+            local_slot_data[k] = v
         end
         print("missing locations: " .. table.concat(AP_server.missing_locations, ", ") .. "\n")
         print("checked locations: " .. table.concat(AP_server.checked_locations, ", ") .. "\n")
         
-        if slot_data["deathlink"] == 1 then
+        if local_slot_data["deathlink"] == 1 then
             AP_server:ConnectUpdate(nil, {"Lua-APClientPP", "DeathLink"})
             DeathLink_Enabled = true
         else
@@ -179,7 +188,7 @@ function ConnectAP(server, slot, password)
         Connected = "True"
         
          
-        if slot_data["earlyspeed"] == 2 then
+        if local_slot_data["earlyspeed"] == 2 then
             if InGame then
                 print("Granting Early Speed")
                 local item_name = "ProgSpeedJump"
@@ -192,11 +201,11 @@ function ConnectAP(server, slot, password)
             end
         end
 
-        local to_scout = {}
+        
         if #names_scouted == 0 then
             for name, value in pairs(Data.L) do
-                if not HasSubstring(name, {"Coin"}) or (HasSubstring(name, {"Coin"}) and slot_data["coinsanity"] == 1) then
-                    if not HasSubstring(name, {"EnemySpawn"}) or (HasSubstring(name, {"EnemySpawn"}) and slot_data["gravesanity"] == 1) then
+                if not HasSubstring(name, {"Coin"}) or (HasSubstring(name, {"Coin"}) and local_slot_data["coinsanity"] == 1) then
+                    if not HasSubstring(name, {"EnemySpawn"}) or (HasSubstring(name, {"EnemySpawn"}) and local_slot_data["gravesanity"] == 1) then
                         if names_scouted[value] == nil then
                             to_scout[#to_scout+1] = value    
                         end  
@@ -204,26 +213,37 @@ function ConnectAP(server, slot, password)
                 end
             end
         end
-        AP_server:LocationScouts(to_scout, 0)
+
+        --AP_server:LocationScouts(to_scout, 0)
         
         for _, location in ipairs(AP_server.checked_locations) do
-            if util.locations_checked[location] == nil then
-                util.locations_checked[location] = 1
+            if locations_checked[location] == nil then
+                locations_checked[location] = 1
             end
         end
 
-        if #util.locations_checked > 0 then
-            local checked = {}
-            for k, _ in pairs(util.locations_checked) do
-                if k == 678001 then
-                    AP_server:StatusUpdate(AP_server.ClientStatus.GOAL)
-                else
-                    checked[#checked+1] = k
-                end
-
-                AddProgressPoint()
+        local locations_missing = {}
+        for _, location in ipairs(AP_server.missing_locations) do
+            if locations_missing[location] == nil then
+                locations_missing[location] = 1
             end
-            AP_server:LocationChecks(checked)
+        end
+
+        Player.Player.ProgressPoints = 0
+        for k, v in pairs(locations_checked) do
+            if k == 678001 and v == 1 then
+                to_goal = true
+            elseif locations_missing[k] == 1 then
+                to_send[#to_send+1] = k
+            end
+            if k < 678252 then -- Dont grant progress for coins and spawns
+                AddProgressPoint()    
+            end
+        end
+        
+
+        if AP_save_data["l_678001"] == 1 then
+            to_goal = true
         end
 
         for k,v in pairs(AP_save_data) do
@@ -234,7 +254,7 @@ function ConnectAP(server, slot, password)
 
         ---@class AAPLogo_C
         for _, logo in ipairs(APLogos) do
-            if util.locations_checked[logo.Contains] == 1 then
+            if locations_checked[logo.Contains] == 1 then
                 logo:K2_DestroyActor()
             end
             
@@ -242,6 +262,7 @@ function ConnectAP(server, slot, password)
         ExecuteInGameThread(PopulateItems)
         UpdateTitles()
         UpdateText()
+        
     end
 
     function on_slot_refused(reasons)
@@ -322,6 +343,8 @@ function ConnectAP(server, slot, password)
                         
                     end
 
+
+
                     if items_owned[item_name] == game_items_recieved[item_name] then
                         game_items_recieved[item_name] = game_items_recieved[item_name] + 1
 
@@ -352,7 +375,23 @@ function ConnectAP(server, slot, password)
                             
                         end
                     end
-
+                    if item_name == "ProgSpeedJump" then
+                        Player.Player:Crouchy()
+                        ExecuteInGameThreadWithDelay(100, function()
+                            if Player.Player == nil then
+                                Player.Player = FindFirstOf("FirstPersonCharacter_C")
+                            end
+                            Player.Player:UnCrouchy()
+                            -- ExecuteInGameThreadWithDelay(100, function()
+                            --     if Player.Player == nil then
+                            --         Player.Player = FindFirstOf("FirstPersonCharacter_C")
+                            --     end
+                            --     Player.Player:Jump();   
+                            -- end)
+                               
+                        end)
+                        
+                    end
                     -- Send the Item_BP to some other function or expose within the BP mod
                 -- print(item.item .. ": " .. item_name .. "\n")-- ..": ".. Data.PN[item_name] .. ": " ..Item_BP .."\n")          
                     if f ~= nil and Result ~= true then
@@ -366,6 +405,16 @@ function ConnectAP(server, slot, password)
             end
         end
 
+        
+        if InGame then
+            if game_items_recieved["RedMoon"] == nil or game_items_recieved["RedMoon"] == 0 then
+                Player.Player.RedCrystals = 0
+            end
+            if game_items_recieved["GreenMoon"] == nil or game_items_recieved["GreenMoon"] == 0 then
+                Player.Player.Moons = 0
+            end
+        end
+                        
         local succes, err = pcall(function (...)
             if InGame then
                 ExecuteInGameThread(function ()
@@ -379,6 +428,8 @@ function ConnectAP(server, slot, password)
             print("Failed during recieve item cleanup\n")
             print(err)
         end
+        Player.Player:ChangeWeaponSlot(true)
+        Player.Player:ChangeWeaponSlot(false)
         print("Finished Recieving items\n")
     end
 
@@ -394,7 +445,7 @@ function ConnectAP(server, slot, password)
                 local game = AP_server:get_player_game(item.player)
                 local item_name = AP_server:get_item_name(item.item, game)
                 --print(item.item .. ": " .. game .. ": " .. ap:get_item_name(item.item, game) .. "\n") --add writing to save map here?
-                if util.locations_checked[item.location] == 1 then
+                if locations_checked[item.location] == 1 then
                     Last_sent = item_name
                 end
 
@@ -555,11 +606,14 @@ local function TryReplaceActor(actor, cost)
     if cost == nil then
         cost = 0
     end
+    if actor == nil then
+        return
+    end
     local succes, err = pcall(function (...)
         local name = util.GetObjectName(actor)
         local path = util.GetPath(actor)
         --if not HasSubstring(name, Data.BV) then
-            util.replaced[name] = 1
+            replaced[name] = 1
             name = name:gsub("+", "_")
 
             local title = tostring(Data.L[name])
@@ -575,7 +629,7 @@ local function TryReplaceActor(actor, cost)
             end
 
 
-            if util.locations_checked[location] == 1 then
+            if locations_checked[location] == 1 then
                 if actor.Name ~= nil and actor.Name:IsValid() then
                     actor.Name:SetHiddenInGame(true, true)
                 end
@@ -607,7 +661,7 @@ function PopulateBarrels()
             local item = StaticFindObject("/Game/FirstPersonBP/Maps/Map.Map:PersistentLevel." .. name)
             if item and item:IsValid() then
                 local item_name = util.GetObjectName(item)
-                if util.replaced[util.GetObjectName(item)] == nil and item.IsInShop then
+                if replaced[util.GetObjectName(item)] == nil and item.IsInShop then
                     TryReplaceActor(item, item.Cost)
                 end
             end
@@ -623,9 +677,11 @@ function PopulateItems()
     end
 
     FirstReplaced = true
-    util.shop_items = {}
-    util.other_items = {}
-    util.heroes = {}
+    shop_items = {}
+    other_items = {}
+    heroes = {}
+    coins = {}
+    graves = {}
 
     local succes, err = pcall(function (...)
         --print("Trying to find Actors")
@@ -639,7 +695,7 @@ function PopulateItems()
                 local item = StaticFindObject(name)
                 if item and item:IsValid() then
                     local item_name = util.GetObjectName(item)
-                    if util.replaced[util.GetObjectName(item)] == nil then
+                    if replaced[util.GetObjectName(item)] == nil then
                         --print("Checking if " .. util.GetObjectName(item) .. " has cost")
                         --if item and item:IsValid() and item:GetPropertyValue("Cost") and type(item.Cost) == "number" then
                             --print(item:GetFullName() .. "\n")
@@ -648,7 +704,7 @@ function PopulateItems()
                                 --print("Check 2")
                                 
                                     --print("Check 3")
-                                util.shop_items[#util.shop_items+1] = item
+                                shop_items[#shop_items+1] = item
                                 
                             --end
                         --end    
@@ -670,7 +726,7 @@ function PopulateItems()
         for _, name in ipairs(names) do
             if AP_save_data["b_" .. name] == 1 or barrels_found[name] then
                 -- Opened barrel but never purchased
-                if util.locations_checked[Data.L[name]] ~= 1 and APLogos[name] == nil then
+                if locations_checked[Data.L[name]] ~= 1 and APLogos[name] == nil then
                     print("Replacing barrel: " .. name .. "\n")
                     local transform = Data.T[name]
                     transform.Rotation = KismetMathLibrary():Quat_MakeFromEuler({X = transform.Rotation.Pitch, Y=transform.Rotation.Roll, Z=transform.Rotation.Yaw})
@@ -697,8 +753,8 @@ function PopulateItems()
         if items ~= nil and #items > 0 then
             for _, item in ipairs(items) do
                 if item:IsValid() then
-                    if util.replaced[util.GetObjectName(item)] == nil then
-                        util.other_items[#util.other_items+1] = item
+                    if replaced[util.GetObjectName(item)] == nil then
+                        other_items[#other_items+1] = item
                     end
                 end
             end    
@@ -710,30 +766,69 @@ function PopulateItems()
         print(err)
     end
     
-
-    local success, err = pcall(function (...)
-        items = FindAllOf("DeadHero_C")
-        if items ~= nil and #items > 0 then
-            for _, item in ipairs(items) do
-                if item:IsValid() then
-                    if util.replaced[util.GetObjectName(item)] == nil then
-                        util.other_items[#util.other_items+1] = item
+    if local_slot_data["deadheroes"] == 1 then
+        local success, err = pcall(function (...)
+            items = FindAllOf("DeadHero_C")
+            if items ~= nil and #items > 0 then
+                for _, item in ipairs(items) do
+                    if item:IsValid() then
+                        if replaced[util.GetObjectName(item)] == nil then
+                            other_items[#other_items+1] = item
+                        end
                     end
-                end
-            end    
+                end    
+            end
+            print("Grabbed heroes\n")    
+        end)
+        if not succes then
+            print("Failed to grab Heroes\n")
+            print(err)
         end
-        print("Grabbed heroes\n")    
-    end)
-    if not succes then
-        print("Failed to grab Heroes\n")
-        print(err)
     end
+
+    -- local success, err = pcall(function (...)
+    --     items = FindAllOf("Coin_C")
+    --     if items ~= nil and #items > 0 then
+    --         for _, item in ipairs(items) do
+    --             if item:IsValid() then
+    --                 if replaced[util.GetObjectName(item)] == nil then
+    --                     coins[#coins+1] = item
+    --                 end
+    --             end
+    --         end    
+    --     end
+    --     print("Grabbed coins\n")    
+    -- end)
+    -- if not succes then
+    --     print("Failed to grab Coins\n")
+    --     print(err)
+    -- end
+
+    -- local success, err = pcall(function (...)
+    --     for g in {"1", "2", "3"} do
+    --         items = FindAllOf("EnemySpawn".. g .. "_C")
+    --         if items ~= nil and #items > 0 then
+    --             for _, item in ipairs(items) do
+    --                 if item:IsValid() then
+    --                     if replaced[util.GetObjectName(item)] == nil then
+    --                         graves[#graves+1] = item
+    --                     end
+    --                 end
+    --             end    
+    --         end
+    --     end
+    --     print("Grabbed graves\n")    
+    -- end)
+    -- if not succes then
+    --     print("Failed to grab graves\n")
+    --     print(err)
+    -- end
     
 
     local success, err = pcall(function (...)
-        if #util.shop_items > 0 then
+        if #shop_items > 0 then
             ---@type AActor
-            for _, shop_item in ipairs(util.shop_items) do
+            for _, shop_item in ipairs(shop_items) do
                 pcall(function (...)
                     if shop_item.IsInShop then
                         TryReplaceActor(shop_item, shop_item.Cost)
@@ -750,8 +845,8 @@ function PopulateItems()
     
 
     local success, err = pcall(function (...)
-        if #util.other_items > 0 then
-            for _, other_item in ipairs(util.other_items) do
+        if #other_items > 0 then
+            for _, other_item in ipairs(other_items) do
                 TryReplaceActor(other_item)
             end
         end
@@ -818,8 +913,8 @@ local function SetupObjectLists()
                     --Player.Player.Moons = Player.Player.Moons - 1
                 end
             end
-            if util.locations_checked[location] ~= 1 and util.found[location] ~= 1 then
-                util.found[location] = 1
+            if locations_checked[location] ~= 1 and found[location] ~= 1 then
+                found[location] = 1
                 local transform = chest:GetTransform()
                 local rotator = KismetMathLibrary():Quat_MakeFromEuler({X = 0, Y=0, Z=90})
                 transform.Rotation = KismetMathLibrary():Multiply_QuatQuat(transform.Rotation, rotator)
@@ -829,10 +924,10 @@ local function SetupObjectLists()
                 
 
                 print("Opened Chest " .. name .. ": " .. tostring(location) .. "\n")
-            elseif util.locations_checked[location] ~= 1 then
+            elseif locations_checked[location] ~= 1 then
                 print("already got item\n")
                 --chest.Spawnthing = FindFirstOf("Coin_C")
-                util.found[location] = 1
+                found[location] = 1
             end    
         end)
         if not succes then
@@ -944,10 +1039,10 @@ local function SetupObjectLists()
             
             local location = 678001
             Last_sent = "Victory"
-            util.locations_checked[location] = 1
+            locations_checked[location] = 1
             print("Killed Meatbag")
             if AP_server then
-                AP_server:StatusUpdate(AP_server.ClientStatus.GOAL)
+                to_goal = true
                 AddProgressPoint()
 
             end
@@ -1124,6 +1219,85 @@ local function SetupObjectLists()
         --print(err)
     end
 
+    ---Default__SwordDamage_C
+    ---Default__GunDamage_C
+    ---Default__Grave3Damage_C
+    local succes, err, PostID = pcall(RegisterHook, "/Game/Blueprints/Levelobjects/EnemySpawn1.EnemySpawn1_C:ReceiveAnyDamage", function (self, _DamageType, Instigator, _Causer)
+        local grave = util.GetObjectName(self:get())
+        local weapon = util.GetObjectName(Instigator:get())
+
+        if locations_checked[Data.L[grave]] ~= 1 then
+            if Player.Player == nil then
+                Player.Player = FindFirstOf("FirstPersonCharacter_C")
+            end
+
+            if (weapon == "Default__SwordDamage_C" and Player.Player.SkillSwordKillGrave1 == true) or (weapon == "Default__GunDamage_C" and Player.Player["Skill Gun Kill Grave 1"] == true) then
+                print("Destroyed grave ".. grave  .. "\n")
+                locations_checked[Data.L[grave]] = 1
+                if local_slot_data["gravesanity"] == 1 then
+                    Send_Queue[Data.L[grave]] = 1
+                end
+            end
+        end
+    end)
+    if not succes then
+        print("Failed to hook graves\n")
+        print(err)
+    else
+        PreID = err
+        Hooks[#Hooks+1] = {PreID, PostID}
+    end
+    local succes, err, PostID = pcall(RegisterHook, "/Game/Blueprints/Levelobjects/EnemySpawn2.EnemySpawn2_C:ReceiveAnyDamage", function (self, _DamageType, Instigator, _Causer)
+        local grave = util.GetObjectName(self:get())
+        local weapon = util.GetObjectName(Instigator:get())
+        if locations_checked[Data.L[grave]] ~= 1 then
+            if Player.Player == nil then
+                Player.Player = FindFirstOf("FirstPersonCharacter_C")
+            end
+
+            if (weapon == "Default__SwordDamage_C" and Player.Player.SkillSwordKillGrave2 == true) or (weapon == "Default__GunDamage_C" and Player.Player["Skill Gun Kill Grave 2"] == true) then
+                print("Destroyed grave ".. grave  .. "\n")
+                locations_checked[Data.L[grave]] = 1
+                if local_slot_data["gravesanity"] == 1 then
+                    Send_Queue[Data.L[grave]] = 1
+                    
+                end
+            end
+        end
+    end)
+    if not succes then
+        print("Failed to hook graves\n")
+        print(err)
+    else
+        PreID = err
+        Hooks[#Hooks+1] = {PreID, PostID}
+    end
+    local succes, err, PostID = pcall(RegisterHook, "/Game/Blueprints/Levelobjects/EnemySpawn3.EnemySpawn3_C:ReceiveAnyDamage", function (self, _DamageType, Instigator, _Causer)
+        local grave = util.GetObjectName(self:get())
+        local weapon = util.GetObjectName(Instigator:get())
+        if locations_checked[Data.L[grave]] ~= 1 then
+            if Player.Player == nil then
+                Player.Player = FindFirstOf("FirstPersonCharacter_C")
+            end
+
+            if weapon == "Default__Grave3Damage_C" then
+                print("Destroyed grave ".. grave  .. "\n")
+                locations_checked[Data.L[grave]] = 1
+                if local_slot_data["gravesanity"] == 1 then
+                    Send_Queue[Data.L[grave]] = 1
+                    
+                end
+            end
+        end
+    end)
+    if not succes then
+        print("Failed to hook graves\n")
+        print(err)
+    else
+        PreID = err
+        Hooks[#Hooks+1] = {PreID, PostID}
+    end
+    
 
 end
 
@@ -1150,50 +1324,78 @@ function ConnectAndPoll()
                 end
                 local succ, err = pcall(function (...)
                     if AP_server ~= nil then
-                        AP_server:poll()
-                    end
-
-                    if AP_server ~= nil then
-                        local not_found = true
-                        while not_found do
-                            for k, v in pairs(Send_Queue) do
-                                if v == 1 then
-                                    AP_server:LocationChecks({k})
-                                    Send_Queue[k] = nil
-                                    not_found = false
-                                end
-                            end
-                            not_found = false
-                        end
-                    end
-                
-
-                    if AP_server ~= nil then
                         State = AP_server:get_state()
                     else
                         print("Room disconnected")
                         State = AP.State.DISCONNECTED
                         return
                     end
-                    
 
+
+                    if AP_server ~= nil then
+                        AP_server:poll()
+                    end
+
+                    if AP_server ~= nil then
+                        for k, v in pairs(Send_Queue) do
+                            if v == 1 then
+                                to_send[#to_send+1] = k
+                                Send_Queue[k] = nil
+                                
+                            end
+                        end
+                    end
+                
+                    if #to_scout > 0 then
+                        AP_server:LocationScouts(to_scout, 0)
+                        to_scout = {}
+                    end
+                    
+                    if #to_send > 0 then
+                        AP_server:LocationChecks(to_send, 0)
+                        to_send = {}
+                    end
+
+                    if #to_hint > 0 then
+                        AP_server:LocationScouts(to_hint, 1)
+                        to_hint = {}
+                    end
+
+                    if to_sync == true then
+                        AP_server:Sync()
+                        to_sync = false
+                    end
+
+                    if to_goal == true then
+                        AP_server:StatusUpdate(AP_server.ClientStatus.GOAL)
+                        to_goal = false
+                    end
+
+                    if Message_Queue ~= nil then
+                        AP_server:Say(Message_Queue)
+                        Message_Queue = nil
+                    end
+                    
 
                     if State ~= AP.State.SLOT_CONNECTED then
                         --ExecuteAsync(function ()
                             if AP_server == nil or State == AP.State.SLOT_CONNECTED then
                                 print("Slot connected\n")
-                                return
+                                --return
                             end
                             if State == AP.State.DISCONNECTED and os.clock() - 30 > start_time then
                                 print("Time out after 30 seconds. Retry later")
                                 AP_server = nil
-                                return
+                                --return
                             elseif State ~= AP.State.SLOT_CONNECTED and os.clock() - 10 > start_time then
-                                print("Could not connect to room. Retry please with different info")
+                                print("Could not connect to room. Retry please with different info\n")
                                 Connected = "False"
                                 AP_server = nil
                                 UpdateText()
-                                return
+                                if not InGame and ConnectionText ~= nil and ConnectionText:IsValid() then
+                                    ConnectionText:SetText(FText("Connected"))
+                                end
+                                --return
                             end
                         --end)
                     elseif not InGame and ConnectionText ~= nil and ConnectionText:IsValid() then
@@ -1322,10 +1524,10 @@ function UnLoadAP()
         Last_item = "NA"
         Last_sent = "NA"
         Last_msg = {}
-        util.chests = {}
-        util.locations_checked = {}
-        util.found = {}
-        util.replaced = {}
+        chests = {}
+        locations_checked = {}
+        found = {}
+        replaced = {}
         
         HideText()
     end)
@@ -1351,19 +1553,19 @@ NotifyOnNewObject("/Script/UMG.UserWidget", function ()
                     print("clicked delete button: " .. tostring(SaveSlot.SlotNumber) .. "\n")
                     DeleteSave(SaveSlot.SlotNumber)
 
-                    -- ---@class UConnectionScreen_C
-                    -- local Screen = FindFirstOf("ConnectionScreen_C")
-                    -- if SaveSlot.SlotNumber == 1 then
-                    --     Screen.Save_1:SetVisibility(0)
-                    -- elseif SaveSlot.SlotNumber == 2 then
-                    --     Screen.Save_1:SetVisibility(0)
-                    -- elseif SaveSlot.SlotNumber == 3 then
-                    --     Screen.Save_1:SetVisibility(0)
-                    -- elseif SaveSlot.SlotNumber == 4 then
-                    --     Screen.Save_1:SetVisibility(0)
-                    -- elseif SaveSlot.SlotNumber == 5 then
-                    --     Screen.Save_1:SetVisibility(0)
-                    -- end
+                    ---@class UConnectionScreen_C
+                    local Screen = FindFirstOf("ConnectionScreen_C")
+                    if SaveSlot.SlotNumber == 1 then
+                        Screen.Save_1:RemoveFromViewport()
+                    elseif SaveSlot.SlotNumber == 2 then
+                        Screen.Save_1:RemoveFromViewport()
+                    elseif SaveSlot.SlotNumber == 3 then
+                        Screen.Save_1:RemoveFromViewport()
+                    elseif SaveSlot.SlotNumber == 4 then
+                        Screen.Save_1:RemoveFromViewport()
+                    elseif SaveSlot.SlotNumber == 5 then
+                        Screen.Save_1:RemoveFromViewport()
+                    end
                 end
                 
             end)
@@ -1462,6 +1664,47 @@ NotifyOnNewObject("/Script/UMG.UserWidget", function ()
             else
                 --print("Failed to hook Load Game Backup\n")
                 --print(err)
+            end
+        end
+
+        if not hook_once["SendChat"] then
+            local succes, err = pcall(RegisterHook,"/Game/Mods/APMod/TeleportRedville.TeleportRedville_C:BndEvt__TeleportRedville_Button_235_K2Node_ComponentBoundEvent_2_OnButtonClickedEvent__DelegateSignature", function (self, ...)    
+            if InMenu then
+                Message_Queue = util.ModActor.TeleportRedville.SendMessageBox:GetText():ToString()
+                util.ModActor.TeleportRedville.SendMessageBox:SetText(FText(""))
+            end    
+                
+                
+            end)
+            if succes then
+                print("Hooked SendChat\n")
+                hook_once["SendChat"] = true
+            else
+                print("Failed to hook SendChat\n")
+                print(err)
+            end
+        end
+
+        if not hook_once["ToggleChat"] then
+            local succes, err = pcall(RegisterHook,"/Game/Mods/APMod/TeleportRedville.TeleportRedville_C:BndEvt__TeleportRedville_ShowChatBox_K2Node_ComponentBoundEvent_1_OnCheckBoxComponentStateChanged__DelegateSignature", function (self, ...)    
+                ---@class UTeleportRedville_C
+                local tp_redville = self:get()
+                ShowChat = tp_redville.ShowChatBox:IsChecked()
+                print("Toggled chat to " .. tostring(ShowChat) .. "\n")
+                if ShowChat == true or InMenu then
+                    UpdateText()
+                elseif ShowChat == false then
+                    
+                    HideText()
+                end
+                
+            end)
+            if succes then
+                print("Hooked ToggleChat\n")
+                hook_once["ToggleChat"] = true
+            else
+                -- print("Failed to hook ToggleChat\n")
+                -- print(err)
             end
         end
 
@@ -1568,9 +1811,19 @@ function MenuEdits(unpause)
     if Player.Player['Pause Menu'].MainMenuButtonsAreShown and not unpause then
         print("Game Paused")
         util.ModActor:ShowMenu()
+        InMenu = true
+        ShowText()
+        if UnlockedCarrot == 1 then
+            util.ModActor:ShowCarrot()
+        end
         SaveSave()
     else
+        InMenu = false
+        if not ShowChat then
+            HideText()
+        end
         util.ModActor:HideMenu()
+        util.ModActor:HideCarrot()
         print("Game Unpaused")
     end
     ExecuteWithDelay(100, function ()
@@ -1579,6 +1832,7 @@ function MenuEdits(unpause)
         end
         if not Player.Player['Pause Menu'].MainMenuButtonsAreShown then
             util.ModActor:HideMenu()
+            util.ModActor:HideCarrot()
             print("Game Unpaused")
         end
     end)
@@ -1603,41 +1857,32 @@ function ConnectionDialogue(show)
     ---@class UConnectionScreen_C
     local Screen = util.ModActor.ConnectionScreen
 
-    if CheckSlotAP(1) then
-        print("Detected AP save in slot 1\n")
-        Screen.Save_1:SetOpacity(1.0)
-    else
-        Screen.Save_1:SetOpacity(0.0)
-    end
-    if CheckSlotAP(2) then
-        print("Detected AP save in slot 2\n")
-        Screen.Save_2:SetOpacity(1.0)
-    else
-        Screen.Save_2:SetOpacity(0.0)
-    end
-    if CheckSlotAP(3) then
-        print("Detected AP save in slot 3\n")
-        Screen.Save_3:SetOpacity(1.0)
-    else
-        Screen.Save_3:SetOpacity(0.0)
-    end
-    if CheckSlotAP(4) then
-        print("Detected AP save in slot 4\n")
-        Screen.Save_4:SetOpacity(1.0)
-    else
-        Screen.Save_4:SetOpacity(0.0)
-    end
-    if CheckSlotAP(5) then
-        print("Detected AP save in slot 5\n")
-        Screen.Save_5:SetOpacity(1.0)
-    else
-        Screen.Save_5:SetOpacity(0.0)
+    local saveinfos = {Screen.Save_1, Screen.Save_2, Screen.Save_3, Screen.Save_4, Screen.Save_5}
+    for _, slot_no in pairs({1, 2, 3, 4, 5}) do
+        local res = CheckSlotAP(slot_no)
+        ---@class USaveInfo_C
+        local saveinfo = saveinfos[slot_no]
+        if res ~= nil and saveinfo ~= nil then
+            print("Detected AP save in slot ".. slot_no .. "\n")
+            saveinfo:AddToViewport(0)
+            local succes, err = pcall(function(...)
+                saveinfo.SlotBox:SetText(FText(tostring(res[1])))
+                saveinfo.GoalBox:SetText(FText(tostring(res[2])))
+                saveinfo.TimeBox:SetText(FText(tostring(os.date("%c", res[3])))) 
+                
+                
+            end)
+            if not succes then
+                print(err)
+            end
+        else
+            saveinfo:RemoveFromViewport()
+        end
     end
 
     if show then
         util.ModActor:ShowConnection()
 
-        ---@class UConnectionDialogue_C
         local ConnectionDialogue = Screen.ConnectionDialogue_1
         if ConnectionDialogue and ConnectionDialogue:IsValid() then
             if AP_save_data["server"] then

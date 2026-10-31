@@ -25,13 +25,6 @@ local util = {}
 ---@class AModActor_C
 util.ModActor = nil
 
----@type Achest_C[]
-util.chests = {}
-
-util.locations_checked = {}
-
-util.found = {}
-util.replaced = {}
 
 
 function util.TeleportPlayerToActor(targetActor)
@@ -220,15 +213,15 @@ end
 
 RegisterKeyBind(Key.F6, function ()
     
-    util.chests = FindAllOf("Chest_C")
+    chests = FindAllOf("Chest_C")
     
     print("Chest list loaded")
 
     
-    util.found = {}
+    found = {}
     
 
-    for _, chest in ipairs(util.chests) do
+    for _, chest in ipairs(chests) do
         
         print(util.GetObjectName(chest))
         print(util.GetObjectName(chest.Spawnthing))
@@ -251,12 +244,16 @@ function tableContains(table, value)
 end
 
 function Kill()
+
+
     ---@type AFirstPersonCharacter_C
     local player = FindFirstOf("FirstPersonCharacter_C")
-    player.Health = 0
-    player.IsDead = true
+    player.RespawnEvent()
+    -- player.Health = 0
+    -- player.IsDead = true
     
 
+    
 end
 
 

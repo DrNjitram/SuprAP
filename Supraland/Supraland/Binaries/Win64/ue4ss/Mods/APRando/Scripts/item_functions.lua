@@ -262,9 +262,9 @@ function funcs.ProgForceBeam(count)
     if count == 1 then
         Player.Player.SkillHasGrapple = true
     elseif count == 2 then
-        Player.Player.SkillGrappleForceCube = true
-    elseif count == 3 then
         Player.Player.SkillGrappleGold = true
+    elseif count == 3 then
+        Player.Player.SkillGrappleForceCube = true
     end
     return true
 end
@@ -320,13 +320,21 @@ end
 
 function funcs.ProgHealthRegen(count)
     Player.Player.HealthIsRegenerating = true
+    local amount = 0
     if count == 1 then
-        Player.Player.HealthRegenerateToX  = 25
+        amount = 25
+        --Player.Player.HealthRegenerateToX  = 25
     elseif count > 1 and count <= 17 then
-        Player.Player.HealthRegenerateToX = Player.Player.HealthRegenerateToX + 5
+        amount = 5
+        --Player.Player.HealthRegenerateToX = Player.Player.HealthRegenerateToX + 5
     elseif count == 18 then
-        Player.Player.HealthRegenerateToX = Player.Player.HealthRegenerateToX + 10
+        amount = 10
+        --Player.Player.HealthRegenerateToX = Player.Player.HealthRegenerateToX + 10
     end
+    if Player.Player.DoubleHealth == true then
+        amount = 2* amount
+    end
+    Player.Player.HealthRegenerateToX = Player.Player.HealthRegenerateToX + amount
     return true
 end
 
@@ -627,6 +635,29 @@ function funcs.ProgLoot(count)
     return true
 end
 
+function funcs.Grave()
+    Player.Player.HealthAndStuff.remaininggraves = Player.Player.HealthAndStuff.remaininggraves - 1
+    if Player.Player.HealthAndStuff.remaininggraves == 0 then
+        Player.Player.HealthAndStuff.AllGravesDestroyed = true
+    end
+    return true
+end
+
+-- function funcs.Grave2()
+--     Player.Player.HealthAndStuff.remaininggraves = Player.Player.HealthAndStuff.remaininggraves - 1
+--     if Player.Player.HealthAndStuff.remaininggraves == 0 then
+--         Player.Player.HealthAndStuff.AllGravesDestroyed = true
+--     end
+-- end
+
+-- function funcs.Grave3()
+--     Player.Player.HealthAndStuff.remaininggraves = Player.Player.HealthAndStuff.remaininggraves - 1
+--     if Player.Player.HealthAndStuff.remaininggraves == 0 then
+--         Player.Player.HealthAndStuff.AllGravesDestroyed = true
+--     end
+-- end
+
+
 funcs.item_to_func = {
     Map = funcs.Map,
     Buckle = funcs.Buckle,
@@ -694,9 +725,9 @@ funcs.item_to_func = {
     HeroGoku = funcs.HeroGoku,
     HeroGuy = funcs.HeroGuy,
     HeroIndy = funcs.HeroIndy,
-    EnemySpawn1 = nil,
-    EnemySpawn2 = nil,
-    EnemySpawn3 = nil,
+    EnemySpawn1 = funcs.Grave,
+    EnemySpawn2 = funcs.Grave,
+    EnemySpawn3 = funcs.Grave,
     DoubleHealth = funcs.DoubleHealth,
     Shell = funcs.Shell,
     Strong = funcs.Strong,

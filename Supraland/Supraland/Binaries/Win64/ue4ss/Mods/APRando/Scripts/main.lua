@@ -29,8 +29,23 @@ local password = ""
 local BASE_ID = 678000
 
 InGame = false
+InMenu = false
 ManualConnecting = false
+ShowChat = true
 Send_Queue = {}
+Message_Queue = nil
+UnlockedCarrot = 0
+
+locations_checked = {}
+found = {}
+---@type Achest_C[]
+chests = {}
+replaced = {}
+shop_items = {}
+other_items = {}
+heroes = {}
+coins = {}
+graves = {}
 
 Player.SetupHooks()
 
@@ -179,17 +194,15 @@ function get_item(names, send_hint)
         send_hint = 0 -- do not create a hint
     end
 
-    local ids = {}
     for i = 1, #names do
-        ids[#ids+1] = Data.L[names[i]]
+        to_hint[#to_hint+1] = Data.L[names[i]]
     end
     for _, item in ipairs(names) do
             print(item .. "\n")
     end
-    for _, item in ipairs(ids) do
+    for _, item in ipairs(to_hint) do
             print(item .. "\n")
     end
-    AP_server:LocationScouts(ids, send_hint)
 end
 
 
@@ -260,48 +273,53 @@ local function HitObject()
             print("No Hit\n")
             return
         end
-        print(APUtil.GetObjectName(Actor) .. "\n")
-        if Actor ~= nil and Actor:IsValid() and HasSubstring(APUtil.GetObjectName(Actor), {"APLogo"}) then
+        local name = APUtil.GetObjectName(Actor) 
+        print(name .. "\n")
+        if Actor ~= nil and Actor:IsValid() and HasSubstring(name, {"APLogo"}) then
             print(string.format("HitActor: %s\n", Actor:GetFullName()))
             if Actor:GetPropertyValue("Cost") and type(Actor.Cost) == "number" then
                 print("Item has cost of " .. tostring(Actor.Cost) .. "\n")
                 if Actor:GetPropertyValue("Contains") and type(Actor.Contains) == "number" then
                     print("Contains " .. tostring(Actor.Contains) .. "\n")
                 end
-                -- if Player.Player ~= nil then
-                --     print("Player has " .. tostring(Player.Player.Coins) .. " Coins")
-                -- end
-                
-                if Actor.Cost == nil or Actor.Cost == 0 or Actor.Cost <= Player.Player.Coins then
+
+                local location = Actor.Contains
+                if locations_checked[location] == 1 then
+                    --Item shouldn't exist
+                    local succes, err = pcall(function (...)
+                        if Actor:IsValid() then
+                            Actor:K2_DestroyActor()
+                        end    
+                    end)
+                    if not succes then
+                        print("Failed to destroy Actor\n")
+                        print(err)
+                    end
+                elseif Actor.Cost == nil or Actor.Cost == 0 or Actor.Cost <= Player.Player.Coins then
                     if Actor.Cost ~= nil and Actor.Cost > 0 then
                         Player.Player.Coins = Player.Player.Coins - Actor.Cost
                     end
                     print("Buying item\n")
-                    local location = Actor.Contains
-                    if APUtil.locations_checked[location] ~= 1 then
+                    
+                    --if APUtil.locations_checked[location] ~= 1 then
                         Last_checked = tostring(location)
                         Last_sent = names_scouted[location]
-                        APUtil.locations_checked[location] = 1
+                        locations_checked[location] = 1
                         
-                        
-                        -- if AP_server ~= nil then  
-                        --     AP_server:LocationChecks({location})
-                        -- end
+
                         Send_Queue[location] = 1
                         print("Queued Item\n")    
                         
                         
-
-
                         AddProgressPoint()
                         -- print("Updating Text\n")
                         -- UpdateText()
-                    else
-                        print("Already owns item, refunding\n")
-                        if Actor.Cost ~= nil and Actor.Cost > 0 then
-                            Player.Player.Coins = Player.Player.Coins + Actor.Cost
-                        end
-                    end
+                    -- else
+                    --     print("Already owns item, refunding\n")
+                    --     if Actor.Cost ~= nil and Actor.Cost > 0 then
+                    --         Player.Player.Coins = Player.Player.Coins + Actor.Cost
+                    --     end
+                    -- end
                     
                     local succes, err = pcall(function (...)
                         if Actor:IsValid() then
@@ -313,14 +331,13 @@ local function HitObject()
                         print(err)
                     end
                     
-                    
                 else
                     Actor:CannotAfford()
                     print("Cannot afford\n")
                 end
-                --print("Player has " .. tostring(Player.Player.Coins) .. " Coins")
+
             end
-        elseif HasSubstring(APUtil.GetObjectName(Actor), {"half_moon"}) then
+        elseif HasSubstring(name, {"half_moon"}) then
             MoonsPlaced = 0
             local muns = {"2_2", "42_7", "63", "64", "65", "66"}
             for _, moon in ipairs(muns)  do
@@ -333,6 +350,11 @@ local function HitObject()
             if MoonsPlaced == 6 then
                 ExecuteWithDelay(100, PopulateItems)
             end
+        elseif HasSubstring(name, {"EnemySpawn"}) then
+
+        elseif HasSubstring(name, {"Smallbutton53"}) then
+            print("Unlocked Carrot tp \n")
+            UnlockedCarrot = 1
         end    
     end)
     if not succes then
@@ -417,6 +439,18 @@ RegisterKeyBind(Key.E, function ()
     end
 end)
 
+RegisterKeyBind(Key.RETURN, function ()
+    local succes, err, _ = pcall(function (...)
+        if InMenu then
+            Message_Queue = APUtil.ModActor.TeleportRedville.SendMessageBox:GetText():ToString()
+            APUtil.ModActor.TeleportRedville.SendMessageBox:SetText(FText(""))
+        end
+    end)
+    if succes ~= true then
+        print(err)
+    end
+end)
+
 RegisterConsoleCommandHandler("disconnect", disconnect)
 RegisterConsoleCommandHandler("test", Test)
 RegisterConsoleCommandHandler("connect", Connect)
@@ -427,7 +461,7 @@ RegisterConsoleCommandHandler("say", Say)
 RegisterConsoleCommandHandler("FindNearby", FindNearby)
 RegisterConsoleCommandHandler("sync", function (Cmd, CommandParts, Ar)
     if AP_server ~= nil then
-        AP_server:Sync()
+        to_sync = true
     end
     return true
 end)
@@ -571,6 +605,11 @@ RegisterConsoleCommandHandler("removeblock", function (Cmd, CommandParts, Ar)
     for _, volume in ipairs(BlockingVolumes) do
         volume:K2_DestroyActor()
     end
+    return true
+end)
+
+RegisterConsoleCommandHandler("kill", function (Cmd, CommandParts, Ar)
+    Kill()
     return true
 end)
 

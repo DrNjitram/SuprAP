@@ -94,11 +94,13 @@ end
 
 
 function SetText(text)
-    if not InGame or not textControl or not textControl:IsValid() then 
-        if InGame then
-            AddText()
-        end 
+    if not InGame then
         return
+    elseif not textControl or not textControl:IsValid() then 
+         AddText()
+    end
+    if ShowChat then
+        textWidget:SetVisibility(Visibility_SELFHITTESTINVISIBLE)
     end
     textControl:SetText(FText(text))
 end
@@ -115,11 +117,15 @@ end
 function ToggleText()
     if not InGame or not textWidget or not textWidget:IsValid() then return end
     local current = textWidget:GetVisibility()
-    setTextVisibility(current == Visibility_SELFHITTESTINVISIBLE and Visibility_HIDDEN or Visibility_SELFHITTESTINVISIBLE)
+    if current == Visibility_HIDDEN then
+        setTextVisibility(Visibility_SELFHITTESTINVISIBLE)
+    else
+        setTextVisibility(Visibility_HIDDEN)
+    end 
 end
 
 function ShowText()
-    AddOrToggleText(Visibility_VISIBLE)
+    AddOrToggleText(Visibility_SELFHITTESTINVISIBLE)
 end
 
 function AddOrToggleText(visibility)

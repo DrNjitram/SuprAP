@@ -1595,4 +1595,9 @@ local Costs = {
 	["UpgradeHappiness2_2"] = 1337
 }
 
-return {L = Locations, ID = Item_IDs, P = Progressives, BP = Blueprints, PN = Pretty_Name, B=Barrels, J=Juicers, BV=Blueville_Shop, T = Transforms, C = Costs}
+local Reverse_Locations = {}
+for k, v in pairs(Locations) do
+	Reverse_Locations[v] = k
+end
+
+return {L = Locations, ID = Item_IDs, P = Progressives, BP = Blueprints, PN = Pretty_Name, B=Barrels, J=Juicers, BV=Blueville_Shop, T = Transforms, C = Costs, RL = Reverse_Locations}
